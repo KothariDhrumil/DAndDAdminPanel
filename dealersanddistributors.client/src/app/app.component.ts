@@ -1,37 +1,27 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
+import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
+import { SpinnerService } from './core/core.index';
 
-interface WeatherForecast {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
-export class AppComponent implements OnInit {
-  public forecasts: WeatherForecast[] = [];
+export class AppComponent {
+  title = 'Kanakku';
 
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.getForecasts();
-  }
-
-  getForecasts() {
-    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe(
-      (result) => {
-        this.forecasts = result;
-      },
-      (error) => {
-        console.error(error);
+  constructor(private spinner: SpinnerService, private router: Router) {
+    this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationStart) {
+        this.spinner.show();
       }
-    );
+      if (event instanceof NavigationEnd) {
+        setTimeout(() => {
+          this.spinner.hide();
+        }, 800);
+      }
+    });
   }
-
-  title = 'dealersanddistributors.client';
 }

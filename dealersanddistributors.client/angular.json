@@ -3,17 +3,11 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "dealersanddistributors.client": {
+   "dealersanddistributors.client": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "standalone": false
-        },
-        "@schematics/angular:directive": {
-          "standalone": false
-        },
-        "@schematics/angular:pipe": {
-          "standalone": false
+          "style": "scss"
         }
       },
       "root": "",
@@ -30,14 +24,34 @@
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "node_modules/ngx-owl-carousel-o/lib/styles/scss/owl.carousel.scss",
+              "node_modules/ngx-owl-carousel-o/lib/styles/scss/owl.theme.default.scss",
+              "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.css",
+              "node_modules/@fortawesome/fontawesome-free/css/brands.css",
+              "node_modules/@fortawesome/fontawesome-free/css/solid.css",
+              "node_modules/bootstrap/scss/bootstrap.scss",
+              "src/assets/icons/ionic/ionicons.css",
+              "src/assets/icons/material/materialdesignicons.css",
+              "src/assets/icons/pe7/pe-icon-7.css",
+              "src/assets/icons/themify/themify.css",
+              "src/assets/icons/typicons/typicons.css",
+              "src/assets/icons/weather/weathericons.css",
+              "src/assets/icons/flags/flags.css",
+              "src/assets/icons/simpleline/simple-line-icons.css",
+              "src/assets/icons/feather/css/iconfont.css",
+              "./node_modules/ngx-lightbox/lightbox.css",
+              "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -45,12 +59,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "5mb"
                 }
               ],
               "outputHashing": "all"
@@ -58,7 +72,8 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
@@ -92,15 +107,26 @@
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/styles.scss"
             ],
             "scripts": [],
             "karmaConfig": "karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
