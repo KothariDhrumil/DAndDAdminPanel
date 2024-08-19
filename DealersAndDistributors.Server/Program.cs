@@ -27,6 +27,8 @@ using DealersAndDistributors.Server.Models;
 using DealersAndDistributors.Server.ClaimsChangeCode;
 using Microsoft.OpenApi.Models;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -78,6 +80,19 @@ builder.Services.AddAuthentication(auth =>
             }
         };
     });
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(MyAllowSpecificOrigins,
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+            //builder.WithOrigins("http://localhost:4200/").AllowAnyMethod();
+            //builder.WithOrigins("https://localhost:4200").AllowAnyMethod();
+            //builder.WithOrigins("https://localhost:4200/").AllowAnyMethod();
+        });
+});
 
 builder.Services.RegisterAuthPermissions<Example6Permissions>(options =>
 {
@@ -210,5 +225,9 @@ app.UsePermissionsChange();   //Example of updating the user's Permission claim 
 app.UseAddEmailClaimToUsers();//Example of adding an extra Email 
 
 app.MapControllers();
+app.UseCors(MyAllowSpecificOrigins);
+app.UseRouting();
+//app.UseResponseCaching();
+//app.UseResponseCompression();
 app.UseDownForMaintenance(TenantTypes.HierarchicalTenant);
 app.Run();

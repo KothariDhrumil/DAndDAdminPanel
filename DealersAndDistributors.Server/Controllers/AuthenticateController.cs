@@ -70,7 +70,7 @@ namespace Example2.WebApiWithToken.IndividualAccounts.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
-        [Route("authenticatewithrefresh")]
+        [Route("token")]
         public async Task<ActionResult<TokenAndRefreshToken>> AuthenticateWithRefresh(LoginUserModel loginUser)
         {
             //NOTE: The _signInManager.PasswordSignInAsync does not change the current ClaimsPrincipal - that only happens on the next access with the token

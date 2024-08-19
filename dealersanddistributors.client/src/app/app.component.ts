@@ -11,7 +11,7 @@ import { Router, Event, NavigationStart, NavigationEnd } from '@angular/router';
 export class AppComponent {
 
   currentUrl: string ="";
-  constructor(public _router: Router, location: PlatformLocation) {
+  constructor(public _router: Router) {
     this._router.events.subscribe((routerEvent: Event) => {
       if (routerEvent instanceof NavigationStart) {
         // location.onPopState(() => {

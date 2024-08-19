@@ -7,7 +7,7 @@ import { JwtHelperService } from '@auth0/angular-jwt'; // Import JwtHelperServic
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { Token } from '../models/token'; // Update the import path to the correct location of the Token model
-import { environment } from '../../../environments/environment.prod';
+import { environment } from '../../../environments/environment';
 import { LocalStorageService } from './local-storage.service';
 import { Permission } from '../models/permission';
 import { Result } from '../models/wrappers/Result';
@@ -15,7 +15,7 @@ import { Result } from '../models/wrappers/Result';
 @Injectable()
 export class AuthService {
 
-  private baseUrl = environment.apiUrl;
+  private baseUrl = environment.apiUrl + "authenticate/";
   private currentUserTokenSource = new BehaviorSubject<string>(this.getStorageToken);
   public currentUserToken$ = this.currentUserTokenSource.asObservable();
 
@@ -97,15 +97,9 @@ export class AuthService {
     return of(currentUserToken);
   }
 
-  public login(values: { email: string, password: string, tenant: string }): Observable<Token> {
+  public login(values: { email: string, password: string}): Observable<Token> {
     console.log(values);
-    const headerDict = {
-      'tenant': values.tenant
-    }
-    const requestOptions = {
-      headers: new HttpHeaders(headerDict),
-    };
-    return this.http.post<Token>(this.baseUrl + 'tokens', values, requestOptions)
+    return this.http.post<Token>(this.baseUrl + 'token', values)
       .pipe(
         tap((result: Token) => {
           this.setStorageToken(result);

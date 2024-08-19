@@ -15,7 +15,8 @@ import { SharedModule } from '../../core/shared/shared.module';
     CommonModule,
     AuthRoutingModule,
     SharedModule,
-    MaterialModule
+    MaterialModule,
+
   ]
 })
 export class AuthModule { }

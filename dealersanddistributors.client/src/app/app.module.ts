@@ -1,7 +1,7 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
@@ -27,6 +27,7 @@ import { LocalStorageService } from './core/service/local-storage.service';
     AppRoutingModule,
     SharedModule,
     HttpClientModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     AuthGuard,
@@ -34,6 +35,7 @@ import { LocalStorageService } from './core/service/local-storage.service';
     RoleGuard,
     AuthService,
     LocalStorageService,
+
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },

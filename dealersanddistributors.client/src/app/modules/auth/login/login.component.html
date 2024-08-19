@@ -1,36 +1,46 @@
-<div class="content">
-  <div class="container">
-    <mat-card class="mat-card-login">
-      <mat-card-content class="mat-card-content-login">
-        <div class="row">
-          <div class="col-lg-12 col-md-12 col-xl-12 col-xs-12 login-form">
-            <img src="/assets/images/full-stack-hero-logo.png" style="width: 75px">
-            <form [formGroup]=" loginForm" (ngSubmit)="onSubmit()">
+<!-- Main Wrapper -->
+<div class="main-wrapper login-body">
+  <div class="login-wrapper">
+    <div class="container">
+      <img class="img-fluid logo-dark mb-2 logo-color" src="assets/img/logo2.png" alt="Logo">
+
+      <div class="loginbox">
+        <div class="login-right">
+          <div class="login-right-wrap">
+            <h1>Login</h1>
+            <p class="account-subtitle">Access to our dashboard</p>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
               <h1>Sign in</h1>
-              <h3>Enter your credentials here.</h3>
-              <mat-form-field appearance="fill">
+              <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>
                 <input matInput placeholder="Ex. mukesh@fullstackhero.com" formControlName="email" required>
                 <mat-error>
                   Email is <strong>required</strong>
                 </mat-error>
               </mat-form-field>
-              <mat-form-field appearance="fill">
-                <mat-label>Tenant</mat-label>
-                <input matInput placeholder="Tenant" formControlName="tenant" required>
-                <mat-error>
-                  Please provide a valid Tenant
-                </mat-error>
-              </mat-form-field>
-              <mat-form-field appearance="fill">
+              <mat-form-field appearance="outline">
                 <mat-label>Password</mat-label>
                 <input matInput type="password" placeholder="Enter your password" formControlName="password" required>
                 <mat-error>
                   Please provide a valid password
                 </mat-error>
               </mat-form-field>
-              <button *ngIf="!isBeingLoggedIn" mat-raised-button color="primary" style="width:100%;height: 50px;"
-                type="submit"> Sign In
+              <div class="input-block mb-3">
+                <div class="row">
+                  <div class="col-6 text-start">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" id="cb1" />
+                      <label htmlFor="label" class="custom-control-label ms-1" for="cb1">Remember me</label>
+                    </div>
+                  </div>
+                  <div class="col-6 text-end">
+                    <a class="forgot-link" [routerLink]="routes.forgot_password">Forgot Password ?</a>
+                  </div>
+                </div>
+              </div>
+              <button *ngIf="!isBeingLoggedIn" [disabled]="loginForm.invalid" class="btn btn-lg btn-block btn-primary w-100" type="submit">
+                Login
               </button>
               <button *ngIf="isBeingLoggedIn" mat-raised-button color="primary" style="width:100%;height: 50px;"
                 [disabled]="!loginForm.valid" type="submit">
@@ -39,11 +49,25 @@
                   </mat-spinner>
                 </mat-icon> Logging you in..
               </button>
+              <div class="login-or">
+                <span class="or-line"></span>
+                <span class="span-or">or</span>
+              </div>
+              <!-- Social Login -->
+              <div class="social-login mb-3">
+                <span>Login with</span>
+                <a href="javascript:void(0);" class="facebook"><i class="fab fa-facebook-f"></i></a><a
+                  href="javascript:void(0);" class="google"><i class="fab fa-google"></i></a>
+              </div>
+              <!-- /Social Login -->
+              <div class="text-center dont-have">
+                Don't have an account yet?
+                <a [routerLink]="routes.register">Register</a>
+              </div>
             </form>
           </div>
         </div>
-      </mat-card-content>
-    </mat-card>
-
+      </div>
+    </div>
   </div>
 </div>

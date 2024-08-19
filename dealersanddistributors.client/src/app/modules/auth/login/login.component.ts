@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/service/auth.service';
+import { routes } from '../../../core/helpers/routes/routes';
 
 @Component({
   selector: 'app-login',
@@ -10,7 +11,8 @@ import { AuthService } from '../../../core/service/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
+  public routes = routes;
+  public show_password = true;
   loginForm !: FormGroup;
   returnUrl !: string;
   isBeingLoggedIn: boolean = false;
@@ -30,7 +32,7 @@ export class LoginComponent implements OnInit {
     this.loginForm = new FormGroup({
       email: new FormControl('admin@root.com', [Validators.required, Validators.email]),
       password: new FormControl('123Pa$$word!', Validators.required),
-      tenant: new FormControl('root', Validators.required)
+      // tenant: new FormControl('root', Validators.required)
     });
   }
 
