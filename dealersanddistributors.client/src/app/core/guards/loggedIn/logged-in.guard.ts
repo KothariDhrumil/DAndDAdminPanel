@@ -7,10 +7,10 @@ import { routes } from '../../core.index';
   providedIn: 'root',
 })
 export class LoggedInGuard {
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   canActivate(
-  
+
   ):
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree>
