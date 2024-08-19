@@ -198,6 +198,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
 app.UseHttpsRedirection();
@@ -210,6 +211,4 @@ app.UseAddEmailClaimToUsers();//Example of adding an extra Email
 
 app.MapControllers();
 app.UseDownForMaintenance(TenantTypes.HierarchicalTenant);
-//app.MapFallbackToFile("/index.html");
-
 app.Run();

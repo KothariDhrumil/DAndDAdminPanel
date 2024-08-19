@@ -1,37 +1,30 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { PlatformLocation } from '@angular/common';
+import { Router, Event, NavigationStart, NavigationEnd } from '@angular/router';
 
-interface WeatherForecast {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css'
 })
-export class AppComponent implements OnInit {
-  public forecasts: WeatherForecast[] = [];
+export class AppComponent {
 
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.getForecasts();
-  }
-
-  getForecasts() {
-    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe(
-      (result) => {
-        this.forecasts = result;
-      },
-      (error) => {
-        console.error(error);
+  currentUrl: string ="";
+  constructor(public _router: Router, location: PlatformLocation) {
+    this._router.events.subscribe((routerEvent: Event) => {
+      if (routerEvent instanceof NavigationStart) {
+        // location.onPopState(() => {
+        //   window.location.reload();
+        // });
+        this.currentUrl = routerEvent.url.substring(
+          routerEvent.url.lastIndexOf("/") + 1
+        );
       }
-    );
+      if (routerEvent instanceof NavigationEnd) {
+      }
+      window.scrollTo(0, 0);
+    });
   }
-
   title = 'dealersanddistributors.client';
 }

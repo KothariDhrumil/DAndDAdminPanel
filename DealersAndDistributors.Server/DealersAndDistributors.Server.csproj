@@ -21,9 +21,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
+    <!--<PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
-    </PackageReference>
+    </PackageReference>-->
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -43,9 +43,9 @@
     <ProjectReference Include="..\..\..\Library\AuthPermissions.SupportCode\AuthPermissions.SupportCode.csproj" />
     <ProjectReference Include="..\..\..\Library\AuthPermissions\AuthPermissions.csproj" />
     <ProjectReference Include="..\..\..\Library\ExamplesCommonCode\ExamplesCommonCode.csproj" />
-    <ProjectReference Include="..\dealersanddistributors.client\dealersanddistributors.client.esproj">
+    <!--<ProjectReference Include="..\dealersanddistributors.client\dealersanddistributors.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    </ProjectReference>-->
   </ItemGroup>
 
   <ItemGroup>
