@@ -15,6 +15,7 @@ import { HasRoleDirective } from '../directives/has-role.directive';
 
 import { DeleteDialogComponent } from './components/delete-dialog/delete-dialog.component';
 import { UploaderComponent } from './components/uploader/uploader.component';
+import { NgxBootstrapModule } from './ngx-bootstrap/ngx-bootstrap.module';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { UploaderComponent } from './components/uploader/uploader.component';
     HasPermissionDirective,
     HasRoleDirective,
     DeleteDialogComponent,
-    UploaderComponent
+    UploaderComponent,
   ],
   imports: [
     CommonModule,
@@ -35,6 +36,7 @@ import { UploaderComponent } from './components/uploader/uploader.component';
     MaterialModule,
     FormsModule,
     TranslateModule,
+    NgxBootstrapModule,
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
@@ -49,7 +51,8 @@ import { UploaderComponent } from './components/uploader/uploader.component';
     TableComponent,
     HasPermissionDirective,
     HasRoleDirective,
-    UploaderComponent
+    UploaderComponent,
+    NgxBootstrapModule,
   ],
 })
 export class SharedModule {}

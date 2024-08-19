@@ -9,14 +9,14 @@ export class ThemeService {
   constructor(private storage: LocalStorageService) { }
   toggleDarkMode() {
     if (this.isDarkMode()) {
-      document.querySelector('.mat-app-background').classList.remove('dark-theme');
-      document.querySelector('.mat-app-background').classList.add('light-theme');
+      document.querySelector('.mat-app-background')?.classList.remove('dark-theme');
+      document.querySelector('.mat-app-background')?.classList.add('light-theme');
       this.storage.setItem('themeVariant', 'light-theme');
       return false;
     }
     else {
-      document.querySelector('.mat-app-background').classList.add('dark-theme');
-      document.querySelector('.mat-app-background').classList.remove('light-theme');
+      document.querySelector('.mat-app-background')?.classList.add('dark-theme');
+      document.querySelector('.mat-app-background')?.classList.remove('light-theme');
       this.storage.setItem('themeVariant', 'dark-theme');
       return true;
     }
@@ -29,7 +29,7 @@ export class ThemeService {
   }
   setThemeFromLocalStorage() {
     if (this.isDarkMode()) {
-      document.querySelector('.mat-app-background').classList.add('dark-theme');
+      document.querySelector('.mat-app-background')?.classList.add('dark-theme');
     }
   }
 }

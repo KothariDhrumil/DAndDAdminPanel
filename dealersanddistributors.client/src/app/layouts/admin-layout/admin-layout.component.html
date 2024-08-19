@@ -1,0 +1,68 @@
+@if (authenticated === true) {
+  <div
+    class="main-wrapper"
+    [ngClass]="{
+      'menu-opened': mobileSidebar === true && authenticated === true,
+      'expand-menu':
+      expandMenu === 'true' && miniSidebar === true && authenticated === true,
+      'mini-sidebar': miniSidebar === true && authenticated === true,
+      'slide-nav': mobileSidebar === true && authenticated === true,
+      blue: layoutColor === '2',
+      light: layoutColor === '1',
+      dark: layoutColor === '4',
+      fluid: layoutWidth === '1',
+      boxed: layoutWidth === '2',
+      headerlight: layoutTopColor === '1',
+      headerdark: layoutTopColor === '2',
+      lg: layoutSidebarSize === '1',
+      'sm-hover': layoutSidebarSize === '2' || layoutWidth === '2',
+      vertical: layoutPosition === '1',
+      sidebardark: layoutSidebarColor === '2',
+      sidebarlight: layoutSidebarColor === '1',
+      default: layoutSidebarView === '1',
+      detached: layoutSidebarView === '2',
+      horizontal:layoutPosition === '6',
+    }"
+    >
+
+      <app-header-one></app-header-one>
+      <app-side-menu-one></app-side-menu-one>
+    <div
+      [ngClass]="{
+        container: layoutPosition === '3' && authenticated === true
+      }"
+      >
+      <!-- Page Wrapper -->
+      <div
+        [ngClass]="{
+          'page-wrapper page-wrapper-three': layoutPosition === '4',
+          'page-wrapper-four': layoutPosition === '5',
+          'page-wrapper':
+            layoutPosition === '1' ||
+            layoutPosition === '2' ||
+            layoutPosition === '3' ||
+            layoutPosition === '5' ||
+            layoutPosition === '6',
+            'page-wrapper-fluid' : layoutPosition === '1' && hideheader === false
+        }"
+        >
+        <div
+          class="content"
+          [ngClass]="layoutPosition === '5' ? 'container' : 'container-fluid'"
+          >
+          <div [class.scroll-content]="getScrollContentPages() === true">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="sidebar-overlay" (click)="toggleMobileIcon()"
+        [ngClass]="{
+          opened: mobileSidebar === true && authenticated === true
+        }"
+      ></div>
+    </div>
+  </div>
+}
+
