@@ -17,8 +17,8 @@ import {
   ApexFill,
   ApexResponsive,
 } from 'ng-apexcharts';
-import { routes } from '../../../core/helpers/routes/routes';
-import { SideBarService } from '../../../core/service/side-bar/side-bar.service';
+import { routes } from '../../../../core/helpers/routes/routes';
+import { SideBarService } from '../../../../core/service/side-bar/side-bar.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | any;

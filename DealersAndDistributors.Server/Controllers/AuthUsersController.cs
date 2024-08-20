@@ -29,17 +29,19 @@ public class AuthUsersController : VersionNeutralApiController
     }
 
     [HttpGet("listusers")]
-    // [HasPermission(Example6Permissions.UserRead)]
+    //[HasPermission(Permissions.AccessAll)]
     [OpenApiOperation("List users filtered by authUser tenant.", "")]
-    public async Task<List<AuthUserDisplay>> ListAuthUsersFilteredByTenantAsync()
+    public async Task<PaginatedResult<List<AuthUserDisplay>>> ListAuthUsersFilteredByTenantAsync(int pageNumber, int pageSize, string orderBy)
     {
         string? authDataKey = User.GetAuthDataKeyFromUser();
         IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(authDataKey);
-        return await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.Email)).ToListAsync();
+        var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.Email)).ToListAsync();
+
+        return new PaginatedResult<List<AuthUserDisplay>> { Data = users};
     }
 
     [HttpGet("profile")]
-    [HasPermission(Example7Permissions.UserRead)]
+    [HasPermission(Permissions.UserRead)]
     public async Task<ActionResult<AuthUserDisplay>> GetCurrentAuthUserInfo()
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -80,14 +82,14 @@ public class AuthUsersController : VersionNeutralApiController
     }
 
     [HttpGet("view-sync-changes")]
-    [HasPermission(Example7Permissions.UserSync)]
+    [HasPermission(Permissions.UserSync)]
     public async Task<ActionResult<List<SyncAuthUserWithChange>>> SyncUsers()
     {
         return await _authUsersAdmin.SyncAndShowChangesAsync();
     }
 
     [HttpPost("apply-sync-changes")]
-    [HasPermission(Example7Permissions.UserSync)]
+    [HasPermission(Permissions.UserSync)]
     public async Task<ActionResult> SyncUsers(IEnumerable<SyncAuthUserWithChange> data)
     {
         var status = await _authUsersAdmin.ApplySyncChangesAsync(data);
@@ -98,7 +100,7 @@ public class AuthUsersController : VersionNeutralApiController
     }
 
     [HttpPut]
-    [HasPermission(Example7Permissions.UserChange)]
+    [HasPermission(Permissions.UserChange)]
     [OpenApiOperation("Update an authUser.", "")]
     public async Task<ActionResult> UpdateAsync(SetupManualUserChange change)
     {
@@ -112,7 +114,7 @@ public class AuthUsersController : VersionNeutralApiController
 
     // todo Change the input type to represent only required changes
     [HttpPut("roles")]
-    [HasPermission(Example7Permissions.UserRolesChange)]
+    [HasPermission(Permissions.UserRolesChange)]
     [OpenApiOperation("Update an authUser's roles.", "")]
     public async Task<ActionResult> UpdateRolesAsync(SetupManualUserChange change)
     {
@@ -125,7 +127,7 @@ public class AuthUsersController : VersionNeutralApiController
     }
 
     [HttpDelete("{id}")]
-    [HasPermission(Example7Permissions.UserRemove)]
+    [HasPermission(Permissions.UserRemove)]
     [OpenApiOperation("Delete an authUser.", "")]
     public async Task<ActionResult> DeleteAsync(string id)
     {
@@ -137,3 +139,7 @@ public class AuthUsersController : VersionNeutralApiController
     }
 }
 
+public class PaginatedResult<T> 
+{
+    public T Data { get; set; }
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MultilingualService } from '../../../core/service/multilingual.service';
+import { MultilingualService } from '../../../../core/service/multilingual.service';
 
 
 @Component({

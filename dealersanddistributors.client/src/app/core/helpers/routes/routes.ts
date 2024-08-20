@@ -1020,4 +1020,7 @@ export class routes {
   public static get dashboard(): string {
     return this.baseUrl + '/admin/dashboard';
   }
+  public static get listAllAuthUsers(): string {
+    return this.baseUrl + '/admin/auth-users';
+  }
 }

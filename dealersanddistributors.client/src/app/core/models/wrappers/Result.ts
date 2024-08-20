@@ -3,7 +3,7 @@ import { IResult } from "./IResult";
 export class Result<T> implements IResult<T> {
   succeeded: boolean = false;
   messages: string[] = [];
-  response !: T;
+  data !: T;
   source: string = ''; // Add an initializer for the 'source' property
   exception: string = '';
   errorCode: number = 0;

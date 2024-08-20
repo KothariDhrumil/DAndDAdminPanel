@@ -21,7 +21,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpGet]
-    [HasPermission(Example7Permissions.RoleRead)]
+    [HasPermission(Permissions.RoleRead)]
     [OpenApiOperation("Get a list of all roles.", "")]
     public async Task<List<RoleWithPermissionNamesDto>> GetListAsync()
     {
@@ -32,7 +32,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpGet("permissions")]
-    [HasPermission(Example7Permissions.PermissionRead)]
+    [HasPermission(Permissions.PermissionRead)]
     [OpenApiOperation("Get permissions. This should not be used by a user that has a tenant.", "")]
     public List<PermissionDisplay> ListPermissions()
     {
@@ -40,7 +40,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpPost("permissions")]
-    [HasPermission(Example7Permissions.RoleChange)]
+    [HasPermission(Permissions.RoleChange)]
     [OpenApiOperation("Update a role's permission names and optionally it's description. This should not be used by a user that has a tenant.", "")]
     public async Task<IActionResult> Edit(RoleCreateUpdateDto input)
     {
@@ -53,7 +53,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpPost]
-    [HasPermission(Example7Permissions.RoleChange)]
+    [HasPermission(Permissions.RoleChange)]
     [OpenApiOperation("Create a role. This should not be used by a user that has a tenant.", "")]
     public async Task<ActionResult> RegisterRoleAsync(RoleCreateUpdateDto input)
     {
@@ -66,7 +66,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpDelete]
-    [HasPermission(Example7Permissions.RoleChange)]
+    [HasPermission(Permissions.RoleChange)]
     [OpenApiOperation("Delete a role. This should not be used by a user that has a tenant.", "")]
     public async Task<ActionResult> DeleteAsync(RoleDeleteConfirmDto input)
     {

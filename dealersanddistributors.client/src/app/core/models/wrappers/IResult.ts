@@ -2,7 +2,7 @@ export interface IResult<T>
 {
   succeeded: boolean;
   messages: string[];
-  response: T | T[];
+  data: T | T[];
   status : IStatus;
 }
 

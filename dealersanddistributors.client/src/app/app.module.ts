@@ -22,8 +22,10 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HeaderOneComponent } from './layouts/admin-layout/header-one/header-one.component';
 import { SideMenuOneComponent } from './layouts/admin-layout/side-menu-one/side-menu-one.component';
+import { LoggedInUserApiService } from './core/service/logged-in-user.services';
+import { MultilingualService } from './core/service/multilingual.service';
 export function rootLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
+  return new TranslateHttpLoader(http, '../assets/i18n/', '.json');
 }
 @NgModule({
   declarations: [
@@ -41,6 +43,7 @@ export function rootLoaderFactory(http: HttpClient) {
     SharedModule,
     BrowserAnimationsModule,
     MaterialModule,
+
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -54,8 +57,10 @@ export function rootLoaderFactory(http: HttpClient) {
     PermissionGuard,
     RoleGuard,
     AuthService,
+    LoggedInUserApiService,
     LocalStorageService,
     BusyService,
+    MultilingualService,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },

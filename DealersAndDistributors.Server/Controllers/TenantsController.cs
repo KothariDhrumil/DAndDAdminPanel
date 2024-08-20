@@ -23,7 +23,7 @@ public class TenantsController : VersionNeutralApiController
     }
 
     [HttpGet]
-    [HasPermission(Example7Permissions.TenantList)]
+    [HasPermission(Permissions.TenantList)]
     [OpenApiOperation("Get a list of all tenants.", "")]
     public async Task<List<HierarchicalTenantDto>> GetListAsync()
     {
@@ -33,7 +33,7 @@ public class TenantsController : VersionNeutralApiController
     }
 
     [HttpGet("{id:int}")]
-    [HasPermission(Example7Permissions.TenantList)]
+    [HasPermission(Permissions.TenantList)]
     [OpenApiOperation("Get tenant details.", "")]
     public async Task<HierarchicalTenantDto?> GetAsync(int id)
     {
@@ -44,7 +44,7 @@ public class TenantsController : VersionNeutralApiController
     }
 
     [HttpPost]
-    [HasPermission(Example7Permissions.TenantCreate)]
+    [HasPermission(Permissions.TenantCreate)]
     [OpenApiOperation("Create a new tenant.", "")]
     public async Task<ActionResult> CreateAsync(CreateHierarchicalTenantRequest request)
     {
@@ -58,7 +58,7 @@ public class TenantsController : VersionNeutralApiController
     }
 
     [HttpPut]
-    [HasPermission(Example7Permissions.TenantUpdate)]
+    [HasPermission(Permissions.TenantUpdate)]
     [OpenApiOperation("Update a tenant.", "")]
     public async Task<ActionResult> UpdateAsync(UpdateHierarchicalTenantRequest request)
     {
@@ -72,7 +72,7 @@ public class TenantsController : VersionNeutralApiController
     }
 
     [HttpPost("move-hierarchy-level")]
-    [HasPermission(Example7Permissions.TenantMove)]
+    [HasPermission(Permissions.TenantMove)]
     [OpenApiOperation("Move hierarchical tenant to another parent.", "")]
     public async Task<ActionResult<string>> MoveHierarchicalTenantToAnotherParentAsync(MoveHierarchicalTenantRequest request)
     {
@@ -88,7 +88,7 @@ public class TenantsController : VersionNeutralApiController
     }
 
     [HttpDelete("{tenantId:int}")]
-    [HasPermission(Example7Permissions.TenantDelete)]
+    [HasPermission(Permissions.TenantDelete)]
     [OpenApiOperation("Delete a tenant.", "")]
     public async Task<ActionResult> DeleteAsync(int tenantId)
     {

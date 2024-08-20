@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { SettingsComponent } from './settings/settings.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { SettingsComponent } from './components/settings/settings.component';
 import { AdminLayoutComponent } from '../../layouts/admin-layout/admin-layout.component';
 import { AuthGuard } from '../../core/guard/auth.guard';
-import { UserInfoComponent } from './user-info/user-info.component';
+import { AuthUserInfoComponent } from './components/auth-user-info/user-info.component';
+import { AuthUserListComponent } from './components/auth-user-list/auth-user-list.component';
 
 const routes: Routes = [
   {
@@ -23,7 +24,11 @@ const routes: Routes = [
       },
       {
         path: 'user-info',
-        component: UserInfoComponent
+        component: AuthUserInfoComponent
+      },
+      {
+        path: 'auth-users',
+        component: AuthUserListComponent
       }
     ]
   },

@@ -9,21 +9,21 @@ namespace DealersAndDistributors.Server.Controllers;
 public class ShopsController : VersionedApiController
 {
     [HttpPost("stock")]
-    [HasPermission(Example7Permissions.StockRead)]
+    [HasPermission(Permissions.StockRead)]
     public Task<List<ShopStockDto>> GetStock(SearchShopStockRequest request)
     {
         return Mediator.Send(request);
     }
 
     [HttpPost("sales")]
-    [HasPermission(Example7Permissions.SalesRead)]
+    [HasPermission(Permissions.SalesRead)]
     public Task<List<ShopSaleDto>> GetSales(SearchShopSaleRequest request)
     {
         return Mediator.Send(request);
     }
 
     [HttpPost("till")]
-    [HasPermission(Example7Permissions.SalesSell)]
+    [HasPermission(Permissions.SalesSell)]
     public Task Till(CreateSaleItemRequest request)
     {
         return Mediator.Send(request);

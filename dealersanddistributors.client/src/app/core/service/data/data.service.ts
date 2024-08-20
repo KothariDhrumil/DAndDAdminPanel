@@ -739,6 +739,14 @@ public sideBar: any[] = [
         icon: 'home',
         base: 'dashboard',
       },
+      {
+        menuValue: 'User Info',
+        route: routes.userInfo,
+        hasSubRoute: false,
+        showSubRoute: false,
+        icon: 'home',
+        base: 'userinfo',
+      },
     ],
   },
 ];

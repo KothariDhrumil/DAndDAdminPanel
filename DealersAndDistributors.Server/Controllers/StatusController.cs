@@ -17,7 +17,7 @@ public class StatusController : VersionNeutralApiController
     }
 
     [HttpGet]
-    [HasPermission(Example7Permissions.AppStatusList)]
+    [HasPermission(Permissions.AppStatusList)]
     [OpenApiOperation("Get a list of tenant's up/down status.", "")]
     public List<KeyValuePair<string, string>> GetList()
     {
@@ -25,7 +25,7 @@ public class StatusController : VersionNeutralApiController
     }
 
     [HttpPost()]
-    [HasPermission(Example7Permissions.AppStatusAllDown)]
+    [HasPermission(Permissions.AppStatusAllDown)]
     [OpenApiOperation("Set app status to down for maintenance for everyone.", "")]
     public IActionResult TakeAllDown(ManuelAppDownDto data)
     {
@@ -37,7 +37,7 @@ public class StatusController : VersionNeutralApiController
     }
 
     [HttpPost("{tenantId:int}")]
-    [HasPermission(Example7Permissions.AppStatusTenantDown)]
+    [HasPermission(Permissions.AppStatusTenantDown)]
     [OpenApiOperation("Set app status to down for maintenance for a specific tenant.", "")]
     public async Task<IActionResult> TakeTenantDown(int tenantId)
     {
@@ -51,7 +51,7 @@ public class StatusController : VersionNeutralApiController
     /// <param name="key"></param>
     /// <returns></returns>
     [HttpPost("remove/{key}")]
-    [HasPermission(Example7Permissions.AppStatusRemove)]
+    [HasPermission(Permissions.AppStatusRemove)]
     [OpenApiOperation("Remove a tenant from the down for maintenance list.", "")]
     public IActionResult Remove(string key)
     {

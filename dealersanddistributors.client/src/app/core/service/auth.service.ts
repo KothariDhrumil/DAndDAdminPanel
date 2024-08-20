@@ -11,10 +11,12 @@ import { environment } from '../../../environments/environment';
 import { LocalStorageService } from './local-storage.service';
 import { Permission } from '../models/permission';
 import { Result } from '../models/wrappers/Result';
+import { PermissionEnum } from '../enums/permissions.enum';
 
 @Injectable()
 export class AuthService {
 
+  private ushortMaxValue = 65535; // 2^16 - 1
   private baseUrl = environment.apiUrl;
   private currentUserTokenSource = new BehaviorSubject<string>(this.getStorageToken);
   public currentUserToken$ = this.currentUserTokenSource.asObservable();
@@ -48,6 +50,13 @@ export class AuthService {
     return !!(decodedToken) ? decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] : '';
   }
 
+  public get getPermissions(): string {
+    const decodedToken = this.getDecodedToken();
+    return !!(decodedToken) ? decodedToken['Permissions'] : '';
+  }
+
+
+
   public get isAuthenticated(): boolean {
     const token = localStorage.getItem('token');
     console.log("token", token);
@@ -74,15 +83,12 @@ export class AuthService {
       return allowedData.some(a => roles.includes(a));
 
     } else if (authorizationType === 'Permission') {
-      var permissionClaims: string[];
-      // var response = await this.userApi.getPermissions(this.getUserId);
-      // if (response.succeeded) {
-      //   this.permissions = response.data;
-      //   if (this.permissions === undefined || this.permissions.length === 0) return false;
-      //   permissionClaims = this.permissions.map(function (a) { return a.permission; });
-      //   return allowedData.some(r => permissionClaims.includes(r));
-      // }
-      return false;
+      const permissions = decodeToken['Permissions'];
+      if (permissions === undefined || permissions.length === 0) return false;
+      if (permissions === 'AccessAll') return true;
+      const permissionClaims = this.extractEnumsFromString(permissions);
+
+      return allowedData.some(r => permissionClaims.includes(r as PermissionEnum));
     }
     return false;
   }
@@ -98,7 +104,7 @@ export class AuthService {
     return of(currentUserToken);
   }
 
-  public login(values: { email: string, password: string}): Observable<Token> {
+  public login(values: { email: string, password: string }): Observable<Token> {
     console.log(values);
     return this.http.post<Token>(this.baseUrl + 'tokens', values)
       .pipe(
@@ -129,7 +135,7 @@ export class AuthService {
       .pipe(
         tap((result: Result<Token>) => {
           if (result.succeeded) {
-            this.setStorageToken(result.response);
+            this.setStorageToken(result.data);
             this.toastr.clear();
             this.toastr.info('User Logged In');
           }
@@ -174,6 +180,23 @@ export class AuthService {
     return decodedToken;
   }
 
+  private extractEnumsFromString(input: string): PermissionEnum[] {
+    const enumValues: PermissionEnum[] = [];
 
+    // Split the string using comma as the delimiter, then remove any whitespace, and finally convert each string to an enum
+    input.split(',').forEach((permission: string) => {
+      const trimmedChar = permission.trim();
+      const enumValue = this.convertCharToEnum(trimmedChar);
+      enumValues.push(enumValue);
+    });
+    return enumValues;
+  }
 
+  private convertCharToEnum(unicodeChar: string): PermissionEnum {
+    if (Object.values(PermissionEnum).includes(unicodeChar as PermissionEnum)) {
+      return unicodeChar as PermissionEnum;
+    } else {
+      throw new Error('Invalid Unicode character for enum conversion.');
+    }
+  }
 }

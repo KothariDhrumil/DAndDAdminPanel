@@ -31,7 +31,7 @@ public static class StartupExtensions
         var provider = services.BuildServiceProvider();
         var jwtSettings = provider.GetRequiredService<IOptions<JwtSettings>>().Value;
 
-        services.RegisterAuthPermissions<Example7Permissions>(options =>
+        services.RegisterAuthPermissions<Permissions>(options =>
         {
             options.TenantType = TenantTypes.HierarchicalTenant;
             options.EncryptionKey = configuration[nameof(AuthPermissionsOptions.EncryptionKey)];

@@ -94,8 +94,8 @@ public static class StartupExtensions
         });
         return builder
             .UseStaticFiles()
-            .UseRouting()
             .UseAuthentication()
+            .UseRouting()            
             .UseAuthorization();
     }
 
