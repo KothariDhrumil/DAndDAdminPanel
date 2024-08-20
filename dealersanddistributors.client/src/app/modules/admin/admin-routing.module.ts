@@ -4,12 +4,13 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AdminLayoutComponent } from '../../layouts/admin-layout/admin-layout.component';
 import { AuthGuard } from '../../core/guard/auth.guard';
+import { UserInfoComponent } from './user-info/user-info.component';
 
 const routes: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
-    canActivate:[AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -20,9 +21,13 @@ const routes: Routes = [
         path: 'dashboard',
         component: DashboardComponent
       },
+      {
+        path: 'user-info',
+        component: UserInfoComponent
+      }
     ]
   },
-    {
+  {
     path: 'settings',
     component: SettingsComponent
   },

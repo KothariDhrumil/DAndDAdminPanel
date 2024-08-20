@@ -12,7 +12,7 @@
     'sidebar-eight': headerSidebarStyle === '3',
     'sidebar-nine': headerSidebarStyle === '4',
     'sidebar-four': mobileSidebar === true && headerSidebarStyle !== '1'
-    
+
   }"
   >
   <div class="sidebar-header">
@@ -94,41 +94,7 @@
               }
             }
           }
-          <li class="submenu">
-            <a [ngClass]="{ subdrop: multilevel[0] }" (click)="multilevel[0] = !multilevel[0]" href="javascript:void(0);"><i class="feather icon-list"></i> <span>Multi Level</span> <span
-          class="menu-arrow"></span></a>
-                <ul [ngClass]="
-                multilevel[0] === true
-                ? 'd-block'
-                : 'd-none'
-            ">
-            <li class="submenu">
-              <a [ngClass]="{ subdrop: multilevel[1] }" (click)="multilevel[1] = !multilevel[1]" href="javascript:void(0);"><span>Level 1</span> <span class="menu-arrow"></span></a>
-                    <ul [ngClass]="
-                    multilevel[1] === true
-                    ? 'd-block'
-                    : 'd-none'
-                ">
-                <li><a href="javascript:void(0);"><span>Level 2</span></a></li>
-                <li class="submenu">
-                  <a [ngClass]="{ subdrop: multilevel[2] }" (click)="multilevel[2] = !multilevel[2]" href="javascript:void(0);"> <span> Level 2</span> <span class="menu-arrow"></span></a>
-                        <ul [ngClass]="
-                        multilevel[2] === true
-                        ? 'd-block'
-                        : 'd-none'
-                    ">
-                    <li><a href="javascript:void(0);">Level 3</a></li>
-                    <li><a href="javascript:void(0);">Level 3</a></li>
-                  </ul>
-                </li>
-                <li><a href="javascript:void(0);"><span>Level 2</span></a></li>
-              </ul>
-            </li>
-            <li>
-              <a href="javascript:void(0);"><span>Level 1</span></a>
-            </li>
-          </ul>
-        </li>
+
       </ul>
     </div>
   </div>

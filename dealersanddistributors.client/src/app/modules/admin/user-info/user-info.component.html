@@ -1,0 +1,9 @@
+<div *ngIf="userInfo">
+  <h2>User Information</h2>
+  <p><strong>Name:</strong> {{ userInfo.name }}</p>
+  <p><strong>Email:</strong> {{ userInfo.email }}</p>
+  <!-- Add more fields as necessary -->
+</div>
+<div *ngIf="!userInfo">
+  <p>No user information available.</p>
+</div>

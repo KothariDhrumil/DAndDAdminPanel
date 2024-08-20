@@ -26,9 +26,7 @@ export class routes {
   public static get lock_screen(): string {
     return this.baseUrl + '/lock-screen';
   }
-  public static get dashboard(): string {
-    return this.baseUrl + '/dashboard';
-  }
+
   public static get customer(): string {
     return this.baseUrl + '/customer';
   }
@@ -1010,5 +1008,16 @@ export class routes {
   }
   public static get invoiceSubscription(): string {
     return this.baseUrl + '/invoices/invoice-subscription';
+  }
+
+  /*
+  Added By Dhrumil
+
+   */
+  public static get userInfo(): string {
+    return this.baseUrl + '/admin/user-info';
+  }
+  public static get dashboard(): string {
+    return this.baseUrl + '/admin/dashboard';
   }
 }

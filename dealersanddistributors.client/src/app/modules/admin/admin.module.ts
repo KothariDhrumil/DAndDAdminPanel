@@ -10,6 +10,7 @@ import { MaterialModule } from '../../core/material/material.module';
 import { SharedModule } from '../../core/shared/shared.module';
 import { HeaderOneComponent } from '../../layouts/admin-layout/header-one/header-one.component';
 import { SideMenuOneComponent } from '../../layouts/admin-layout/side-menu-one/side-menu-one.component';
+import { UserInfoComponent } from './user-info/user-info.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,6 @@ import { SideMenuOneComponent } from '../../layouts/admin-layout/side-menu-one/s
     DeleteDialogComponent,
     LogoutDialogComponent,
     SettingsComponent,
-
   ],
   imports: [
     CommonModule,

@@ -15,7 +15,7 @@ import { Result } from '../models/wrappers/Result';
 @Injectable()
 export class AuthService {
 
-  private baseUrl = environment.apiUrl + "authenticate/";
+  private baseUrl = environment.apiUrl;
   private currentUserTokenSource = new BehaviorSubject<string>(this.getStorageToken);
   public currentUserToken$ = this.currentUserTokenSource.asObservable();
 
@@ -100,7 +100,7 @@ export class AuthService {
 
   public login(values: { email: string, password: string}): Observable<Token> {
     console.log(values);
-    return this.http.post<Token>(this.baseUrl + 'token', values)
+    return this.http.post<Token>(this.baseUrl + 'tokens', values)
       .pipe(
         tap((result: Token) => {
           this.setStorageToken(result);

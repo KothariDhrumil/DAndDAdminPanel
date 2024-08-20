@@ -1,93 +1,139 @@
-﻿// Copyright (c) 2022 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT license. See License.txt in the project root for license information.
-
+﻿
 using AuthPermissions.AdminCode;
+using AuthPermissions.AspNetCore;
 using AuthPermissions.BaseCode.CommonCode;
-using Example6.MvcWebApp.Sharding.Models;
+using AuthPermissions.BaseCode.DataLayer.Classes;
+using AuthPermissions.SupportCode.AddUsersServices;
 using ExamplesCommonCode.CommonAdmin;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NSwag.Annotations;
+using Shared;
 
-namespace DealersAndDistributors.Server.Controllers
-{  
-    public class AuthUsersController : Controller
+namespace DealersAndDistributors.Server.Controllers;
+
+public class AuthUsersController : VersionNeutralApiController
+{
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly IAuthUsersAdminService _authUsersAdmin;
+
+    public AuthUsersController(
+        UserManager<IdentityUser> userManager,
+        IAuthUsersAdminService authUsersAdmin)
     {
-        private readonly IAuthUsersAdminService _authUsersAdmin;
+        _userManager = userManager;
+        _authUsersAdmin = authUsersAdmin;
+    }
 
-        public AuthUsersController(IAuthUsersAdminService authUsersAdmin)
+    [HttpGet("listusers")]
+    // [HasPermission(Example6Permissions.UserRead)]
+    [OpenApiOperation("List users filtered by authUser tenant.", "")]
+    public async Task<List<AuthUserDisplay>> ListAuthUsersFilteredByTenantAsync()
+    {
+        string? authDataKey = User.GetAuthDataKeyFromUser();
+        IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(authDataKey);
+        return await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.Email)).ToListAsync();
+    }
+
+    [HttpGet("profile")]
+    [HasPermission(Example7Permissions.UserRead)]
+    public async Task<ActionResult<AuthUserDisplay>> GetCurrentAuthUserInfo()
+    {
+        if (User.Identity?.IsAuthenticated == true)
         {
-            _authUsersAdmin = authUsersAdmin;
+            string? userId = User.GetUserIdFromUser();
+            StatusGeneric.IStatusGeneric<AuthUser> status = await _authUsersAdmin.FindAuthUserByUserIdAsync(userId);
+
+            return status.HasErrors
+            ? throw new Exception(status.GetAllErrors())
+            : Ok(AuthUserDisplay.DisplayUserInfo(status.Result));
         }
 
-        // List users filtered by authUser tenant
-        //[HasPermission(Example4Permissions.UserRead)]
-        public async Task<ActionResult> Index(string message)
+        return Unauthorized();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [OpenApiOperation("Creates a new user and tenant with roles.", "")]
+    public async Task<ActionResult> CreateUserAndTenantAsync([FromServices] ISignInAndCreateTenant userRegisterInvite, CreateUserRequest request)
+    {
+        var newUserData = new AddNewUserDto
         {
-            var authDataKey = User.GetAuthDataKeyFromUser();
-            var userQuery = _authUsersAdmin.QueryAuthUsers(authDataKey);
-            return Ok(userQuery.ToList());
-        } 
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(SetupManualUserChange change)
+            Email = request.Email,
+            UserName = request.UserName,
+            Password = request.Password,
+            IsPersistent = false
+        };
+        var newTenantData = new AddNewTenantDto
         {
-            var status = await _authUsersAdmin.UpdateUserAsync(change.UserId,
-                change.Email, change.UserName, change.RoleNames, change.TenantName);
+            TenantName = request.TenantName,
+            Version = request.Version
+        };
+        var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);
+        if (status.HasErrors)
+            throw new Exception(status.GetAllErrors());
 
-            if (status.HasErrors)
-                return RedirectToAction(nameof(ErrorDisplay),
-                    new { errorMessage = status.GetAllErrors() });
+        return Ok(status.Message);
+    }
 
-            return RedirectToAction(nameof(Index), new { message = status.Message });
-        }
+    [HttpGet("view-sync-changes")]
+    [HasPermission(Example7Permissions.UserSync)]
+    public async Task<ActionResult<List<SyncAuthUserWithChange>>> SyncUsers()
+    {
+        return await _authUsersAdmin.SyncAndShowChangesAsync();
+    }
 
-        public async Task<ActionResult> SyncUsers()
-        {
-            var syncChanges = await _authUsersAdmin.SyncAndShowChangesAsync();
-            return View(syncChanges);
-        }
+    [HttpPost("apply-sync-changes")]
+    [HasPermission(Example7Permissions.UserSync)]
+    public async Task<ActionResult> SyncUsers(IEnumerable<SyncAuthUserWithChange> data)
+    {
+        var status = await _authUsersAdmin.ApplySyncChangesAsync(data);
+        if (status.HasErrors)
+            throw new Exception(status.GetAllErrors());
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        //NOTE: the input be called "data" because we are using JavaScript to send that info back
-        public async Task<ActionResult> SyncUsers(IEnumerable<SyncAuthUserWithChange> data)
-        {
-            var status = await _authUsersAdmin.ApplySyncChangesAsync(data);
-            if (status.HasErrors)
-                return RedirectToAction(nameof(ErrorDisplay),
-                    new { errorMessage = status.GetAllErrors() });
+        return Ok(status.Message);
+    }
 
-            return RedirectToAction(nameof(Index), new { message = status.Message });
-        }
+    [HttpPut]
+    [HasPermission(Example7Permissions.UserChange)]
+    [OpenApiOperation("Update an authUser.", "")]
+    public async Task<ActionResult> UpdateAsync(SetupManualUserChange change)
+    {
+        StatusGeneric.IStatusGeneric status = await _authUsersAdmin.UpdateUserAsync(
+            change.UserId, change.Email, change.UserName, change.RoleNames, change.TenantName);
 
-        // GET: AuthUsersController/Delete/5
-        public async Task<ActionResult> Delete(string userId)
-        {
-            var status = await _authUsersAdmin.FindAuthUserByUserIdAsync(userId);
-            if (status.HasErrors)
-                return RedirectToAction(nameof(ErrorDisplay),
-                    new { errorMessage = status.GetAllErrors() });
+        return status.HasErrors
+            ? throw new Exception(status.GetAllErrors())
+            : Ok(status.Message);
+    }
 
-            return View(AuthUserDisplay.DisplayUserInfo(status.Result));
-        }
+    // todo Change the input type to represent only required changes
+    [HttpPut("roles")]
+    [HasPermission(Example7Permissions.UserRolesChange)]
+    [OpenApiOperation("Update an authUser's roles.", "")]
+    public async Task<ActionResult> UpdateRolesAsync(SetupManualUserChange change)
+    {
+        StatusGeneric.IStatusGeneric status = await _authUsersAdmin.UpdateUserAsync(
+            change.UserId, roleNames: change.RoleNames);
 
-        // POST: AuthUsersController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(AuthIdAndChange input)
-        {
-            var status = await _authUsersAdmin.DeleteUserAsync(input.UserId);
-            if (status.HasErrors)
-                return RedirectToAction(nameof(ErrorDisplay),
-                    new { errorMessage = status.GetAllErrors() });
+        return status.HasErrors
+            ? throw new Exception(status.GetAllErrors())
+            : Ok(status.Message);
+    }
 
-            return RedirectToAction(nameof(Index), new { message = status.Message });
-        }
+    [HttpDelete("{id}")]
+    [HasPermission(Example7Permissions.UserRemove)]
+    [OpenApiOperation("Delete an authUser.", "")]
+    public async Task<ActionResult> DeleteAsync(string id)
+    {
+        var status = await _authUsersAdmin.DeleteUserAsync(id);
 
-        public ActionResult ErrorDisplay(string errorMessage)
-        {
-            return View((object)errorMessage);
-        }
+        return status.HasErrors
+            ? throw new Exception(status.GetAllErrors())
+            : Ok(status.Message);
     }
 }
+

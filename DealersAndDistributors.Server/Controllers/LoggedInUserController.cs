@@ -1,40 +1,34 @@
-﻿// Copyright (c) 2022 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT license. See License.txt in the project root for license information.
-
+﻿
 using AuthPermissions.AdminCode;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.PermissionsCode;
 using ExamplesCommonCode.CommonAdmin;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Example6.MvcWebApp.Sharding.Controllers
+namespace DealersAndDistributors.Server.Controllers;
+
+public class LoggedInUserController : VersionNeutralApiController
 {
-    public class LoggedInUserController : Controller
+    [HttpGet("AuthUserInfo")]
+    public async Task<AuthUserDisplay?> AuthUserInfo([FromServices] IAuthUsersAdminService service)
     {
-        public IActionResult Index()
+        if (User.Identity?.IsAuthenticated == true)
         {
-            return View(User);
+            var userId = User.GetUserIdFromUser();
+            var status = await service.FindAuthUserByUserIdAsync(userId);
+
+            if (status.HasErrors)
+                throw new Exception(status.GetAllErrors());
+
+            return AuthUserDisplay.DisplayUserInfo(status.Result);
         }
+        return null;
+    }
 
-        public async Task<IActionResult> AuthUserInfo([FromServices]IAuthUsersAdminService service)
-        {
-            if (User.Identity?.IsAuthenticated == true)
-            {
-                var userId = User.GetUserIdFromUser();
-                var status = await service.FindAuthUserByUserIdAsync(userId);
-
-                if (status.HasErrors)
-                    return RedirectToAction("ErrorDisplay", "AuthUsers",
-                        new { errorMessage = status.GetAllErrors() });
-
-                return View(AuthUserDisplay.DisplayUserInfo(status.Result));
-            }
-            return View((AuthUserDisplay)null);
-        }
-
-        public IActionResult UserPermissions([FromServices] IUsersPermissionsService service)
-        {
-            return View(service.PermissionsFromUser(HttpContext.User));
-        }
+    [HttpGet("permissions")]
+    public List<string> UserPermissions([FromServices] IUsersPermissionsService service)
+    {
+        return service.PermissionsFromUser(HttpContext.User);
     }
 }
+

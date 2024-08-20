@@ -12,44 +12,16 @@
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
+	 <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EfCore.GenericServices" Version="8.1.0" />
-    <PackageReference Include="EfCore.TestSupport" Version="8.0.1" />
-    <PackageReference Include="GenericServices" Version="1.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.8" />
-    <!--<PackageReference Include="Microsoft.AspNetCore.SpaProxy">
-      <Version>8.*-*</Version>
-    </PackageReference>-->
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="Net.DistributedFileStoreCache" Version="2.0.0" />
-    <PackageReference Include="NetCore.AutoRegisterDi" Version="2.2.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Library\AuthPermissions.AspNetCore\AuthPermissions.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\..\Library\AuthPermissions.BaseCode\AuthPermissions.BaseCode.csproj" />
-    <ProjectReference Include="..\..\..\Library\AuthPermissions.PostgreSql\AuthPermissions.PostgreSql.csproj" />
-    <ProjectReference Include="..\..\..\Library\AuthPermissions.SqlServer\AuthPermissions.SqlServer.csproj" />
-    <ProjectReference Include="..\..\..\Library\AuthPermissions.SupportCode\AuthPermissions.SupportCode.csproj" />
-    <ProjectReference Include="..\..\..\Library\AuthPermissions\AuthPermissions.csproj" />
     <ProjectReference Include="..\..\..\Library\ExamplesCommonCode\ExamplesCommonCode.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
     <!--<ProjectReference Include="..\dealersanddistributors.client\dealersanddistributors.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>-->
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
 </Project>
