@@ -1,10 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { url } from './../models/models';
+import { HttpClient, HttpEvent, HttpHandler, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt'; // Import JwtHelperService from the appropriate module
 
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { Token } from '../models/token'; // Update the import path to the correct location of the Token model
 import { environment } from '../../../environments/environment';
@@ -12,17 +13,21 @@ import { LocalStorageService } from './local-storage.service';
 import { Permission } from '../models/permission';
 import { Result } from '../models/wrappers/Result';
 import { PermissionEnum } from '../enums/permissions.enum';
+import { routes } from '../helpers/routes/routes';
 
 @Injectable()
 export class AuthService {
 
   private ushortMaxValue = 65535; // 2^16 - 1
   private baseUrl = environment.apiUrl;
+  private tokenUrl = this.baseUrl + 'tokens/';
   private currentUserTokenSource = new BehaviorSubject<string>(this.getStorageToken);
   public currentUserToken$ = this.currentUserTokenSource.asObservable();
 
   private permissions$ = new Subject<Permission[]>();
   private permissions: Permission[] = [];
+
+
 
   constructor(private http: HttpClient, private localStorage: LocalStorageService, private router: Router, private toastr: ToastrService) {
   }
@@ -106,7 +111,7 @@ export class AuthService {
 
   public login(values: { email: string, password: string }): Observable<Token> {
     console.log(values);
-    return this.http.post<Token>(this.baseUrl + 'tokens', values)
+    return this.http.post<Token>(this.tokenUrl, values)
       .pipe(
         tap((result: Token) => {
           this.setStorageToken(result);
@@ -121,14 +126,15 @@ export class AuthService {
     this.setStorageToken(null);
     this.toastr.clear();
     this.toastr.info('User Logged Out');
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl(routes.login);
   }
 
-  public tryRefreshingToken(): void {
+  public tryRefreshingToken(request: HttpRequest<any>,
+    next: HttpHandler): Observable<HttpEvent<any>> {
     const jwtToken = this.getStorageToken ?? '';
     const refreshToken = this.getStorageRefreshToken ?? '';
 
-    this.http.post<Result<Token>>(this.baseUrl + 'identity/tokens/refresh', {
+    this.http.post<Result<Token>>(this.baseUrl + '/tokens/refresh', {
       'refreshToken': refreshToken,
       'token': jwtToken
     })
@@ -138,19 +144,26 @@ export class AuthService {
             this.setStorageToken(result.data);
             this.toastr.clear();
             this.toastr.info('User Logged In');
+            request = request.clone({
+              setHeaders: {
+                Authorization: 'Bearer ' + result.data.refreshToken,
+              },
+            });
+            return next.handle(request);
           }
           else {
             this.logout();
             this.toastr.error('Something went wrong!');
+            return throwError(() => result);
           }
         }),
         catchError((error) => {
           console.error(error);
           this.logout();
-          return of(null);
+          return throwError(() => error);
         })
-      )
-      .subscribe();
+      );
+    return next.handle(request);
   }
 
   private setToken(token: string | null) {
