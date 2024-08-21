@@ -1,3 +1,4 @@
+import { SyncAuthUserWithChange } from './../../../modules/admin/models/authuserinfo.model';
 import { BehaviorSubject } from 'rxjs';
 
 export class routes {
@@ -9,6 +10,8 @@ export class routes {
     if (res == 'rtl') this.Url = res;
   });
   static adminDashboard: any;
+
+
 
   public static get baseUrl(): string {
     return routes.Url;
@@ -1017,10 +1020,17 @@ export class routes {
   public static get userInfo(): string {
     return this.baseUrl + '/admin/user-info';
   }
+  public static get authRoles(): string {
+    return this.baseUrl + '/admin/auth-roles';
+  }
   public static get dashboard(): string {
     return this.baseUrl + '/admin/dashboard';
   }
   public static get listAllAuthUsers(): string {
     return this.baseUrl + '/admin/auth-users';
+  }
+
+  public static get syncAuthUserWithChangeList(): string {
+    return this.baseUrl + '/admin/sync-auth-user-with-change-list';
   }
 }

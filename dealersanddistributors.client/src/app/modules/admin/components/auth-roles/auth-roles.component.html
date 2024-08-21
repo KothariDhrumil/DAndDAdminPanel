@@ -1,0 +1,6 @@
+<div [hidden]="!roles">
+  <app-table [title]="'Roles'" [data]="roles && roles.data" [columns]="roleColumns" (onReload)="reload()"
+    (onCreateForm)="openForm()" (onEditForm)="openForm($event)" (onDelete)="remove($event)"
+    [totalCount]="roles && roles.totalCount" [pageSize]="roles && roles.pageSize" >
+  </app-table>
+</div>

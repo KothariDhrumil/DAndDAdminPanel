@@ -4,7 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { PaginatedResult } from '../../../core/models/wrappers/PaginatedResult';
 import { UserParams } from '../models/userParams';
-import { AuthUserInfo } from '../models/authuserinfo.model';
+import { AuthUserInfo, SyncAuthUserWithChange } from '../models/authuserinfo.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,11 @@ export class AuthUsersService {
   baseUrl = environment.apiUrl + 'authusers/';
 
   constructor(private http: HttpClient) {
+  }
+
+  getSyncUsers(UserParams: UserParams): Observable<PaginatedResult<SyncAuthUserWithChange>> {
+    return this.http.get<PaginatedResult<SyncAuthUserWithChange>>(this.baseUrl + 'view-sync-changes')
+      .pipe(map((response: PaginatedResult<SyncAuthUserWithChange>) => response));
   }
 
   getUsers(UserParams: UserParams): Observable<PaginatedResult<AuthUserInfo>> {
@@ -48,5 +53,9 @@ export class AuthUsersService {
 
   updateUserRole(userId: string, roles: {}) {
     return this.http.put(this.baseUrl + userId + '/roles', roles);
+  }
+
+  applySyncUsers(users: SyncAuthUserWithChange[]): Observable<any> {
+    return this.http.post(this.baseUrl + 'apply-sync-changes', users);
   }
 }

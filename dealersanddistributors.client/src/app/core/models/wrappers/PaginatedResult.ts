@@ -1,5 +1,8 @@
 import { IResult, IStatus } from "./IResult";
 export class PaginatedResult<T> implements IResult<T> {
+  map(arg0: (role: any) => any): string[] {
+    throw new Error('Method not implemented.');
+  }
   succeeded: boolean;
   messages: string[];
   data: T[];

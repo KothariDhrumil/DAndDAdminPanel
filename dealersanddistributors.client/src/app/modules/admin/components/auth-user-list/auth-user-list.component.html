@@ -1,3 +1,8 @@
+<div class="row">
+  <div class="col-md-12">
+    <button *appHasPermission='[permissionEnum.UserSync]' class="btn btn-primary" (click)="redirectToAuthUserSyncUserList()">Sync with Authentication Provide's Users</button>
+  </div>
+</div>
 <div [hidden]="!users">
   <app-table [title]="'Users'" [subtitle]="'Manage, Register, Update or Remove Users here.'"
     [data]="users && users.data" [columns]="userColumns" (onFilter)="filter($event)" (onReload)="reload()"

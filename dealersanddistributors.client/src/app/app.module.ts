@@ -25,7 +25,7 @@ import { SideMenuOneComponent } from './layouts/admin-layout/side-menu-one/side-
 import { LoggedInUserApiService } from './core/service/logged-in-user.services';
 import { MultilingualService } from './core/service/multilingual.service';
 export function rootLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, '../assets/i18n/', '.json');
+  return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
 @NgModule({
   declarations: [

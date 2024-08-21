@@ -1,0 +1,12 @@
+
+<div [hidden]="!users">
+  <app-table [title]="'Users'" [data]="users && users.data" [columns]="userColumns"
+    (onReload)="reload()" (onCreateForm)="openForm()"   (onSort)="sort($event)"
+     [totalCount]="users && users.totalCount" [pageSize]="users && users.pageSize"
+    (onPageChanged)="pageChanged($event)" [customActionOneData]="userRoleActionData"
+    (onCustomActionOne)="openUserRolesForm($event)">
+  </app-table>
+</div>
+<div class="row">
+  <button mat-raised-button class="btn btn-primary" color="primary" (click)="syncUsers()">Update All</button>
+</div>

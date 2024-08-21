@@ -6,6 +6,8 @@ import { AdminLayoutComponent } from '../../layouts/admin-layout/admin-layout.co
 import { AuthGuard } from '../../core/guard/auth.guard';
 import { AuthUserInfoComponent } from './components/auth-user-info/user-info.component';
 import { AuthUserListComponent } from './components/auth-user-list/auth-user-list.component';
+import { AuthUserSyncUserListComponent } from './components/auth-user-sync-user-list/auth-user-sync-user-list.component';
+import { AuthRolesComponent } from './components/auth-roles/auth-roles.component';
 
 const routes: Routes = [
   {
@@ -29,6 +31,14 @@ const routes: Routes = [
       {
         path: 'auth-users',
         component: AuthUserListComponent
+      },
+      {
+        path: 'sync-auth-user-with-change-list',
+        component: AuthUserSyncUserListComponent
+      },
+      {
+        path: 'auth-roles',
+        component: AuthRolesComponent
       }
     ]
   },

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph;
 using NSwag.Annotations;
 using Shared;
 
@@ -37,7 +38,7 @@ public class AuthUsersController : VersionNeutralApiController
         IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(authDataKey);
         var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.Email)).ToListAsync();
 
-        return new PaginatedResult<List<AuthUserDisplay>> { Data = users};
+        return new PaginatedResult<List<AuthUserDisplay>>(users);
     }
 
     [HttpGet("profile")]
@@ -83,9 +84,10 @@ public class AuthUsersController : VersionNeutralApiController
 
     [HttpGet("view-sync-changes")]
     [HasPermission(Permissions.UserSync)]
-    public async Task<ActionResult<List<SyncAuthUserWithChange>>> SyncUsers()
+    public async Task<PaginatedResult<List<SyncAuthUserWithChange>>> SyncUsers()
     {
-        return await _authUsersAdmin.SyncAndShowChangesAsync();
+        var data = await _authUsersAdmin.SyncAndShowChangesAsync();
+        return new PaginatedResult<List<SyncAuthUserWithChange>>(data);
     }
 
     [HttpPost("apply-sync-changes")]
@@ -139,7 +141,11 @@ public class AuthUsersController : VersionNeutralApiController
     }
 }
 
-public class PaginatedResult<T> 
+public class PaginatedResult<T>
 {
     public T Data { get; set; }
+    public PaginatedResult(T data)
+    {
+        Data = data;
+    }
 }

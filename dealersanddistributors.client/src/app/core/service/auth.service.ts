@@ -10,7 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Token } from '../models/token'; // Update the import path to the correct location of the Token model
 import { environment } from '../../../environments/environment';
 import { LocalStorageService } from './local-storage.service';
-import { Permission } from '../models/permission';
+
 import { Result } from '../models/wrappers/Result';
 import { PermissionEnum } from '../enums/permissions.enum';
 import { routes } from '../helpers/routes/routes';
@@ -23,11 +23,6 @@ export class AuthService {
   private tokenUrl = this.baseUrl + 'tokens/';
   private currentUserTokenSource = new BehaviorSubject<string>(this.getStorageToken);
   public currentUserToken$ = this.currentUserTokenSource.asObservable();
-
-  private permissions$ = new Subject<Permission[]>();
-  private permissions: Permission[] = [];
-
-
 
   constructor(private http: HttpClient, private localStorage: LocalStorageService, private router: Router, private toastr: ToastrService) {
   }

@@ -10,6 +10,9 @@ import { MaterialModule } from '../../core/material/material.module';
 import { SharedModule } from '../../core/shared/shared.module';
 import { LoggedInUserApiService } from '../../core/service/logged-in-user.services';
 import { AuthUserListComponent } from './components/auth-user-list/auth-user-list.component';
+import { AuthRole } from './models/role.model';
+import { RoleService } from './services/roles.services';
+import { TenantsService } from './services/tenants.service';
 
 
 @NgModule({
@@ -28,7 +31,9 @@ import { AuthUserListComponent } from './components/auth-user-list/auth-user-lis
     TranslateModule
   ],
   providers:[
-    LoggedInUserApiService
+    LoggedInUserApiService,
+    RoleService,
+    TenantsService
   ]
 })
 export class AdminModule { }

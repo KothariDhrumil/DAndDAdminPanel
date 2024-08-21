@@ -1,4 +1,5 @@
 
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
@@ -746,6 +747,14 @@ public sideBar: any[] = [
         showSubRoute: false,
         icon: 'home',
         base: 'userinfo',
+      },
+      {
+        menuValue: 'Roles',
+        route: routes.authRoles,
+        hasSubRoute: false,
+        showSubRoute: false,
+        icon: 'home',
+        base: 'auth-roles',
       },
     ],
   },

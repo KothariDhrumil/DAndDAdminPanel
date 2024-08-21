@@ -23,23 +23,25 @@ public class RolesController : VersionNeutralApiController
     [HttpGet]
     [HasPermission(Permissions.RoleRead)]
     [OpenApiOperation("Get a list of all roles.", "")]
-    public async Task<List<RoleWithPermissionNamesDto>> GetListAsync()
+    public async Task<PaginatedResult<List<RoleWithPermissionNamesDto>>> GetListAsync()
     {
         string? userId = User.GetUserIdFromUser();
-        return await _authRolesAdmin.QueryRoleToPermissions(userId)
+       var data = await _authRolesAdmin.QueryRoleToPermissions(userId)
                 .OrderBy(x => x.RoleType)
                 .ToListAsync();
+        return new PaginatedResult<List<RoleWithPermissionNamesDto>>(data);
     }
 
     [HttpGet("permissions")]
     [HasPermission(Permissions.PermissionRead)]
     [OpenApiOperation("Get permissions. This should not be used by a user that has a tenant.", "")]
-    public List<PermissionDisplay> ListPermissions()
+    public PaginatedResult<List<PermissionDisplay>> ListPermissions()
     {
-        return _authRolesAdmin.GetPermissionDisplay(false);
+        return new PaginatedResult<List<PermissionDisplay>>(_authRolesAdmin.GetPermissionDisplay(false));
+        
     }
 
-    [HttpPost("permissions")]
+    [HttpPut("permissions")]
     [HasPermission(Permissions.RoleChange)]
     [OpenApiOperation("Update a role's permission names and optionally it's description. This should not be used by a user that has a tenant.", "")]
     public async Task<IActionResult> Edit(RoleCreateUpdateDto input)

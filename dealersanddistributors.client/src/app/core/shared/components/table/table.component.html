@@ -14,10 +14,10 @@
   <div class="list-btn">
     <ul class="filter-list">
       <li>
-        <a *ngIf="onCreateForm.observers.length>0" class="btn btn-primary" mat-raised-button color="primary"
+        <button *ngIf="onCreateForm.observers.length>0" class="btn btn-primary" mat-raised-button color="primary"
           (click)="openCreateForm()">
-          <mat-icon>add</mat-icon> {{'components.table.register'|translate}} {{ title }}
-        </a>
+          {{'components.table.register'|translate}} {{ title }}
+        </button>
 
       </li>
       <li>
@@ -50,7 +50,7 @@
           <div class="table-responsive">
             <div class="table-scroll">
               <!-- Table -->
-              <mat-table fixedLayout="true"  mat-table-stripped [dataSource]="tableDataSource" matSort
+              <mat-table fixedLayout="true" mat-table-stripped [dataSource]="tableDataSource" matSort
                 class="table table-center table-hover datatable" (matSortChange)="handleSort($event)">
                 <ng-container *ngFor="let tableColumn of columns" [matColumnDef]="tableColumn.name">
                   <thead class="thead-light">
@@ -114,6 +114,11 @@
                             matTooltip="{{customActionOneData.title}}" color="{{customActionOneData.color}}"
                             (click)="openCustomActionOne(element)">
                             <mat-icon>{{customActionOneData.icon}}</mat-icon>
+                          </button>
+                          <button *ngIf="customActionTwoData" mat-raised-button
+                            matTooltip="{{customActionTwoData.title}}" color="{{customActionTwoData.color}}"
+                            (click)="openCustomActionTwo(element)">
+                            <mat-icon>{{customActionTwoData.icon}}</mat-icon>
                           </button>
                           <button *ngIf="onView.observers.length>0" mat-raised-button color="primary"
                             (click)="openViewForm(element)">

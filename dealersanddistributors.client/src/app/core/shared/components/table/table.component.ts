@@ -25,6 +25,7 @@ export class TableComponent implements OnInit, AfterViewInit {
   public tableDataSource!: MatTableDataSource<any>;
   public displayedColumns!: string[];
   @Input() customActionOneData!: CustomAction;
+  @Input() customActionTwoData!: CustomAction;
   @Input() customActionData!: CustomAction;
   searchString!: string;
   @Input() totalCount: number = 1;
@@ -47,6 +48,8 @@ export class TableComponent implements OnInit, AfterViewInit {
   @Output() onReload: EventEmitter<any> = new EventEmitter<any>();
   @Output() onSort: EventEmitter<Sort> = new EventEmitter<Sort>();
   @Output() onCustomActionOne: EventEmitter<any> = new EventEmitter();
+
+  @Output() onCustomActionTwo: EventEmitter<any> = new EventEmitter();
   @Output() onCustomAction: EventEmitter<any> = new EventEmitter();
   @Output() onCreateForm: EventEmitter<any> = new EventEmitter();
   @Output() onEditForm: EventEmitter<any> = new EventEmitter();
@@ -70,6 +73,9 @@ export class TableComponent implements OnInit, AfterViewInit {
     this.tableDataSource = new MatTableDataSource<any>(data);
   }
   openCustomActionOne($event: any) {
+    this.onCustomActionOne.emit($event);
+  }
+  openCustomActionTwo($event: any) {
     this.onCustomActionOne.emit($event);
   }
 
