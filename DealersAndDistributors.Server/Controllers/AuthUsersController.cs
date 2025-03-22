@@ -1,5 +1,4 @@
-﻿
-using AuthPermissions.AdminCode;
+﻿using AuthPermissions.AdminCode;
 using AuthPermissions.AspNetCore;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
@@ -16,11 +15,19 @@ using Shared;
 
 namespace DealersAndDistributors.Server.Controllers;
 
+/// <summary>
+/// Controller for managing authentication users and their associated operations
+/// </summary>
 public class AuthUsersController : VersionNeutralApiController
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IAuthUsersAdminService _authUsersAdmin;
 
+    /// <summary>
+    /// Initializes a new instance of the AuthUsersController
+    /// </summary>
+    /// <param name="userManager">The ASP.NET Core Identity user manager</param>
+    /// <param name="authUsersAdmin">The service for managing authentication users</param>
     public AuthUsersController(
         UserManager<IdentityUser> userManager,
         IAuthUsersAdminService authUsersAdmin)
