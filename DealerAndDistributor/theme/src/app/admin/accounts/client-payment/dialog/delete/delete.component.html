@@ -1,0 +1,22 @@
+<h3 mat-dialog-title>Are you sure?</h3>
+<div mat-dialog-content>
+  <ul class="clearfix">
+    <li>
+      <p><span class="font-weight-bold"> Client Name: </span>{{data.client_name}}</p>
+    </li>
+    <li>
+      <p><span class="font-weight-bold"> Payment Date: </span>{{ data.payment_date }}</p>
+    </li>
+    <li>
+      <p>
+        <span class="font-weight-bold">Payment Amount: </span>{{data.payment_amount}}
+      </p>
+    </li>
+  </ul>
+</div>
+<div mat-dialog-actions class="mb-1">
+  <button mat-flat-button class="formCancelBtn" (click)="confirmDelete()">
+    Delete
+  </button>
+  <button mat-flat-button mat-dialog-close color="accent" tabindex="-1">Cancel</button>
+</div>

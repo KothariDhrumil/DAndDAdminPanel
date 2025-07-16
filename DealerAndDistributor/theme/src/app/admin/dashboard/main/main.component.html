@@ -1,0 +1,339 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="'Dashboad'" [items]="['Home']" [active_item]="'Dashboad'"></app-breadcrumb>
+    </div>
+    <div class="row ">
+      <div class="col-xl-8">
+        <mat-card>
+          <mat-card-header class="header-style">
+            <mat-card-title>Project Survay</mat-card-title>
+            <button mat-icon-button [matMenuTriggerFor]="menu" class="header-dropdown">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item>
+                <mat-icon>add_circle_outline</mat-icon>
+                <span>Add</span>
+              </button>
+              <button mat-menu-item disabled>
+                <mat-icon>delete_outline</mat-icon>
+                <span>Delete</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>refresh</mat-icon>
+                <span>Refresh</span>
+              </button>
+            </mat-menu>
+          </mat-card-header>
+          <mat-card-content>
+            <apx-chart [series]="projectOptions.series!" [chart]="projectOptions.chart!" [yaxis]="projectOptions.yaxis!"
+              [xaxis]="projectOptions.xaxis!" [labels]="projectOptions.labels!" [stroke]="projectOptions.stroke!"
+              [plotOptions]="projectOptions.plotOptions!" [markers]="projectOptions.markers!"
+              [grid]="projectOptions.grid!" [fill]="projectOptions.fill!" [tooltip]="projectOptions.tooltip!"
+              [colors]="projectOptions.colors!">
+            </apx-chart>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="col-xl-4 ">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card card-statistic-2">
+              <div class="clearfix">
+                <div class="card-right">
+                  <div>
+                    <h6 class="float-end">Earning</h6>
+                  </div>
+                  <div class="m-r-10 m-l-10">
+                    <h5 class="font-weight-bold float-end mb-0"> $20,125</h5>
+                  </div>
+                </div>
+              </div>
+              <apx-chart [series]="smallChart1Options.series!" [chart]="smallChart1Options.chart!"
+                [xaxis]="smallChart1Options.xaxis!" [yaxis]="smallChart1Options.yaxis!"
+                [colors]="smallChart1Options.colors!" [stroke]="smallChart1Options.stroke!"
+                [legend]="smallChart1Options.legend!" [tooltip]="smallChart1Options.tooltip!"
+                [dataLabels]="smallChart1Options.dataLabels!"></apx-chart>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card card-statistic-2">
+              <div class="clearfix">
+                <div class="card-right">
+                  <div>
+                    <h6 class="float-end">New Clients</h6>
+                  </div>
+                  <div class="m-r-10 m-l-10">
+                    <h5 class="font-weight-bold float-end mb-0"> 129</h5>
+                  </div>
+                </div>
+              </div>
+              <apx-chart [series]="smallChart2Options.series!" [chart]="smallChart2Options.chart!"
+                [xaxis]="smallChart2Options.xaxis!" [yaxis]="smallChart2Options.yaxis!"
+                [colors]="smallChart2Options.colors!" [stroke]="smallChart2Options.stroke!"
+                [legend]="smallChart2Options.legend!" [tooltip]="smallChart2Options.tooltip!"
+                [dataLabels]="smallChart2Options.dataLabels!"></apx-chart>
+            </div>
+          </div>
+        </div>
+        <div class="card-bnner">
+          <div class="row">
+            <div class="col-lg-6">
+              <img style="height: 135px;" src="assets/images/pages/home-1.png" alt="">
+            </div>
+            <div class="col-lg-6">
+              <h6>Download Reports</h6>
+              <p>Download employee salary reports.</p>
+              <a [routerLink]="['/admin/dashboard/main']">Download <i class="fas fa-arrow-down"></i> </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <mat-card>
+          <mat-card-header class="header-style">
+            <mat-card-title>Product Report</mat-card-title>
+            <button mat-icon-button [matMenuTriggerFor]="menu" class="header-dropdown">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item>
+                <mat-icon>add_circle_outline</mat-icon>
+                <span>Add</span>
+              </button>
+              <button mat-menu-item disabled>
+                <mat-icon>delete_outline</mat-icon>
+                <span>Delete</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>refresh</mat-icon>
+                <span>Refresh</span>
+              </button>
+            </mat-menu>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="row">
+              <div class="col-md-12 col-xl-4 d-flex flex-column justify-content-center">
+                <div class="m-l-10 m-b-20">
+                  <h4>$1,17,289</h4>
+                  <h5 class="font-weight-light col-green">Total Income</h5>
+                  <p class="mb-2">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+                    Aenean commodo ligula eget dolor.
+                  </p>
+                </div>
+                <div class="m-l-10">
+                  <h4>$65,984</h4>
+                  <h5 class="font-weight-light col-orange">Total Expense</h5>
+                  <p class="mb-2"> Cras dapibus. Vivamus elementum semper nisi. Aenean
+                    vulputate eleifend tellus.
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-12 col-xl-8">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h5 class="tx-primary m-b-30">Country Wise Sales</h5>
+                    <div class="mb-3 mt-3">
+                      <table class="table table-borderless">
+                        <tbody>
+                          <tr class="tr-height-m">
+                            <td class="text-muted">India</td>
+                            <td class="w-100 px-0">
+                              <mat-progress-bar mode="determinate" class="progress-round progress-shadow" value="40">
+                              </mat-progress-bar>
+                            </td>
+                            <td>
+                              <h5 class="font-weight-bold mb-0">154</h5>
+                            </td>
+                          </tr>
+                          <tr class="tr-height-m">
+                            <td class="text-muted">USA</td>
+                            <td class="w-100 px-0">
+                              <mat-progress-bar mode="determinate" class="progress-round green-progress progress-shadow"
+                                value="90">
+                              </mat-progress-bar>
+                            </td>
+                            <td>
+                              <h5 class="font-weight-bold mb-0">423</h5>
+                            </td>
+                          </tr>
+                          <tr class="tr-height-m">
+                            <td class="text-muted">Shrilanka</td>
+                            <td class="w-100 px-0">
+                              <mat-progress-bar mode="determinate" class="progress-round sky-progress progress-shadow"
+                                value="65">
+                              </mat-progress-bar>
+                            </td>
+                            <td>
+                              <h5 class="font-weight-bold mb-0">265</h5>
+                            </td>
+                          </tr>
+                          <tr class="tr-height-m">
+                            <td class="text-muted">Australia</td>
+                            <td class="w-100 px-0">
+                              <mat-progress-bar mode="determinate"
+                                class="progress-round orange-progress progress-shadow" value="50">
+                              </mat-progress-bar>
+                            </td>
+                            <td>
+                              <h5 class="font-weight-bold mb-0">341</h5>
+                            </td>
+                          </tr>
+                          <tr class="tr-height-m">
+                            <td class="text-muted">Japan</td>
+                            <td class="w-100 px-0">
+                              <mat-progress-bar mode="determinate" class="progress-round red-progress progress-shadow"
+                                value="58">
+                              </mat-progress-bar>
+                            </td>
+                            <td>
+                              <h5 class="font-weight-bold mb-0">238</h5>
+                            </td>
+                          </tr>
+                          <tr class="tr-height-m">
+                            <td class="text-muted">Itely</td>
+                            <td class="w-100 px-0">
+                              <mat-progress-bar mode="determinate" class="progress-round progress-shadow" value="40">
+                              </mat-progress-bar>
+                            </td>
+                            <td>
+                              <h5 class="font-weight-bold mb-0">153</h5>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mt-3">
+                    <!-- chart -->
+                    <div class="recent-report__chart">
+                      <canvas baseChart height="150" class="chart" [data]="doughnutChartData" [type]="doughnutChartType"
+                        [options]="doughnutChartOptions">
+                      </canvas>
+                    </div>
+                    <div class="country-chart">
+                      <div class="d-flex justify-content-between mx-xl-5 mt-3">
+                        <div class="chart-note">
+                          <span class="dot dot-product bg-green"></span>
+                          <span>Itely</span>
+                        </div>
+                        <p class="mb-0">$30,289</p>
+                      </div>
+                      <div class="d-flex justify-content-between mx-xl-5 mt-3">
+                        <div class="chart-note">
+                          <span class="dot dot-product bg-orange"></span>
+                          <span>USA</span>
+                        </div>
+                        <p class="mb-0">$25,968</p>
+                      </div>
+                      <div class="d-flex justify-content-between mx-xl-5 mt-3">
+                        <div class="chart-note">
+                          <span class="dot dot-product bg-purple"></span>
+                          <span>India</span>
+                        </div>
+                        <p class="mb-0">$45,278</p>
+                      </div>
+                      <div class="d-flex justify-content-between mx-xl-5 mt-3">
+                        <div class="chart-note">
+                          <span class="dot dot-product bg-red"></span>
+                          <span>Shrilanka</span>
+                        </div>
+                        <p class="mb-0">$21,376</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+        <mat-card>
+          <mat-card-header class="header-style">
+            <mat-card-title>Invoices</mat-card-title>
+            <a mat-button color="primary" href="#" (click)="$event.preventDefault();">View All</a>
+          </mat-card-header>
+          <mat-card-content>
+            <ng-scrollbar style="height: 400px" visibility="hover">
+              <app-table-card [dataSource]="invoiceData"
+                [columnDefinitions]="invoiceColumnDefinitions"></app-table-card>
+            </ng-scrollbar>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+        <mat-card>
+          <mat-card-header class="header-style">
+            <mat-card-title>Average Daily Bill</mat-card-title>
+            <a mat-button color="primary" href="#" (click)="$event.preventDefault();">View All</a>
+          </mat-card-header>
+          <mat-card-content>
+            <h5>129 Dollar <span class="text-muted font-12">(Average)</span></h5>
+            <apx-chart [series]="performanceRateChartOptions.series!" [chart]="performanceRateChartOptions.chart!"
+              [xaxis]="performanceRateChartOptions.xaxis!" [stroke]="performanceRateChartOptions.stroke!"
+              [colors]="performanceRateChartOptions.colors!" [dataLabels]="performanceRateChartOptions.dataLabels!"
+              [legend]="performanceRateChartOptions.legend!" [markers]="performanceRateChartOptions.markers!"
+              [grid]="performanceRateChartOptions.grid!" [yaxis]="performanceRateChartOptions.yaxis!"
+              [tooltip]="performanceRateChartOptions.tooltip!" [title]="performanceRateChartOptions.title!">
+            </apx-chart>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+        <mat-card>
+          <mat-card-header class="header-style">
+            <mat-card-title>Client Survay</mat-card-title>
+            <a mat-button color="primary" href="#" (click)="$event.preventDefault();">View All</a>
+          </mat-card-header>
+          <mat-card-content>
+            <apx-chart [series]="areaChartOptions.series!" [chart]="areaChartOptions.chart!"
+              [xaxis]="areaChartOptions.xaxis!" [yaxis]="areaChartOptions.yaxis!" [colors]="areaChartOptions.colors!"
+              [stroke]="areaChartOptions.stroke!" [legend]="areaChartOptions.legend!" [grid]="areaChartOptions.grid!"
+              [tooltip]="areaChartOptions.tooltip!" [dataLabels]="areaChartOptions.dataLabels!"></apx-chart>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+        <mat-card>
+          <mat-card-header class="header-style">
+            <mat-card-title>Support Tickets Survay</mat-card-title>
+            <a mat-button color="primary" href="#" (click)="$event.preventDefault();">View All</a>
+          </mat-card-header>
+          <mat-card-content>
+            <apx-chart [series]="barChartOptions.series!" [chart]="barChartOptions.chart!"
+              [dataLabels]="barChartOptions.dataLabels!" [plotOptions]="barChartOptions.plotOptions!"
+              [responsive]="barChartOptions.responsive!" [xaxis]="barChartOptions.xaxis!" [grid]="barChartOptions.grid!"
+              [tooltip]="barChartOptions.tooltip!" [legend]="barChartOptions.legend!" [fill]="barChartOptions.fill!">
+            </apx-chart>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <div class="row clearfix">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <mat-card>
+          <mat-card-header class="header-style">
+            <mat-card-title>Projects</mat-card-title>
+            <a mat-button color="primary" href="#" (click)="$event.preventDefault();">View All</a>
+          </mat-card-header>
+          <mat-card-content>
+            <ng-scrollbar style="height: 400px" visibility="hover">
+              <app-table-card [dataSource]="projectData"
+                [columnDefinitions]="projectColumnDefinitions"></app-table-card>
+            </ng-scrollbar>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</section>
