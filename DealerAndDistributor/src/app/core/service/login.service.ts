@@ -16,12 +16,12 @@ const jwt = new JWT();
 })
 export class LoginService {
   private baseUrl = environment.apiUrl;
-  private tokenUrl = this.baseUrl + 'tokens/';
+  private tokenUrl = this.baseUrl + 'tokens';
   constructor(protected http: HttpClient, private store: LocalStorageService) { }
 
-  login(username: string, password: string) {
+  login(email: string, password: string) {
     const values = {
-      username: username,
+      email: email,
       password: password,
     };
 

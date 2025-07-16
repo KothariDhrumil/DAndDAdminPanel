@@ -28,17 +28,17 @@ import { environment } from '../../../environments/environment';
 export class AuthService {
   user$ = new BehaviorSubject<User>({});
   private baseUrl = environment.apiUrl;
-    private currentUserTokenSource = new BehaviorSubject<string>(this.getStorageToken);
-  public currentUserToken$ = this.currentUserTokenSource.asObservable();
+  private currentUserTokenSource!: BehaviorSubject<string>;
+  public currentUserToken$!: Observable<string>;
   constructor(
-
     private loginService: LoginService,
     private store: LocalStorageService,
     private toastrService: ToastrService,
     private router: Router,
     private http: HttpClient
   ) {
-
+    this.currentUserTokenSource = new BehaviorSubject<string>(this.store.get('token')?.toString() ?? '');
+    this.currentUserToken$ = this.currentUserTokenSource.asObservable();
   }
 
   public get currentUserValue(): User {
@@ -54,8 +54,8 @@ export class AuthService {
     return this.store.get('token')?.toString() ?? '';
   }
 
-  login(username: string, password: string, rememberMe = false) {
-    return this.loginService.login(username, password).pipe(
+  login(email: string, password: string, rememberMe = false) {
+    return this.loginService.login(email, password).pipe(
       switchMap((response) => {
         if (response) {
           this.toastrService.clear();
@@ -71,8 +71,7 @@ export class AuthService {
 
   public get isAuthenticated(): boolean {
     const token = this.store.get('token');
-    console.log("token", token);
-    if (!!(token)) {
+    if (typeof token === 'string' && token.trim() !== '') {
       const jwtService = new JwtHelperService();
       return !jwtService.isTokenExpired(token);
     }
@@ -89,11 +88,6 @@ export class AuthService {
     // remove user from local storage to log user out
     this.store.clear();
     this.router.navigateByUrl(routes.login);
-  }
-
-  assignUser(user: BehaviorSubject<User>): Observable<User> {
-    this.user$.next(this.currentUserValue); // Update the user$ BehaviorSubject with the new value
-    return this.user$.asObservable(); // Return an observable that emits the new user value
   }
 
   public tryRefreshingToken(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {

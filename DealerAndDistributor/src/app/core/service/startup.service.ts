@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { switchMap, tap } from 'rxjs/operators';
-import { AuthService } from './auth.service';
 import { NgxRolesService, NgxPermissionsService } from 'ngx-permissions';
-import { User } from '../models/interface';
+import { LoggedInUserService, LoggedInUserInfo } from './loggedinuser.service';
+import { forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,30 +11,30 @@ export class StartupService {
   constructor(
     private rolesService: NgxRolesService,
     private permissonsService: NgxPermissionsService,
-    private authService: AuthService
+    private loggedInUserService: LoggedInUserService
   ) {}
 
   /**
-   * Load the application only after get the menu or other essential informations
-   * such as permissions and roles.
+   * Loads roles and permissions for the logged-in user before app startup.
    */
-
-  // load(user: User) {
-  //   return this.setPermissions(user);
-  // }
-
   load() {
-
+    return forkJoin({
+      user: this.loggedInUserService.getAuthUserInfo(),
+      permissions: this.loggedInUserService.getPermissions(),
+    }).pipe(
+      tap(({ user, permissions }) => {
+        this.setRolesAndPermissions(user, permissions);
+      })
+    );
   }
 
-  private setPermissions(user: User) {
-    const role: any = {};
-    user['roles']?.forEach((e: any) => {
-      this.permissonsService.loadPermissions(user.permissions!);
-      this.rolesService.flushRoles();
-      const name = e['name'];
-      role[name] = user.permissions;
+  private setRolesAndPermissions(user: LoggedInUserInfo, permissions: string[]) {
+    this.permissonsService.loadPermissions(permissions);
+    this.rolesService.flushRoles();
+    const roles: Record<string, string[]> = {};
+    user.roleNames.forEach(roleName => {
+      roles[roleName] = permissions;
     });
-    this.rolesService.addRolesWithPermissions(role);
+    this.rolesService.addRolesWithPermissions(roles);
   }
 }

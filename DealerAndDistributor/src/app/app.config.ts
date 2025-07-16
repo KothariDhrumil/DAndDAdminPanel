@@ -25,6 +25,8 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { DirectionService, LanguageService, appInitializerProviders } from './core';
 import { ErrorInterceptor } from './core/interceptor/error.interceptor';
+import { provideToastr } from 'ngx-toastr';
+import { JwtInterceptor } from './core/interceptor/jwt.interceptor';
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -50,7 +52,6 @@ export const appConfig: ApplicationConfig = {
     ),
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
     { provide: DateAdapter, useClass: MomentDateAdapter },
-    appInitializerProviders,
     {
       provide: MAT_DATE_FORMATS,
       useValue: {
@@ -75,6 +76,12 @@ export const appConfig: ApplicationConfig = {
       useClass: ErrorInterceptor,
       multi: true,
     },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true,
+    },
     provideAnimationsAsync(),
+    provideToastr(),
   ],
 };

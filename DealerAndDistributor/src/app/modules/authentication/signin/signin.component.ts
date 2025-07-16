@@ -15,9 +15,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService, Role } from '../../../core';
 import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
 import { routes } from '../../../core/helpers/routes/routes';
+import { StartupService } from '../../../core/service/startup.service';
 
 interface AuthForm {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -42,10 +43,11 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   private router = inject(Router);
   private authService = inject(AuthService);
   private activatedRoute = inject(ActivatedRoute);
+  private startupService = inject(StartupService);
   returnUrl !: string;
 
   authForm!: FormGroup<{
-    username: FormControl<string>;
+    email: FormControl<string>;
     password: FormControl<string>;
   }>;
   submitted = signal(false);
@@ -65,7 +67,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     }
 
     this.authForm = this.formBuilder.group({
-      username: this.formBuilder.control('admin', { validators: [Validators.required], nonNullable: true }),
+      email: this.formBuilder.control('admin', { validators: [Validators.required], nonNullable: true }),
       password: this.formBuilder.control('admin@123', { validators: [Validators.required], nonNullable: true }),
     });
   }
@@ -83,15 +85,22 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       this.loading.set(false);
       return;
     }
-    const { username, password } = this.authForm.getRawValue();
+    const { email, password } = this.authForm.getRawValue();
     this.authService
-      .login(username, password, false)
+      .login(email, password, false)
       .subscribe({
         next: (response) => {
           this.submitted.set(false);
           this.loading.set(false);
           if (response) {
-            this.router.navigateByUrl(this.returnUrl);
+            this.startupService.load().subscribe({
+              next: () => {
+                this.router.navigateByUrl(this.returnUrl);
+              },
+              error: (error: unknown) => {
+                this.error.set('Failed to load roles/permissions');
+              }
+            });
           } else {
             this.error.set('Login failed');
           }
