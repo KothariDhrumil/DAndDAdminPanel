@@ -24,14 +24,7 @@ export class StartupService {
   // }
 
   load() {
-    return this.authService
-      .change()
-      .pipe(
-        tap((user) => {
-          return this.setPermissions(user);
-        })
-      )
-      .subscribe();
+
   }
 
   private setPermissions(user: User) {

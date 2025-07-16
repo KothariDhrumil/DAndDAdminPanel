@@ -1,5 +1,6 @@
+import { ToastrService } from 'ngx-toastr';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import {
   BehaviorSubject,
   catchError,
@@ -8,89 +9,127 @@ import {
   of,
   share,
   switchMap,
+  tap,
   throwError,
 } from 'rxjs';
 
 import { LoginService } from './login.service';
-import { TokenService } from './token.service';
-
-import { User } from '../models/interface';
+import { Token, User } from '../models/interface';
 import { LocalStorageService } from '../shared/services';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { routes } from '../helpers/routes/routes';
+import { Router } from '@angular/router';
+import { Result } from '../models/wrappers/Result';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   user$ = new BehaviorSubject<User>({});
-
-  private change$: Observable<User>;
-
+  private baseUrl = environment.apiUrl;
+    private currentUserTokenSource = new BehaviorSubject<string>(this.getStorageToken);
+  public currentUserToken$ = this.currentUserTokenSource.asObservable();
   constructor(
-    private tokenService: TokenService,
+
     private loginService: LoginService,
-    private store: LocalStorageService
+    private store: LocalStorageService,
+    private toastrService: ToastrService,
+    private router: Router,
+    private http: HttpClient
   ) {
-    this.change$ = merge(this.tokenService.change()).pipe(
-      switchMap(() => {
-        return this.assignUser(this.user$);
-      }),
-      share()
-    );
+
   }
 
   public get currentUserValue(): User {
     return this.store.get('currentUser');
   }
-  change() {
-    return this.change$;
+
+
+  public get getToken(): string {
+    return this.currentUserTokenSource.getValue();
   }
+
+  public get getStorageToken(): string {
+    return this.store.get('token')?.toString() ?? '';
+  }
+
   login(username: string, password: string, rememberMe = false) {
-    return this.loginService.login(username, password, rememberMe).pipe(
+    return this.loginService.login(username, password).pipe(
       switchMap((response) => {
-        const returnValue = JSON.parse(JSON.stringify(response))['token'];
-        this.tokenService.set(returnValue);
-        const roleData: [] = JSON.parse(JSON.stringify(response))['user'][
-          'roles'
-        ];
-        roleData.sort((a: any, b: any) => {
-          const aPri: number = a['priority'];
-          const bPri: number = b['priority'];
-          if (aPri > bPri) return 1;
-          else if (aPri < bPri) return -1;
-          else return 0;
-        });
-        this.tokenService.roleArray = roleData;
-        this.tokenService.permissionArray = JSON.parse(
-          JSON.stringify(response)
-        )['user']['permissions'];
-
-        this.user$.next(JSON.parse(JSON.stringify(response))['user']);
-        this.store.set('currentUser', response.user);
-
-        // Store role names in a new array
-        const roleNames = this.tokenService.roleArray.map(
-          (role: { name: string }) => role.name
-        );
-
-        const roleNamesJSON = JSON.stringify(roleNames);
-
-        // Store the JSON string in LocalStorage
-        this.store.set('roleNames', roleNamesJSON);
-
+        if (response) {
+          this.toastrService.clear();
+          this.toastrService.info('User Logged In');
+        } else {
+          this.toastrService.error('Login failed');
+        }
         return of(response); // Return the response to be handled in the component
       })
     );
   }
 
+
+  public get isAuthenticated(): boolean {
+    const token = this.store.get('token');
+    console.log("token", token);
+    if (!!(token)) {
+      const jwtService = new JwtHelperService();
+      return !jwtService.isTokenExpired(token);
+    }
+    return false;
+  }
+
+
+  private get getStorageRefreshToken(): string {
+    return this.store.get('refreshToken') ?? '';
+  }
+
+
   logout() {
     // remove user from local storage to log user out
     this.store.clear();
-    // this.currentUserSubject.next(this.currentUserValue);
-    return of({ success: false });
+    this.router.navigateByUrl(routes.login);
   }
 
   assignUser(user: BehaviorSubject<User>): Observable<User> {
     this.user$.next(this.currentUserValue); // Update the user$ BehaviorSubject with the new value
     return this.user$.asObservable(); // Return an observable that emits the new user value
+  }
+
+  public tryRefreshingToken(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const jwtToken = this.store.get('token') ?? '';
+    const refreshToken = this.store.get('refreshToken') ?? '';
+
+    if (!jwtToken || !refreshToken) {
+      this.logout();
+      return throwError(() => new Error('No token or refresh token found'));
+    }
+    if (new JwtHelperService().isTokenExpired(jwtToken)) {
+      this.toastrService.clear();
+      this.toastrService.info('Refreshing token...');
+    }
+    this.http.post<Token>(this.baseUrl + '/tokens/refresh', {
+      'refreshToken': refreshToken,
+      'token': jwtToken
+    })
+      .pipe(
+        tap((result: Token) => {
+          this.store.set('token', result.token);
+          this.store.set('refreshToken', result.refreshToken);
+          this.store.set('refreshTokenExpiryTime', result.refreshTokenExpiryTime);
+          request = request.clone({
+            setHeaders: {
+              Authorization: 'Bearer ' + result.refreshToken,
+            },
+          });
+          return next.handle(request);
+        }),
+        catchError((error) => {
+          console.error(error);
+          this.logout();
+          return throwError(() => error);
+        })
+      );
+    return next.handle(request);
   }
 }

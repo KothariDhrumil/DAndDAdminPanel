@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService, Role } from '../../../core';
 import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
+import { routes } from '../../../core/helpers/routes/routes';
 
 interface AuthForm {
   username: string;
@@ -40,6 +41,8 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private activatedRoute = inject(ActivatedRoute);
+  returnUrl !: string;
 
   authForm!: FormGroup<{
     username: FormControl<string>;
@@ -56,6 +59,11 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   readonly isHide = computed(() => this.hide());
 
   ngOnInit() {
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || routes.dashboard;
+    if (this.authService.isAuthenticated) {
+      this.router.navigateByUrl(this.returnUrl)
+    }
+
     this.authForm = this.formBuilder.group({
       username: this.formBuilder.control('admin', { validators: [Validators.required], nonNullable: true }),
       password: this.formBuilder.control('admin@123', { validators: [Validators.required], nonNullable: true }),
@@ -79,17 +87,13 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     this.authService
       .login(username, password, false)
       .subscribe({
-        next: (response: { user: { roles: { name: string }[] } }) => {
-          const role = response.user.roles[0];
+        next: (response) => {
+          this.submitted.set(false);
           this.loading.set(false);
-          if (role.name === Role.Admin) {
-            this.router.navigate(['/admin/dashboard/main']);
-          } else if (role.name === Role.Employee) {
-            this.router.navigate(['/employee/dashboard']);
-          } else if (role.name === Role.Client) {
-            this.router.navigate(['/client/dashboard']);
+          if (response) {
+            this.router.navigateByUrl(this.returnUrl);
           } else {
-            this.router.navigate(['/authentication/signin']);
+            this.error.set('Login failed');
           }
         },
         error: (error: unknown) => {
