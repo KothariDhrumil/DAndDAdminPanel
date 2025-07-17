@@ -16,8 +16,7 @@ export const routes: Routes = [
       },
       {
         path: 'superadmin',
-        loadComponent: () =>
-          import('./modules/superadmin/superadmin.module').then((m) => m.SuperadminComponent),
+        loadChildren: () => import('./modules/superadmin/superadmin.module').then(m => m.SuperadminModule),
       },
       // Example:
       // { path: 'dashboard', component: DashboardComponent },

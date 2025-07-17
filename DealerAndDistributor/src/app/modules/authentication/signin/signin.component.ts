@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService, Role } from '../../../core';
 import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
 import { StartupService } from '../../../core/service/startup.service';
-import { DASHBOARD_ROUTE } from '../../../core/helpers/routes/app-routes';
+import { DASHBOARD_ROUTE, SUPERADMIN_DASHBOARD_ROUTE } from '../../../core/helpers/routes/app-routes';
 
 interface AuthForm {
   email: string;
@@ -95,6 +95,9 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
           if (response) {
             this.startupService.load().subscribe({
               next: () => {
+                if (this.authService.isAuthenticated) {
+                  this.router.navigateByUrl(SUPERADMIN_DASHBOARD_ROUTE);
+                }
                 this.router.navigateByUrl(this.returnUrl);
               },
               error: (error: unknown) => {
