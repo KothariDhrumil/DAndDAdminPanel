@@ -14,7 +14,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService, Role } from '../../../core';
 import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
-import { routes } from '../../../core/helpers/routes/routes';
 import { StartupService } from '../../../core/service/startup.service';
 import { DASHBOARD_ROUTE } from '../../../core/helpers/routes/app-routes';
 
