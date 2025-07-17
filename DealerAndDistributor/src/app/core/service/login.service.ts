@@ -35,6 +35,7 @@ export class LoginService {
   }
   storeToken(result: Token) {
     if (result) {
+      this.store.clear();
       this.store.set('token', result.token);
       this.store.set('refreshToken', result.refreshToken);
       this.store.set('refreshTokenExpiryTime', result.refreshTokenExpiryTime);

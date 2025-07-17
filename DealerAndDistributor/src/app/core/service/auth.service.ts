@@ -47,10 +47,6 @@ export class AuthService {
 
 
   public get getToken(): string {
-    return this.currentUserTokenSource.getValue();
-  }
-
-  public get getStorageToken(): string {
     return this.store.get('token')?.toString() ?? '';
   }
 
