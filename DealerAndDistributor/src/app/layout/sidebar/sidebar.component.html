@@ -5,7 +5,7 @@
     <div class="menu">
       <ng-scrollbar [style.height]="listMaxHeight + 'px'" visibility="hover">
         <ul class="list">
-          <li class="sidebar-user-panel">
+          <!-- <li class="sidebar-user-panel">
             <div class="user-panel">
               <div class=" image">
                 <img src={{userImg}} class="img-circle user-img-circle" alt="User Image" />
@@ -15,7 +15,8 @@
               <div class="sidebar-userpic-name">{{userFullName}} </div>
               <div class="profile-usertitle-job ">{{userType}} </div>
             </div>
-          </li>
+          </li> -->
+
           <!-- Top Most level menu -->
           @for (sidebarItem of sidebarItems; track sidebarItem) {
           <ng-template [ngxPermissionsOnly]="sidebarItem.role">

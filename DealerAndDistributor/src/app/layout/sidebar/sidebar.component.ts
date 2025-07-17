@@ -45,8 +45,8 @@ import { UnsubscribeOnDestroyAdapter } from '../../core/shared';
 })
 export class SidebarComponent
   extends UnsubscribeOnDestroyAdapter
-  implements OnInit
-{
+  implements OnInit {
+  private isBrowser = typeof window !== 'undefined';
   public sidebarItems!: RouteInfo[];
   public innerHeight?: number;
   public bodyTag!: HTMLElement;
@@ -133,19 +133,23 @@ export class SidebarComponent
     _this.checkStatuForResize(true);
   }
   setMenuHeight() {
-    this.innerHeight = window.innerHeight;
-    const height = this.innerHeight - this.headerHeight;
-    this.listMaxHeight = height + '';
-    this.listMaxWidth = '500px';
+    if (this.isBrowser) {
+      this.innerHeight = window.innerHeight;
+      const height = this.innerHeight - this.headerHeight;
+      this.listMaxHeight = height + '';
+      this.listMaxWidth = '500px';
+    }
   }
   isOpen() {
     return this.bodyTag.classList.contains('overlay-open');
   }
   checkStatuForResize(firstTime: boolean) {
-    if (window.innerWidth < 1025) {
-      this.renderer.addClass(this.document.body, 'ls-closed');
-    } else {
-      this.renderer.removeClass(this.document.body, 'ls-closed');
+    if (this.isBrowser) {
+      if (window.innerWidth < 1025) {
+        this.renderer.addClass(this.document.body, 'ls-closed');
+      } else {
+        this.renderer.removeClass(this.document.body, 'ls-closed');
+      }
     }
   }
   mouseHover() {

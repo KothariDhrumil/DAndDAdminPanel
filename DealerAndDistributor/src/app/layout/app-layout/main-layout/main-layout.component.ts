@@ -7,6 +7,7 @@ import { SidebarComponent } from '../../sidebar/sidebar.component';
 import { RightSidebarService, InConfiguration, DirectionService } from '../../../core';
 import { ConfigService } from '../../../core/config';
 import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
+import { LocalStorageService } from '../../../core/shared/services';
 
 @Component({
     selector: 'app-main-layout',
@@ -24,13 +25,15 @@ import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
 export class MainLayoutComponent
   extends UnsubscribeOnDestroyAdapter
   implements AfterViewInit {
+  private isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
   direction!: Direction;
   public config!: InConfiguration;
   constructor(
     private directoryService: DirectionService,
     private configService: ConfigService,
     @Inject(DOCUMENT) private document: Document,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private storageSevice: LocalStorageService
   ) {
     super();
     this.config = this.configService.configData;
@@ -39,20 +42,20 @@ export class MainLayoutComponent
         if (currentData) {
           this.direction = currentData === 'ltr' ? 'ltr' : 'rtl';
         } else {
-          if (localStorage.getItem('isRtl')) {
-            if (localStorage.getItem('isRtl') === 'true') {
+          if (this.storageSevice.has('isRtl')) {
+            if (this.storageSevice.get('isRtl') === 'true') {
               this.direction = 'rtl';
-            } else if (localStorage.getItem('isRtl') === 'false') {
+            } else if (this.storageSevice.get('isRtl') === 'false') {
               this.direction = 'ltr';
             }
           } else {
             if (this.config) {
               if (this.config.layout.rtl === true) {
                 this.direction = 'rtl';
-                localStorage.setItem('isRtl', 'true');
+                this.storageSevice.set('isRtl', 'true');
               } else {
                 this.direction = 'ltr';
-                localStorage.setItem('isRtl', 'false');
+                this.storageSevice.set('isRtl', 'false');
               }
             }
           }
@@ -61,138 +64,142 @@ export class MainLayoutComponent
     );
   }
   ngAfterViewInit(): void {
-    //------------ set varient start----------------
-    if (localStorage.getItem('theme')) {
-      this.renderer.removeClass(this.document.body, this.config.layout.variant);
-      this.renderer.addClass(
-        this.document.body,
-        localStorage.getItem('theme') as string
-      );
-    } else {
-      this.renderer.addClass(this.document.body, this.config.layout.variant);
-      localStorage.setItem('theme', this.config.layout.variant);
-    }
-
-    //------------ set varient end----------------
-
-    //------------ set theme start----------------
-
-    if (localStorage.getItem('choose_skin')) {
-      this.renderer.removeClass(
-        this.document.body,
-        'theme-' + this.config.layout.theme_color
-      );
-
-      this.renderer.addClass(
-        this.document.body,
-        localStorage.getItem('choose_skin') as string
-      );
-      localStorage.setItem(
-        'choose_skin_active',
-        (localStorage.getItem('choose_skin') as string).substring(6)
-      );
-    } else {
-      this.renderer.addClass(
-        this.document.body,
-        'theme-' + this.config.layout.theme_color
-      );
-
-      localStorage.setItem(
-        'choose_skin',
-        'theme-' + this.config.layout.theme_color
-      );
-      localStorage.setItem(
-        'choose_skin_active',
-        this.config.layout.theme_color
-      );
-    }
-
-    //------------ set theme end----------------
-
-    //------------ set RTL start----------------
-
-    if (localStorage.getItem('isRtl')) {
-      if (localStorage.getItem('isRtl') === 'true') {
-        this.setRTLSettings();
-      } else if (localStorage.getItem('isRtl') === 'false') {
-        this.setLTRSettings();
-      }
-    } else {
-      if (this.config.layout.rtl == true) {
-        this.setRTLSettings();
+    if (this.isBrowser) {
+      //------------ set varient start----------------
+      if (this.storageSevice.has('theme')) {
+        this.renderer.removeClass(this.document.body, this.config.layout.variant);
+        this.renderer.addClass(
+          this.document.body,
+          this.storageSevice.get('theme') as string
+        );
       } else {
-        this.setLTRSettings();
+        this.renderer.addClass(this.document.body, this.config.layout.variant);
+        this.storageSevice.set('theme', this.config.layout.variant);
       }
-    }
-    //------------ set RTL end----------------
 
-    //------------ set sidebar color start----------------
+      //------------ set varient end----------------
 
-    if (localStorage.getItem('menuOption')) {
-      this.renderer.addClass(
-        this.document.body,
-        localStorage.getItem('menuOption') as string
-      );
-    } else {
-      this.renderer.addClass(
-        this.document.body,
-        'menu_' + this.config.layout.sidebar.backgroundColor
-      );
-      localStorage.setItem(
-        'menuOption',
-        'menu_' + this.config.layout.sidebar.backgroundColor
-      );
-    }
+      //------------ set theme start----------------
 
-    //------------ set sidebar color end----------------
+      if (this.storageSevice.has('choose_skin')) {
+        this.renderer.removeClass(
+          this.document.body,
+          'theme-' + this.config.layout.theme_color
+        );
 
-    //------------ set logo color start----------------
-
-    if (localStorage.getItem('choose_logoheader')) {
-      this.renderer.addClass(
-        this.document.body,
-        localStorage.getItem('choose_logoheader') as string
-      );
-    } else {
-      this.renderer.addClass(
-        this.document.body,
-        'logo-' + this.config.layout.logo_bg_color
-      );
-    }
-
-    //------------ set logo color end----------------
-
-    //------------ set sidebar collapse start----------------
-    if (localStorage.getItem('collapsed_menu')) {
-      if (localStorage.getItem('collapsed_menu') === 'true') {
-        this.renderer.addClass(this.document.body, 'side-closed');
-        this.renderer.addClass(this.document.body, 'submenu-closed');
-      }
-    } else {
-      if (this.config.layout.sidebar.collapsed == true) {
-        this.renderer.addClass(this.document.body, 'side-closed');
-        this.renderer.addClass(this.document.body, 'submenu-closed');
-        localStorage.setItem('collapsed_menu', 'true');
+        this.renderer.addClass(
+          this.document.body,
+          this.storageSevice.get('choose_skin') as string
+        );
+        this.storageSevice.set(
+          'choose_skin_active',
+          (this.storageSevice.get('choose_skin') as string).substring(6)
+        );
       } else {
-        this.renderer.removeClass(this.document.body, 'side-closed');
-        this.renderer.removeClass(this.document.body, 'submenu-closed');
-        localStorage.setItem('collapsed_menu', 'false');
-      }
-    }
+        this.renderer.addClass(
+          this.document.body,
+          'theme-' + this.config.layout.theme_color
+        );
 
-    //------------ set sidebar collapse end----------------
+        this.storageSevice.set(
+          'choose_skin',
+          'theme-' + this.config.layout.theme_color
+        );
+        this.storageSevice.set(
+          'choose_skin_active',
+          this.config.layout.theme_color
+        );
+      }
+
+      //------------ set theme end----------------
+
+      //------------ set RTL start----------------
+
+      if (this.storageSevice.has('isRtl')) {
+        if (this.storageSevice.get('isRtl') === 'true') {
+          this.setRTLSettings();
+        } else if (this.storageSevice.get('isRtl') === 'false') {
+          this.setLTRSettings();
+        }
+      } else {
+        if (this.config.layout.rtl == true) {
+          this.setRTLSettings();
+        } else {
+          this.setLTRSettings();
+        }
+      }
+      //------------ set RTL end----------------
+
+      //------------ set sidebar color start----------------
+
+      if (this.storageSevice.has('menuOption')) {
+        this.renderer.addClass(
+          this.document.body,
+          this.storageSevice.get('menuOption') as string
+        );
+      } else {
+        this.renderer.addClass(
+          this.document.body,
+          'menu_' + this.config.layout.sidebar.backgroundColor
+        );
+        this.storageSevice.set(
+          'menuOption',
+          'menu_' + this.config.layout.sidebar.backgroundColor
+        );
+      }
+
+      //------------ set sidebar color end----------------
+
+      //------------ set logo color start----------------
+
+      if (this.storageSevice.has('choose_logoheader')) {
+        this.renderer.addClass(
+          this.document.body,
+          this.storageSevice.get('choose_logoheader') as string
+        );
+      } else {
+        this.renderer.addClass(
+          this.document.body,
+          'logo-' + this.config.layout.logo_bg_color
+        );
+      }
+
+      //------------ set logo color end----------------
+
+      //------------ set sidebar collapse start----------------
+      if (this.storageSevice.has('collapsed_menu')) {
+        if (this.storageSevice.get('collapsed_menu') === 'true') {
+          this.renderer.addClass(this.document.body, 'side-closed');
+          this.renderer.addClass(this.document.body, 'submenu-closed');
+        }
+      } else {
+        if (this.config.layout.sidebar.collapsed == true) {
+          this.renderer.addClass(this.document.body, 'side-closed');
+          this.renderer.addClass(this.document.body, 'submenu-closed');
+          this.storageSevice.set('collapsed_menu', 'true');
+        } else {
+          this.renderer.removeClass(this.document.body, 'side-closed');
+          this.renderer.removeClass(this.document.body, 'submenu-closed');
+          this.storageSevice.set('collapsed_menu', 'false');
+        }
+      }
+
+      //------------ set sidebar collapse end----------------
+    }
   }
 
   setRTLSettings() {
-    document.getElementsByTagName('html')[0].setAttribute('dir', 'rtl');
-    this.renderer.addClass(this.document.body, 'rtl');
-
-    localStorage.setItem('isRtl', 'true');
+    if (this.isBrowser) {
+      document.getElementsByTagName('html')[0].setAttribute('dir', 'rtl');
+      this.renderer.addClass(this.document.body, 'rtl');
+      this.storageSevice.set('isRtl', 'true');
+    }
   }
   setLTRSettings() {
-    document.getElementsByTagName('html')[0].removeAttribute('dir');
-    this.renderer.removeClass(this.document.body, 'rtl');
-
-    localStorage.setItem('isRtl', 'false');
+    if (this.isBrowser) {
+      document.getElementsByTagName('html')[0].removeAttribute('dir');
+      this.renderer.removeClass(this.document.body, 'rtl');
+      this.storageSevice.set('isRtl', 'false');
+    }
   }
 }

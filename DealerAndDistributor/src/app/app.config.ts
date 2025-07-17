@@ -3,6 +3,7 @@ import {
   HttpClient,
   provideHttpClient,
   withInterceptorsFromDi,
+  withFetch,
 } from '@angular/common/http';
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { routes } from './app.routes';
@@ -34,7 +35,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
+    provideHttpClient(withFetch()),
     provideRouter(routes),
     provideAnimations(),
     { provide: LocationStrategy, useClass: HashLocationStrategy },

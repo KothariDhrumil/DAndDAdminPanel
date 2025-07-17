@@ -5,17 +5,20 @@ import {
   ElementRef,
   OnInit,
   Renderer2,
-  DOCUMENT
+  DOCUMENT,
+  PLATFORM_ID
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { MatMenuModule } from '@angular/material/menu';
+import { isPlatformBrowser } from '@angular/common';
 
 import { MatButtonModule } from '@angular/material/button';
 import { FeatherIconsComponent } from '../../core/shared/components/feather-icons/feather-icons.component';
 import { UnsubscribeOnDestroyAdapter } from '../../core/shared';
 import { AuthService, InConfiguration, LanguageService } from '../../core';
 import { ConfigService } from '../../core/config';
+import { LocalStorageService } from '../../core/shared/services';
 
 interface Notifications {
   message: string;
@@ -40,8 +43,7 @@ interface Notifications {
 })
 export class HeaderComponent
   extends UnsubscribeOnDestroyAdapter
-  implements OnInit
-{
+  implements OnInit {
   public config!: InConfiguration;
   userImg?: string;
   homePage?: string;
@@ -61,9 +63,13 @@ export class HeaderComponent
     private configService: ConfigService,
     private authService: AuthService,
     private router: Router,
-    public languageService: LanguageService
+    public languageService: LanguageService,
+
+    private storageSevice: LocalStorageService
+
   ) {
     super();
+
   }
   listLang = [
     { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
@@ -123,22 +129,23 @@ export class HeaderComponent
   ];
   ngOnInit() {
     this.config = this.configService.configData;
-    const userRole = this.authService.currentUserValue.roles?.[0]?.name;
-    this.userImg =
-      './assets/images/user/' + this.authService.currentUserValue.avatar;
-    this.docElement = document.documentElement;
+    //const userRole = this.authService.currentUserValue.roles?.[0]?.name;
+    //this.userImg =    './assets/images/user/' + this.authService.currentUserValue.avatar;
+    //this.docElement = document.documentElement;
 
-    if (userRole === 'Admin') {
-      this.homePage = 'admin/dashboard/main';
-    } else if (userRole === 'Client') {
-      this.homePage = 'client/dashboard';
-    } else if (userRole === 'Employee') {
-      this.homePage = 'employee/dashboard';
-    } else {
-      this.homePage = 'admin/dashboard/main';
-    }
+    // if (userRole === 'Admin') {
+    //   this.homePage = 'admin/dashboard/main';
+    // } else if (userRole === 'Client') {
+    //   this.homePage = 'client/dashboard';
+    // } else if (userRole === 'Employee') {
+    //   this.homePage = 'employee/dashboard';
+    // } else {
+    //   this.homePage = 'admin/dashboard/main';
+    // }
 
-    this.langStoreValue = localStorage.getItem('lang') as string;
+
+    this.langStoreValue = this.storageSevice.get("lang") as string;
+
     const val = this.listLang.filter((x) => x.lang === this.langStoreValue);
     this.countryName = val.map((element) => element.text);
     if (val.length === 0) {
@@ -165,6 +172,8 @@ export class HeaderComponent
     this.flagvalue = flag;
     this.langStoreValue = lang;
     this.languageService.setLanguage(lang);
+    this.storageSevice.set('lang', lang);
+
   }
   mobileMenuSidebarOpen(event: Event, className: string) {
     const hasClass = (event.target as HTMLInputElement).classList.contains(
@@ -181,11 +190,13 @@ export class HeaderComponent
     if (hasClass) {
       this.renderer.removeClass(this.document.body, 'side-closed');
       this.renderer.removeClass(this.document.body, 'submenu-closed');
-      localStorage.setItem('collapsed_menu', 'false');
+      this.storageSevice.set('collapsed_menu', 'false');
+
     } else {
       this.renderer.addClass(this.document.body, 'side-closed');
       this.renderer.addClass(this.document.body, 'submenu-closed');
-      localStorage.setItem('collapsed_menu', 'true');
+      this.storageSevice.set('collapsed_menu', 'true');
+
     }
   }
   logout() {

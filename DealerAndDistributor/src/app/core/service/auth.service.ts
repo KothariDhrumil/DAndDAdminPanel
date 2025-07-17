@@ -17,9 +17,7 @@ import { LoginService } from './login.service';
 import { Token, User } from '../models/interface';
 import { LocalStorageService } from '../shared/services';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { routes } from '../helpers/routes/routes';
 import { Router } from '@angular/router';
-import { Result } from '../models/wrappers/Result';
 import { environment } from '../../../environments/environment';
 import { LOGIN_ROUTE } from '../helpers/routes/app-routes';
 

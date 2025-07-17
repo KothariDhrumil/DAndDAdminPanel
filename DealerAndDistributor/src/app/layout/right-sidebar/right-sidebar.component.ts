@@ -22,6 +22,7 @@ import { FeatherIconsComponent } from '../../core/shared/components/feather-icon
 import { UnsubscribeOnDestroyAdapter } from '../../core/shared';
 import { DirectionService, InConfiguration, RightSidebarService } from '../../core';
 import { ConfigService } from '../../core/config';
+import { LocalStorageService } from '../../core/shared/services';
 
 
 @Component({
@@ -39,8 +40,8 @@ import { ConfigService } from '../../core/config';
 })
 export class RightSidebarComponent
   extends UnsubscribeOnDestroyAdapter
-  implements OnInit, AfterViewInit
-{
+  implements OnInit, AfterViewInit {
+  private isBrowser = typeof window !== 'undefined';
   selectedBgColor = 'white';
   maxHeight?: string;
   maxWidth?: string;
@@ -59,7 +60,8 @@ export class RightSidebarComponent
     public elementRef: ElementRef,
     private rightSidebarService: RightSidebarService,
     private configService: ConfigService,
-    private directionService: DirectionService
+    private directionService: DirectionService,
+    private storageSevice: LocalStorageService,
   ) {
     super();
   }
@@ -74,28 +76,28 @@ export class RightSidebarComponent
   }
 
   ngAfterViewInit() {
-    this.selectedBgColor = localStorage.getItem('choose_skin_active') as string;
+    this.selectedBgColor = this.storageSevice.get('choose_skin_active') as string;
 
-    if (localStorage.getItem('menuOption')) {
-      if (localStorage.getItem('menuOption') === 'menu_dark') {
+    if (this.storageSevice.has('menuOption')) {
+      if (this.storageSevice.get('menuOption') === 'menu_dark') {
         this.isDarkSidebar = true;
-      } else if (localStorage.getItem('menuOption') === 'menu_light') {
+      } else if (this.storageSevice.get('menuOption') === 'menu_light') {
         this.isDarkSidebar = false;
       }
     }
 
-    if (localStorage.getItem('theme')) {
-      if (localStorage.getItem('theme') === 'dark') {
+    if (this.storageSevice.has('theme')) {
+      if (this.storageSevice.get('theme') === 'dark') {
         this.isDarTheme = true;
-      } else if (localStorage.getItem('theme') === 'light') {
+      } else if (this.storageSevice.get('theme') === 'light') {
         this.isDarTheme = false;
       }
     }
 
-    if (localStorage.getItem('isRtl')) {
-      if (localStorage.getItem('isRtl') === 'true') {
+    if (this.storageSevice.has('isRtl')) {
+      if (this.storageSevice.get('isRtl') === 'true') {
         this.isRtl = true;
-      } else if (localStorage.getItem('isRtl') === 'false') {
+      } else if (this.storageSevice.get('isRtl') === 'false') {
         this.isRtl = false;
       }
     }
@@ -108,8 +110,8 @@ export class RightSidebarComponent
       .getAttribute('data-theme');
     this.renderer.removeClass(this.document.body, 'theme-' + prevTheme);
     this.renderer.addClass(this.document.body, 'theme-' + this.selectedBgColor);
-    localStorage.setItem('choose_skin', 'theme-' + this.selectedBgColor);
-    localStorage.setItem('choose_skin_active', this.selectedBgColor);
+    this.storageSevice.set('choose_skin', 'theme-' + this.selectedBgColor);
+    this.storageSevice.set('choose_skin_active', this.selectedBgColor);
   }
   lightSidebarBtnClick() {
     this.renderer.removeClass(this.document.body, 'menu_dark');
@@ -117,8 +119,8 @@ export class RightSidebarComponent
     this.renderer.addClass(this.document.body, 'menu_light');
     this.renderer.addClass(this.document.body, 'logo-white');
     const menuOption = 'menu_light';
-    localStorage.setItem('choose_logoheader', 'logo-white');
-    localStorage.setItem('menuOption', menuOption);
+    this.storageSevice.set('choose_logoheader', 'logo-white');
+    this.storageSevice.set('menuOption', menuOption);
   }
   darkSidebarBtnClick() {
     this.renderer.removeClass(this.document.body, 'menu_light');
@@ -126,18 +128,18 @@ export class RightSidebarComponent
     this.renderer.addClass(this.document.body, 'menu_dark');
     this.renderer.addClass(this.document.body, 'logo-black');
     const menuOption = 'menu_dark';
-    localStorage.setItem('choose_logoheader', 'logo-black');
-    localStorage.setItem('menuOption', menuOption);
+    this.storageSevice.set('choose_logoheader', 'logo-black');
+    this.storageSevice.set('menuOption', menuOption);
   }
   lightThemeBtnClick() {
     this.renderer.removeClass(this.document.body, 'dark');
     this.renderer.removeClass(this.document.body, 'submenu-closed');
     this.renderer.removeClass(this.document.body, 'menu_dark');
     this.renderer.removeClass(this.document.body, 'logo-black');
-    if (localStorage.getItem('choose_skin')) {
+    if (this.storageSevice.has('choose_skin')) {
       this.renderer.removeClass(
         this.document.body,
-        localStorage.getItem('choose_skin') as string
+        this.storageSevice.get('choose_skin') as string
       );
     } else {
       this.renderer.removeClass(
@@ -155,20 +157,20 @@ export class RightSidebarComponent
     const menuOption = 'menu_light';
     this.selectedBgColor = 'white';
     this.isDarkSidebar = false;
-    localStorage.setItem('choose_logoheader', 'logo-white');
-    localStorage.setItem('choose_skin', 'theme-white');
-    localStorage.setItem('theme', theme);
-    localStorage.setItem('menuOption', menuOption);
+    this.storageSevice.set('choose_logoheader', 'logo-white');
+    this.storageSevice.set('choose_skin', 'theme-white');
+    this.storageSevice.set('theme', theme);
+    this.storageSevice.set('menuOption', menuOption);
   }
   darkThemeBtnClick() {
     this.renderer.removeClass(this.document.body, 'light');
     this.renderer.removeClass(this.document.body, 'submenu-closed');
     this.renderer.removeClass(this.document.body, 'menu_light');
     this.renderer.removeClass(this.document.body, 'logo-white');
-    if (localStorage.getItem('choose_skin')) {
+    if (this.storageSevice.has('choose_skin')) {
       this.renderer.removeClass(
         this.document.body,
-        localStorage.getItem('choose_skin') as string
+        this.storageSevice.get('choose_skin') as string
       );
     } else {
       this.renderer.removeClass(
@@ -185,16 +187,18 @@ export class RightSidebarComponent
     const menuOption = 'menu_dark';
     this.selectedBgColor = 'black';
     this.isDarkSidebar = true;
-    localStorage.setItem('choose_logoheader', 'logo-black');
-    localStorage.setItem('choose_skin', 'theme-black');
-    localStorage.setItem('theme', theme);
-    localStorage.setItem('menuOption', menuOption);
+    this.storageSevice.set('choose_logoheader', 'logo-black');
+    this.storageSevice.set('choose_skin', 'theme-black');
+    this.storageSevice.set('theme', theme);
+    this.storageSevice.set('menuOption', menuOption);
   }
   setRightSidebarWindowHeight() {
-    this.innerHeight = window.innerHeight;
-    const height = this.innerHeight - this.headerHeight;
-    this.maxHeight = height + '';
-    this.maxWidth = '500px';
+    if (this.isBrowser) {
+      this.innerHeight = window.innerHeight;
+      const height = this.innerHeight - this.headerHeight;
+      this.maxHeight = height + '';
+      this.maxWidth = '500px';
+    }
   }
   onClickedOutside(event: Event) {
     const button = event.target as HTMLButtonElement;
@@ -226,19 +230,19 @@ export class RightSidebarComponent
       this.renderer.addClass(this.document.body, 'rtl');
       this.directionService.updateDirection('rtl');
     }
-    localStorage.setItem('isRtl', isrtl);
+    this.storageSevice.set('isRtl', isrtl);
     this.isRtl = event.checked;
   }
   setRTLSettings() {
     document.getElementsByTagName('html')[0].setAttribute('dir', 'rtl');
     this.renderer.addClass(this.document.body, 'rtl');
     this.isRtl = true;
-    localStorage.setItem('isRtl', 'true');
+    this.storageSevice.set('isRtl', 'true');
   }
   setLTRSettings() {
     document.getElementsByTagName('html')[0].removeAttribute('dir');
     this.renderer.removeClass(this.document.body, 'rtl');
     this.isRtl = false;
-    localStorage.setItem('isRtl', 'false');
+    this.storageSevice.set('isRtl', 'false');
   }
 }

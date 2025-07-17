@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { LocalStorageService } from '../shared/services';
 
 @Injectable({
   providedIn: 'root',
@@ -7,20 +8,19 @@ import { TranslateService } from '@ngx-translate/core';
 export class LanguageService {
   public languages: string[] = ['en', 'es', 'de'];
 
-  constructor(public translate: TranslateService) {
-    let browserLang: string;
+  constructor(public translate: TranslateService, private storageSevice: LocalStorageService) {
+    let browserLang: string = 'en';
     translate.addLangs(this.languages);
 
-    if (localStorage.getItem('lang')) {
-      browserLang = localStorage.getItem('lang') as string;
-    } else {
-      browserLang = translate.getBrowserLang() as string;
+    const storedLang = this.storageSevice.get('lang');
+    if (typeof storedLang === 'string' && storedLang) {
+      browserLang = storedLang;
     }
-    translate.use(browserLang.match(/en|es|de/) ? browserLang : 'en');
+    translate.use(this.languages.includes(browserLang) ? browserLang : 'en');
   }
 
   public setLanguage(lang: string) {
     this.translate.use(lang);
-    localStorage.setItem('lang', lang);
+    this.storageSevice.set('lang', lang);
   }
 }
