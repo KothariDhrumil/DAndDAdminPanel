@@ -16,6 +16,7 @@ import { AuthService, Role } from '../../../core';
 import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
 import { routes } from '../../../core/helpers/routes/routes';
 import { StartupService } from '../../../core/service/startup.service';
+import { DASHBOARD_ROUTE } from '../../../core/helpers/routes/app-routes';
 
 interface AuthForm {
   email: string;
@@ -61,7 +62,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   readonly isHide = computed(() => this.hide());
 
   ngOnInit() {
-    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || routes.dashboard;
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || DASHBOARD_ROUTE;
     if (this.authService.isAuthenticated) {
       this.router.navigateByUrl(this.returnUrl)
     }

@@ -21,6 +21,7 @@ import { routes } from '../helpers/routes/routes';
 import { Router } from '@angular/router';
 import { Result } from '../models/wrappers/Result';
 import { environment } from '../../../environments/environment';
+import { LOGIN_ROUTE } from '../helpers/routes/app-routes';
 
 @Injectable({
   providedIn: 'root',
@@ -83,7 +84,7 @@ export class AuthService {
   logout() {
     // remove user from local storage to log user out
     this.store.clear();
-    this.router.navigateByUrl(routes.login);
+    this.router.navigateByUrl(LOGIN_ROUTE);
   }
 
   public tryRefreshingToken(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {

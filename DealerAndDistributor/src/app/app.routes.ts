@@ -9,7 +9,18 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
     children: [
-      // Place your protected child routes here
+
+      { path: '', redirectTo: '/authentication/signin', pathMatch: 'full' },
+      {
+        path: 'product',
+        loadComponent: () =>
+          import('./modules/product/product.module').then((m) => m.ProductComponent),
+      },
+      {
+        path: 'superadmin',
+        loadComponent: () =>
+          import('./modules/superadmin/superadmin.module').then((m) => m.SuperadminComponent),
+      },
       // Example:
       // { path: 'dashboard', component: DashboardComponent },
     ],
