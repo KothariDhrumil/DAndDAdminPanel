@@ -98,18 +98,17 @@ export class SidebarComponent
     }
   }
   ngOnInit() {
+    this.subs.sink = this.sidebarService
+      .getRouteInfo()
+      .subscribe((routes: RouteInfo[]) => {
+        this.sidebarItems = routes;
+      });
+
     if (this.authService.currentUserValue) {
       const userRole = this.authService.currentUserValue.roles?.[0]?.name;
       this.userFullName = this.authService.currentUserValue.name;
       this.userImg =
         './assets/images/user/' + this.authService.currentUserValue.avatar;
-
-      this.subs.sink = this.sidebarService
-        .getRouteInfo()
-        .subscribe((routes: RouteInfo[]) => {
-          this.sidebarItems = routes;
-        });
-
       if (userRole === Role.Admin) {
         this.userType = this.capitalizeString(Role.Admin);
       } else if (userRole === Role.Client) {

@@ -73,6 +73,11 @@ export class AuthService {
     return false;
   }
 
+  public get isSuperAdmin(): boolean {
+    const isSuperAdmin = this.store.get('isSuperAdmin');
+    return isSuperAdmin === true || isSuperAdmin === 'true';
+  }
+
 
   private get getStorageRefreshToken(): string {
     return this.store.get('refreshToken') ?? '';

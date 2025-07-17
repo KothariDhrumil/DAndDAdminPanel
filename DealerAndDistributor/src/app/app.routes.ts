@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guard/auth.guard';
 import { MainLayoutComponent } from './layout/app-layout/main-layout/main-layout.component';
 import { AuthLayoutComponent } from './layout/app-layout/auth-layout/auth-layout.component';
+import { Page404Component } from './modules/authentication/page404/page404.component';
 
 export const routes: Routes = [
   {
@@ -16,7 +17,8 @@ export const routes: Routes = [
       },
       {
         path: 'superadmin',
-        loadChildren: () => import('./modules/superadmin/superadmin.module').then(m => m.SuperadminModule),
+        loadChildren: () =>
+           import('./modules/superadmin/superadmin.routes').then(m => m.SUPERADMIN_ROUTES),
       },
       // Example:
       // { path: 'dashboard', component: DashboardComponent },
@@ -29,5 +31,5 @@ export const routes: Routes = [
       import('./modules/authentication/auth.routes').then((m) => m.AUTH_ROUTE),
   },
   // Optional: handle unknown routes
-  { path: '**', redirectTo: '/authentication/signin' }
+  { path: '**', component: Page404Component },
 ];

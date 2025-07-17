@@ -95,7 +95,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
           if (response) {
             this.startupService.load().subscribe({
               next: () => {
-                if (this.authService.isAuthenticated) {
+                if (this.authService.isSuperAdmin) {
                   this.router.navigateByUrl(SUPERADMIN_DASHBOARD_ROUTE);
                 }
                 this.router.navigateByUrl(this.returnUrl);

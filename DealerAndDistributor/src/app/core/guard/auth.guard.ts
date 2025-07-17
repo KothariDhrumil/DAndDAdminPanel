@@ -35,6 +35,7 @@ export class AuthGuard {
         return false;
       }
     }
+    
     return true;
   }
 }

@@ -2,19 +2,6 @@
   "routes": [
     {
       "path": "",
-      "title": "MENUITEMS.MAIN.TEXT",
-      "iconType": "",
-      "icon": "",
-      "class": "",
-      "groupTitle": true,
-      "badge": "",
-      "badgeClass": "",
-      "role": ["ADMIN"],
-      "submenu": []
-    },
-
-    {
-      "path": "",
       "title": "MENUITEMS.DASHBOARD.TEXT",
       "iconType": "feather",
       "icon": "monitor",
@@ -22,7 +9,7 @@
       "groupTitle": false,
       "badge": "",
       "badgeClass": "",
-      "role": ["ADMIN"],
+      "role": ["SUPERADMIN", "ADMIN"],
       "submenu": [
         {
           "path": "/admin/dashboard/main",
