@@ -10,7 +10,6 @@ using NSwag.Annotations;
 using Shared;
 
 namespace DealersAndDistributors.Server.Controllers;
-
 public class TenantsController : VersionNeutralApiController
 {
     private readonly IAuthTenantAdminService _authTenantAdmin;
@@ -45,14 +44,17 @@ public class TenantsController : VersionNeutralApiController
            : HierarchicalTenantDto.TurnIntoDisplayFormat(new List<Tenant> { status.Result }.AsQueryable()).SingleOrDefault();
     }
 
-    [HttpPost]
+    [HttpPost("create")]
     [HasPermission(Permissions.TenantCreate)]
     [OpenApiOperation("Create a new tenant.", "")]
     public async Task<ActionResult> CreateAsync(CreateHierarchicalTenantRequest request)
     {
         var status = await _authTenantAdmin.AddHierarchicalTenantAsync(
             request.TenantName,
-            request.ParentId);
+            request.ParentId,
+            null,
+            request.HasOwnDb,
+            request.ShardingName);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
@@ -88,6 +90,22 @@ public class TenantsController : VersionNeutralApiController
             ? throw new Exception(status.GetAllErrors())
             : Ok(status.Message);
     }
+
+
+    [HttpPost("move-database")]
+    [HasPermission(Permissions.MoveTenantDatabase)]
+    public async Task<IActionResult> MoveDatabase(CreateHierarchicalTenantRequest input)
+    {
+        var removeDownAsync = await _upDownService.SetTenantDownWithDelayAsync(TenantDownVersions.Update, input.TenantId);
+        var status = await _authTenantAdmin.MoveToDifferentDatabaseAsync(
+            input.TenantId, (bool)input.HasOwnDb, input.ShardingName);
+        await removeDownAsync();
+
+        return status.HasErrors
+            ? throw new Exception(status.GetAllErrors())
+            :Ok(status.Message);
+    }
+
 
     [HttpDelete("{tenantId:int}")]
     [HasPermission(Permissions.TenantDelete)]

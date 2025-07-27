@@ -1,12 +1,15 @@
 ﻿using Application;
 using Asp.Versioning;
 using AuthPermissions.BaseCode.SetupCode;
+using AuthPermissions.SupportCode.AddUsersServices;
+using AuthPermissions.SupportCode.AddUsersServices.Authentication;
 using AuthPermissions.SupportCode.DownStatusCode;
 using Infrastructure.Auth;
 using Infrastructure.OpenApi;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,7 +86,8 @@ public static class StartupExtensions
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder builder, IConfiguration config)
     {
-        builder.UseDownForMaintenance(TenantTypes.HierarchicalTenant);
+     
+        builder.UseDownForMaintenance(TenantTypes.HierarchicalTenant | TenantTypes.AddSharding);
         builder.UseSwagger();
         builder.UseSwaggerUI(c =>
         {
@@ -95,7 +99,7 @@ public static class StartupExtensions
         return builder
             .UseStaticFiles()
             .UseAuthentication()
-            .UseRouting()            
+            .UseRouting()
             .UseAuthorization();
     }
 
@@ -105,10 +109,15 @@ public static class StartupExtensions
         return builder;
     }
 
-    internal static IServiceCollection AddServices(this IServiceCollection services) =>
-            services
-                .AddServices(typeof(ITransientService), ServiceLifetime.Transient)
-                .AddServices(typeof(IScopedService), ServiceLifetime.Scoped);
+    internal static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services
+            .AddServices(typeof(ITransientService), ServiceLifetime.Transient)
+            .AddServices(typeof(IScopedService), ServiceLifetime.Scoped);
+        
+        
+        return services;
+    }
 
     internal static IServiceCollection AddServices(this IServiceCollection services, Type interfaceType, ServiceLifetime lifetime)
     {

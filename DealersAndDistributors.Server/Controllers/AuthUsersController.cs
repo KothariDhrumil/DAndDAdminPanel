@@ -4,6 +4,7 @@ using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.SupportCode.AddUsersServices;
 using ExamplesCommonCode.CommonAdmin;
+using Infrastructure.Auth.AuthP;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -80,7 +81,7 @@ public class AuthUsersController : VersionNeutralApiController
         var newTenantData = new AddNewTenantDto
         {
             TenantName = request.TenantName,
-            Version = request.Version
+            HasOwnDb = false,
         };
         var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);
         if (status.HasErrors)

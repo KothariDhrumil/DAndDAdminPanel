@@ -1,9 +1,9 @@
 ﻿using AuthPermissions.AspNetCore.GetDataKeyCode;
-using AuthPermissions.BaseCode.CommonCode;
+using AuthPermissions.BaseCode.DataLayer.EfCode;
 using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using IDataKeyFilterReadOnly = Domain.IDataKeyFilterReadOnly;
+using AuthPermissions.BaseCode.CommonCode;
 
 namespace Infrastructure.Persistence.Contexts;
 
@@ -11,12 +11,17 @@ public class RetailDbContext : DbContext, IDataKeyFilterReadOnly
 {
     public string DataKey { get; }
 
-    public RetailDbContext(DbContextOptions<RetailDbContext> options, IGetDataKeyFromUser dataKeyFilter)
+    public RetailDbContext(DbContextOptions<RetailDbContext> options, IGetShardingDataFromUser shardingDataKeyAndConnect)
         : base(options)
     {
         // The DataKey is null when: no one is logged in, its a background service, or user hasn't got an assigned tenant
         // In these cases its best to set the data key that doesn't match any possible DataKey 
-        DataKey = dataKeyFilter?.DataKey ?? "stop any user without a DataKey to access the data";
+        DataKey = shardingDataKeyAndConnect?.DataKey ?? "stop any user without a DataKey to access the data";
+
+        if (shardingDataKeyAndConnect?.ConnectionString != null)
+            //NOTE: If no connection string is provided the DbContext will use the connection it was provided when it was registered
+            //If you don't want that to happen, then remove the if above and the connection will be set to null (and fail) 
+            Database.SetConnectionString(shardingDataKeyAndConnect.ConnectionString);
     }
 
     public DbSet<RetailOutlet> RetailOutlets => Set<RetailOutlet>();
@@ -38,9 +43,7 @@ public class RetailDbContext : DbContext, IDataKeyFilterReadOnly
         {
             if (typeof(IDataKeyFilterReadOnly).IsAssignableFrom(entityType.ClrType))
             {
-                entityType.GetProperty(nameof(IDataKeyFilterReadWrite.DataKey)).SetIsUnicode(false); //Make unicode
-                entityType.GetProperty(nameof(IDataKeyFilterReadWrite.DataKey)).SetMaxLength(AuthDbConstants.TenantDataKeySize);    //and small for single multi-tenant
-                entityType.AddIndex(entityType.FindProperty(nameof(IDataKeyFilterReadOnly.DataKey))!);
+                entityType.AddHierarchicalTenantReadOnlyQueryFilter(this);
             }
             else
             {

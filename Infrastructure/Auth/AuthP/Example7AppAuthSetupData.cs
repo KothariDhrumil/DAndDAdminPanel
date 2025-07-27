@@ -1,19 +1,47 @@
-﻿using AuthPermissions.BaseCode.SetupCode;
+﻿using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
+using AuthPermissions.BaseCode.SetupCode;
+using AuthPermissions.SupportCode.AddUsersServices;
 
 namespace Infrastructure.Auth.AuthP;
 
+
+public static class Example7CreateTenantVersions
+{
+    public static readonly MultiTenantVersionData TenantSetupData = new()
+    {
+        TenantRolesForEachVersion = new Dictionary<string, List<string>>()
+        {
+            { "Free", null },
+            { "Pro", new List<string> { "Tenant Admin" } },
+            { "Enterprise", new List<string> { "Tenant Admin" } },
+        },
+        TenantAdminRoles = new Dictionary<string, List<string>>()
+        {
+            { "Free", new List<string> { "Invoice Reader", "Invoice Creator" } },
+            { "Pro", new List<string> { "Invoice Reader", "Invoice Creator", "Tenant Admin" } },
+            { "Enterprise", new List<string> { "Invoice Reader", "Invoice Creator", "Tenant Admin" } }
+        },
+        HasOwnDbForEachVersion = new Dictionary<string, bool?>()
+        {
+            { "Free", true },
+            { "Pro", true },
+            { "Enterprise", true }
+        }
+
+    };
+}
 public static class Example7AppAuthSetupData
 {
 
     public static readonly List<BulkLoadRolesDto> RolesDefinition = new()
         {
-            new("SuperAdmin", "Super admin - only use for setup", "AccessAll"),
+           new("SuperAdmin", "Super admin - only use for setup", "AccessAll"),
             new("App Admin", "Overall app Admin",
                 "UserRead, UserSync, UserChange, UserRolesChange, UserChangeTenant, UserRemove, " +
                 "RoleRead, RoleChange, PermissionRead, IncludeFilteredPermissions, " +
                 "TenantList, TenantCreate, TenantUpdate, TenantMove, TenantDelete, " +
                 "AppStatusList, AppStatusAllDown, AppStatusTenantDown, AppStatusRemove"),
-            new("Tenant Admin", "Tenant-level admin", "EmployeeRead, UserRead, UserRolesChange, RoleRead"),
+            new("Tenant Admin", "Tenant-level admin", "EmployeeRead, UserRead, UserRolesChange, RoleRead",RoleTypes.TenantAdminAdd),
             new("Tenant Director", "Company CEO, can see stock/sales and employees", "EmployeeRead, StockRead, SalesRead"),
             new("Area Manager", "Area manager - check stock and sales", "StockRead, SalesRead"),
             new("Store Manager", "Shop sales manager - full access", "StockRead, StockAddNew, StockRemove, SalesRead, SalesSell, SalesReturn"),

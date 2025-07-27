@@ -86,6 +86,26 @@ public enum Permissions : ushort //Must be ushort to work with AuthP
     TenantMove = 42_003,
     [Display(GroupName = "TenantAdmin", Name = "Delete tenant", Description = "Can delete tenant (WARNING)", AutoGenerateFilter = true)]
     TenantDelete = 42_004,
+    [Display(GroupName = "TenantAdmin", Name = "Access other tenant data", Description = "Sets DataKey of user to another tenant", AutoGenerateFilter = true)]
+    TenantAccessData = 42_005,
+
+    //42_100 - sharding admin
+    [Display(GroupName = "ShardingAdmin", Name = "List databases + tenants", Description = "List databases in the shardingsettings file", AutoGenerateFilter = true)]
+    ListDbsWithTenants = 42_100,
+    [Display(GroupName = "ShardingAdmin", Name = "Move tenant to another database", Description = "Move tenant to another database", AutoGenerateFilter = true)]
+    MoveTenantDatabase = 42_101,
+
+    [Display(GroupName = "ShardingAdmin", Name = "List databases", Description = "List sharding databases", AutoGenerateFilter = true)]
+    ListDatabaseInfos = 42_110,
+    [Display(GroupName = "ShardingAdmin", Name = "Add new database", Description = "Add new sharding database", AutoGenerateFilter = true)]
+    AddDatabaseInfo = 42_111,
+    [Display(GroupName = "ShardingAdmin", Name = "Update database info", Description = "Update sharding database info", AutoGenerateFilter = true)]
+    UpdateDatabaseInfo = 42_112,
+    [Display(GroupName = "ShardingAdmin", Name = "Remove database info", Description = "Remove sharding database info", AutoGenerateFilter = true)]
+    RemoveDatabaseInfo = 42_113,
+    [Display(GroupName = "ShardingAdmin", Name = "Check database info", Description = "Setup / check of backup of the sharding info", AutoGenerateFilter = true)]
+    CheckDatabaseInfo = 42_120,
+
 
     //43_000
     [Display(GroupName = "AppStatus", Name = "list active app statues", Description = "Can list active statues", AutoGenerateFilter = true)]

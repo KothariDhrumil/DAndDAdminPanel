@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2021 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using AuthPermissions.BaseCode.CommonCode;
+
 namespace Domain;
 
 public class RetailOutlet : IAggregateRoot, IDataKeyFilterReadOnly
@@ -17,12 +19,12 @@ public class RetailOutlet : IAggregateRoot, IDataKeyFilterReadOnly
         DataKey = dataKey ?? throw new ArgumentNullException(nameof(dataKey));
     }
 
-    public int RetailOutletId { get; private set; }
+    public int RetailOutletId { get; set; }
 
     /// <summary>
     /// This contains the fullname of the AuthP Tenant
     /// </summary>
-    public string FullName { get; private set; } = default!;
+    public string FullName { get; set; } = default!;
 
     public string ShortName { get; private set; } = default!;
 

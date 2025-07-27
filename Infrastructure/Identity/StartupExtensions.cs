@@ -8,7 +8,7 @@ public static class StartupExtensions
 {
     internal static IServiceCollection AddIdentity(this IServiceCollection services) =>
         services
-            .AddIdentityCore<IdentityUser>(options =>
+            .AddIdentity<IdentityUser, IdentityRole>(options =>
                 options.SignIn.RequireConfirmedAccount = false)
             .AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddDefaultTokenProviders()

@@ -9,4 +9,7 @@
   <ItemGroup>
     <PackageReference Include="GenericServices.StatusGeneric" Version="1.2.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\AuthPermissions.BaseCode\AuthPermissions.BaseCode.csproj" />
+  </ItemGroup>
 </Project>
