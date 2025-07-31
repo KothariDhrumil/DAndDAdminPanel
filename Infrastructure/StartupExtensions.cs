@@ -1,19 +1,22 @@
 ﻿using Application;
 using Asp.Versioning;
 using AuthPermissions.BaseCode.SetupCode;
-using AuthPermissions.SupportCode.AddUsersServices;
-using AuthPermissions.SupportCode.AddUsersServices.Authentication;
 using AuthPermissions.SupportCode.DownStatusCode;
+using HealthChecks.UI.Client;
 using Infrastructure.Auth;
-using Infrastructure.OpenApi;
+using Infrastructure.DomainEvents;
 using Infrastructure.Persistence;
+using Infrastructure.Time;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Namotion.Reflection;
+using SharedKernel;
 
 
 namespace Infrastructure;
@@ -30,9 +33,11 @@ public static class StartupExtensions
 
         });
         services.RegisterSwagger();
-        services.AddAuth(config, webHostEnvironment)
-            .AddOpenApiDocumentation(config)
-            .AddPersistence(config)
+        services
+            .AddAuth(config, webHostEnvironment)
+            //.AddOpenApiDocumentation(config)
+            .AddDatabase(config)
+            .AddHealthChecks(config)
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();
 
@@ -42,10 +47,8 @@ public static class StartupExtensions
     {
         services.AddSwaggerGen(c =>
         {
-            //TODO - Lowercase Swagger Documents
-            //c.DocumentFilter<LowercaseDocumentFilter>();
-            //Refer - https://gist.github.com/rafalkasa/01d5e3b265e5aa075678e0adfd54e23f
             c.IncludeXmlComments(string.Format(@"{0}\DealersAndDistributors.Server.xml", System.AppDomain.CurrentDomain.BaseDirectory));
+
             c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
@@ -56,15 +59,17 @@ public static class StartupExtensions
                     Url = new Uri("https://opensource.org/licenses/MIT")
                 }
             });
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+
+            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
             {
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer",
+                Scheme = JwtBearerDefaults.AuthenticationScheme,
                 BearerFormat = "JWT",
                 Description = "Input your Bearer token in this format - Bearer {your token here} to access this API",
             });
+
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -73,7 +78,7 @@ public static class StartupExtensions
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer",
+                                Id = JwtBearerDefaults.AuthenticationScheme,
                             },
                             Scheme = "Bearer",
                             Name = "Bearer",
@@ -84,10 +89,21 @@ public static class StartupExtensions
         });
     }
 
+
+    private static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddHealthChecks()
+            .AddSqlServer(configuration.GetConnectionString("ShardingConnection")!);
+
+        return services;
+    }
+
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder builder, IConfiguration config)
     {
-     
+
         builder.UseDownForMaintenance(TenantTypes.HierarchicalTenant | TenantTypes.AddSharding);
+        
         builder.UseSwagger();
         builder.UseSwaggerUI(c =>
         {
@@ -96,11 +112,14 @@ public static class StartupExtensions
             c.DisplayRequestDuration();
 
         });
+
         return builder
             .UseStaticFiles()
-            .UseAuthentication()
             .UseRouting()
+            .UseExceptionHandler()
+            .UseAuthentication()
             .UseAuthorization();
+            
     }
 
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
@@ -114,8 +133,10 @@ public static class StartupExtensions
         services
             .AddServices(typeof(ITransientService), ServiceLifetime.Transient)
             .AddServices(typeof(IScopedService), ServiceLifetime.Scoped);
-        
-        
+
+
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
         return services;
     }
 

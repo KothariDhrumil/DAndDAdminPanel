@@ -2,13 +2,15 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using AuthPermissions.BaseCode.CommonCode;
+using StatusGeneric;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain;
 
 /// <summary>
 /// This contains an item stocked in the shop, and how many they have
 /// </summary>
-public class ShopStock : IAggregateRoot, IDataKeyFilterReadOnly
+public class ShopStock : IDataKeyFilterReadOnly
 {
     private ShopStock() { } //needed by EF Core
 
