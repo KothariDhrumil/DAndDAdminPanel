@@ -84,6 +84,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
         //     - eventual consistency
         //     - handlers can fail
 
+        this.MarkWithDataKeyIfNeeded(DataKey);
         int result = await base.SaveChangesAsync(cancellationToken);
 
         await PublishDomainEventsAsync();

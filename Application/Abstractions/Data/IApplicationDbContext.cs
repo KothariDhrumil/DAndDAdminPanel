@@ -7,6 +7,7 @@ namespace Application.Abstractions.Data;
 
 public interface IRetailDbContext : IDataKeyFilterReadOnly
 {
+    public string DataKey { get; }
 
     DbSet<RetailOutlet> RetailOutlets { get; }
 

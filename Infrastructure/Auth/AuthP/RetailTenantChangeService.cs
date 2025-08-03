@@ -351,7 +351,7 @@ public class RetailTenantChangeService : ITenantChangeService
         }
 
         //else we remove all the data with the DataKey of the tenant
-        
+
 
         //var deleteSalesSql = $"DELETE FROM retail.{nameof(RetailDbContext.ShopSales)} WHERE DataKey = '{dataKey}'";
         //await context.Database.ExecuteSqlRawAsync(deleteSalesSql);
@@ -388,11 +388,20 @@ public class RetailTenantChangeService : ITenantChangeService
     {
         //Thanks to https://stackoverflow.com/questions/33911316/entity-framework-core-how-to-check-if-database-exists
         //There are various options to detect if a database is there - this seems the clearest
-        if (!await context.Database.CanConnectAsync())
+        if (context.Database.CanConnect())
         {
             //The database doesn't exist
             if (migrateEvenIfNoDb)
-                await context.Database.MigrateAsync();
+            {
+                try
+                {
+                    await context.Database.MigrateAsync();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
             else
             {
                 return $"The database defined by the connection string '{tenant.DatabaseInfoName}' doesn't exist.";

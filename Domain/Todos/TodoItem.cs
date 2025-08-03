@@ -4,7 +4,7 @@ using SharedKernel;
 
 namespace Domain.Todos;
 
-public sealed class TodoItem : Entity, IDataKeyFilterReadOnly
+public sealed class TodoItem : Entity, IDataKeyFilterReadWrite, IDataKeyFilterReadOnly
 {
     public Guid Id { get; set; }
     public string Description { get; set; }
@@ -18,5 +18,5 @@ public sealed class TodoItem : Entity, IDataKeyFilterReadOnly
     /// <summary>
     /// This contains the datakey from the RetailOutlet
     /// </summary>
-    public string DataKey { get; private set; } = default!;
+    public string DataKey { get; set; }
 }
