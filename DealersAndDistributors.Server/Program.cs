@@ -10,8 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
        .AddApplication()
-       .AddPresentation()
-       .AddInfrastructure(builder.Configuration, builder.Environment);
+       .AddPresentation();
+
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddCors(options =>
 {
@@ -21,6 +23,10 @@ builder.Services.AddCors(options =>
             builder.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
         });
 });
+
+builder.Services       
+       .AddInfrastructure(builder.Configuration, builder.Environment);
+
 
 var app = builder.Build();
 

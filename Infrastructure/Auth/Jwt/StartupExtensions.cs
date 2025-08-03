@@ -25,8 +25,6 @@ internal static class StartupExtensions
             })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, null!);
 
-        services.AddHttpContextAccessor();
-
         services.AddScoped<IUserContext, UserContext>();
 
         return services;
