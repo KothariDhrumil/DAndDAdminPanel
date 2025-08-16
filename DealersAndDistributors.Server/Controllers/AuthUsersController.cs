@@ -3,6 +3,7 @@ using AuthPermissions.AspNetCore;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.SupportCode.AddUsersServices;
+using Domain;
 using ExamplesCommonCode.CommonAdmin;
 using Infrastructure.Auth.AuthP;
 using Infrastructure.Identity;
@@ -21,7 +22,7 @@ namespace DealersAndDistributors.Server.Controllers;
 /// </summary>
 public class AuthUsersController : VersionNeutralApiController
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAuthUsersAdminService _authUsersAdmin;
 
     /// <summary>
@@ -30,7 +31,7 @@ public class AuthUsersController : VersionNeutralApiController
     /// <param name="userManager">The ASP.NET Core Identity user manager</param>
     /// <param name="authUsersAdmin">The service for managing authentication users</param>
     public AuthUsersController(
-        UserManager<IdentityUser> userManager,
+        UserManager<ApplicationUser> userManager,
         IAuthUsersAdminService authUsersAdmin)
     {
         _userManager = userManager;
@@ -76,7 +77,10 @@ public class AuthUsersController : VersionNeutralApiController
             Email = request.Email,
             UserName = request.UserName,
             Password = request.Password,
-            IsPersistent = false
+            IsPersistent = false,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            DesignationId = request.DesignationId,            
         };
         var newTenantData = new AddNewTenantDto
         {

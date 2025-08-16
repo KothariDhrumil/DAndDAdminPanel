@@ -1,6 +1,7 @@
 ﻿
 using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.JwtTokenCode;
+using Domain;
 using Infrastructure.Auth.Jwt;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -10,12 +11,12 @@ namespace Infrastructure.Identity;
 
 internal class TokenService : ITokenService
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenBuilder _tokenBuilder;
     private readonly JwtSettings _jwtSettings;
 
     public TokenService(
-        UserManager<IdentityUser> userManager,
+        UserManager<ApplicationUser> userManager,
         ITokenBuilder tokenBuilder,
         IOptions<JwtSettings> jwtSettings)
     {

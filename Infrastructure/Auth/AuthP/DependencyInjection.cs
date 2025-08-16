@@ -10,6 +10,7 @@ using AuthPermissions.SupportCode;
 using AuthPermissions.SupportCode.AddUsersServices;
 using AuthPermissions.SupportCode.AddUsersServices.Authentication;
 using AuthPermissions.SupportCode.DownStatusCode;
+using Domain;
 using Infrastructure.Auth.Jwt;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Services;
@@ -59,7 +60,7 @@ public static class DependencyInjection
         //NOTE: This uses the same database as the individual accounts DB
         .UsingEfCoreSqlServer(connectionString)
         .SetupMultiTenantSharding(new ShardingEntryOptions(true))
-        .IndividualAccountsAuthentication()
+        .IndividualAccountsAuthentication<ApplicationUser>()
         .RegisterAddClaimToUser<AddGlobalChangeTimeClaim>()
         .RegisterAddClaimToUser<AddTenantNameClaim>()
         .RegisterTenantChangeService<RetailTenantChangeService>()
@@ -68,13 +69,14 @@ public static class DependencyInjection
         .AddAuthUsersIfEmpty(Example7AppAuthSetupData.UsersRolesDefinition)
         .RegisterFindUserInfoService<IndividualAccountUserLookup>()
         .RegisterAuthenticationProviderReader<SyncIndividualAccountUsers>()
-        .AddSuperUserToIndividualAccounts()
+        .AddSuperUserToIndividualAccounts<ApplicationUser>()
         .SetupAspNetCoreAndDatabase(options =>
         {
             //Migrate individual account database
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<AppIdentityDbContext>>();
+
             //Add demo users to the database
-            options.RegisterServiceToRunInJob<StartupServicesIndividualAccountsAddDemoUsers>();
+            //options.RegisterServiceToRunInJob<StartupServicesIndividualAccountsAddDemoUsers>();
 
             //Migrate the application part of the database
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<RetailDbContext>>();
