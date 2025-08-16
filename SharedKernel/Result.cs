@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace SharedKernel;
+﻿namespace SharedKernel;
 
 public class Result
 {
@@ -35,18 +33,14 @@ public class Result
 
 public class Result<TValue> : Result
 {
-    private readonly TValue? _value;
+
+    public TValue? Data { get; set; }
 
     public Result(TValue? value, bool isSuccess, Error error)
         : base(isSuccess, error)
     {
-        _value = value;
+        Data = value;
     }
-
-    [NotNull]
-    public TValue Value => IsSuccess
-        ? _value!
-        : throw new InvalidOperationException("The value of a failure result can't be accessed.");
 
     public static implicit operator Result<TValue>(TValue? value) =>
         value is not null ? Success(value) : Failure<TValue>(Error.NullValue);

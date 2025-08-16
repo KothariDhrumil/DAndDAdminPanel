@@ -33,3 +33,16 @@ public record Error
     public static Error Conflict(string code, string description) =>
         new(code, description, ErrorType.Conflict);
 }
+
+
+public static class GenericErrors
+{
+    public static Error UnAuthorized => Error.Problem(
+        "NotAuthorized",
+        "You are not Authorized");
+     
+    public static Error Fobidden => Error.Problem(
+        "NotAuthorized",
+        "You are not authorized to access this resource");
+     
+}
