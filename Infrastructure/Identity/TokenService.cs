@@ -1,14 +1,13 @@
-﻿
-using Application.Identity.Tokens;
+﻿using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.JwtTokenCode;
 using Domain;
 using Infrastructure.Auth.Jwt;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using SharedKernel;
 
 namespace Infrastructure.Identity;
-
 internal class TokenService : ITokenService
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -25,7 +24,7 @@ internal class TokenService : ITokenService
         _jwtSettings = jwtSettings.Value;
     }
 
-    public async Task<TokenResponse> GetTokenAsync(TokenRequest request, CancellationToken cancellationToken)
+    public async Task<Result<TokenResponse>> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken)
     {
         if (await _userManager.FindByEmailAsync(request.Email.Trim().Normalize()) is not { } user
             || !await _userManager.CheckPasswordAsync(user, request.Password))
@@ -37,7 +36,7 @@ internal class TokenService : ITokenService
         return new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays));
     }
 
-    public async Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
+    public async Task<Result<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request)
     {
         (var updatedTokens, int _) = await _tokenBuilder.RefreshTokenUsingRefreshTokenAsync(request.Adapt<TokenAndRefreshToken>());
         if (updatedTokens == null)

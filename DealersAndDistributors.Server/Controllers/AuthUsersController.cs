@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Graph;
+using System.Security.Claims;
 using NSwag.Annotations;
 using Shared;
 
@@ -67,32 +67,6 @@ public class AuthUsersController : VersionNeutralApiController
         return Unauthorized();
     }
 
-    [HttpPost]
-    [AllowAnonymous]
-    [OpenApiOperation("Creates a new user and tenant with roles.", "")]
-    public async Task<ActionResult> CreateUserAndTenantAsync([FromServices] ISignInAndCreateTenant userRegisterInvite, CreateUserRequest request)
-    {
-        var newUserData = new AddNewUserDto
-        {
-            Email = request.Email,
-            UserName = request.UserName,
-            Password = request.Password,
-            IsPersistent = false,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            DesignationId = request.DesignationId,            
-        };
-        var newTenantData = new AddNewTenantDto
-        {
-            TenantName = request.TenantName,
-            HasOwnDb = false,
-        };
-        var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);
-        if (status.HasErrors)
-            throw new Exception(status.GetAllErrors());
-
-        return Ok(status.Message);
-    }
 
     [HttpGet("view-sync-changes")]
     [HasPermission(Permissions.UserSync)]

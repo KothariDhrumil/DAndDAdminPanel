@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.Identity.Tokens;
 
@@ -13,7 +14,9 @@ public class TokenRequestValidator : AbstractValidator<TokenRequest>
             .EmailAddress()
                 .WithMessage("Invalid Email Address.");
 
-        RuleFor(p => p.Password).Cascade(CascadeMode.Stop)
+        RuleFor(p => p.Password)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty();
     }
 }
+ 

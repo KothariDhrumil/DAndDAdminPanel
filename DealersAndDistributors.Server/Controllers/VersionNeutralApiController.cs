@@ -5,7 +5,8 @@ namespace DealersAndDistributors.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiVersionNeutral]
-public class VersionNeutralApiController : BaseApiController
+[ApiController]
+public class VersionNeutralApiController : ControllerBase
 {
 }
 

@@ -1,12 +1,13 @@
 ﻿
 using Application;
+using SharedKernel;
 
 namespace Application.Identity.Tokens;
 
 public interface ITokenService : ITransientService
 {
-    Task<TokenResponse> GetTokenAsync(TokenRequest request, CancellationToken cancellationToken);
+    Task<Result<TokenResponse>> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken);
 
-    Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request);
+    Task<Result<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request);
 }
 
