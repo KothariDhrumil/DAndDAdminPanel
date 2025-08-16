@@ -41,6 +41,10 @@ public static class StartupExtensions
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();
 
+        services.AddHttpClient("SMSService", client =>
+        {
+            client.BaseAddress = new Uri(config["SMSConfiguration:BaseURL"]);
+        });
         return services;
     }
     private static void RegisterSwagger(this IServiceCollection services)
