@@ -51,7 +51,7 @@ public class AuthUsersController : VersionNeutralApiController
     }
 
     [HttpGet("profile")]
-    [HasPermission(Permissions.UserRead)]
+    //[HasPermission(Permissions.UserRead)]
     public async Task<ActionResult<AuthUserDisplay>> GetCurrentAuthUserInfo()
     {
         if (User.Identity?.IsAuthenticated == true)

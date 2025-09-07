@@ -3,15 +3,14 @@ using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.Services;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.SupportCode.AddUsersServices;
-using Azure;
 using DealersAndDistributors.Server.Extensions;
 using DealersAndDistributors.Server.Infrastructure;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SharedKernel;
+using StatusGeneric;
 
 
 
@@ -31,20 +30,19 @@ public sealed class AccountController : VersionNeutralApiController
     [HttpPost("authenticate")]
     [AllowAnonymous]
     // [OpenApiOperation("Request an access token using credentials.", "")]
-    public async Task<IResult> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken)
     {
         var response = await _tokenService.AuthenticateAsync(request, cancellationToken);
-
-        return response.Match(Results.Ok, CustomResults.Problem);
+        return Ok(response);
     }
 
     [HttpPost("refresh")]
     [AllowAnonymous]
     //[OpenApiOperation("Request an access token using a refresh token.", "")]
-    public async Task<IResult> RefreshAsync(RefreshTokenRequest request)
+    public async Task<IActionResult> RefreshAsync(RefreshTokenRequest request)
     {
         var response = await _tokenService.RefreshTokenAsync(request);
-        return response.Match(Results.Ok, CustomResults.Problem);
+        return Ok(response);
 
     }
 
@@ -66,13 +64,14 @@ public sealed class AccountController : VersionNeutralApiController
         var newTenantData = new AddNewTenantDto
         {
             TenantName = request.TenantName,
-            HasOwnDb = false            
+            HasOwnDb = false
         };
         var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);
         if (status.HasErrors)
-            throw new Exception(status.GetAllErrors());
-
-        return Ok(status.Message);
+        {
+            return Ok(new Response<IStatusGeneric>(status.GetAllErrors()));
+        }
+        return Ok(new Response<string>(status.Message, status.GetAllErrors()));
     }
 
 

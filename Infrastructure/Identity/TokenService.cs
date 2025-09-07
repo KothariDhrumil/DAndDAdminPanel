@@ -24,7 +24,7 @@ internal class TokenService : ITokenService
         _jwtSettings = jwtSettings.Value;
     }
 
-    public async Task<Result<TokenResponse>> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken)
+    public async Task<Response<TokenResponse>> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken)
     {
         if (await _userManager.FindByEmailAsync(request.Email.Trim().Normalize()) is not { } user
             || !await _userManager.CheckPasswordAsync(user, request.Password))
@@ -33,15 +33,15 @@ internal class TokenService : ITokenService
         }
 
         TokenAndRefreshToken result = await _tokenBuilder.GenerateTokenAndRefreshTokenAsync(user.Id);
-        return new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays));
+        return new Response<TokenResponse>(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
     }
 
-    public async Task<Result<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request)
+    public async Task<Response<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request)
     {
         (var updatedTokens, int _) = await _tokenBuilder.RefreshTokenUsingRefreshTokenAsync(request.Adapt<TokenAndRefreshToken>());
         if (updatedTokens == null)
             throw new HttpRequestException("Refresh Authentication Token Failed.", null, System.Net.HttpStatusCode.Unauthorized);
 
-        return new TokenResponse(updatedTokens.Token, updatedTokens.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)); ;
+        return new Response<TokenResponse>(new TokenResponse(updatedTokens.Token, updatedTokens.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays))); ;
     }
 }

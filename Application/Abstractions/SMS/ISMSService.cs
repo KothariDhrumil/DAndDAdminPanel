@@ -2,7 +2,7 @@
 
 namespace Application.Abstractions.Authentication;
 
-public interface ISMSService
+public interface ISMSService : ITransientService
 {
     Task<string> SendOTPAsync(SMSRequestDTO request);
 
