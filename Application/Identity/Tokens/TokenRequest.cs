@@ -1,22 +1,33 @@
 ﻿using FluentValidation;
-using System.ComponentModel.DataAnnotations;
 
 namespace Application.Identity.Tokens;
 
-public record TokenRequest(string Email, string Password);
+public record TokenRequest(string PhoneNumber, string Password, bool OtpEnabled);
 
 public class TokenRequestValidator : AbstractValidator<TokenRequest>
 {
     public TokenRequestValidator()
     {
-        RuleFor(p => p.Email).Cascade(CascadeMode.Stop)
+        RuleFor(p => p.PhoneNumber).Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .EmailAddress()
-                .WithMessage("Invalid Email Address.");
-
+            .MinimumLength(10).WithMessage("Invalid Phone number")
+            .MaximumLength(10).WithMessage("Invalid Phone number");
+        
         RuleFor(p => p.Password)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty();
+            .NotEmpty().When(x => !x.OtpEnabled);
     }
 }
- 
+
+public record GenerateOTPRequest(string PhoneNumber);
+
+public class GenerateOTPRequestValidator : AbstractValidator<GenerateOTPRequest>
+{
+    public GenerateOTPRequestValidator()
+    {
+        RuleFor(p => p.PhoneNumber).Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .MinimumLength(10).WithMessage("Invalid Phone number")
+            .MaximumLength(10).WithMessage("Invalid Phone number");
+    }
+}

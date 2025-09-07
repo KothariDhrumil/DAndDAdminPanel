@@ -45,7 +45,7 @@ public class AuthUsersController : VersionNeutralApiController
     {
         string? authDataKey = User.GetAuthDataKeyFromUser();
         IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(authDataKey);
-        var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.Email)).ToListAsync();
+        var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.UserTenant.TenantFullName)).ToListAsync();
 
         return new PaginatedResult<List<AuthUserDisplay>>(users);
     }

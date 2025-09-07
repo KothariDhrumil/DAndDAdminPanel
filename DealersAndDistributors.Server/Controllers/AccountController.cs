@@ -1,4 +1,5 @@
 ﻿
+using Application.Identity.Account;
 using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.Services;
 using AuthPermissions.BaseCode.CommonCode;
@@ -53,7 +54,7 @@ public sealed class AccountController : VersionNeutralApiController
     {
         var newUserData = new AddNewUserDto
         {
-            Email = request.Email,
+            Email = request.PhoneNumber,
             UserName = request.UserName,
             Password = request.Password,
             IsPersistent = false,
@@ -72,6 +73,30 @@ public sealed class AccountController : VersionNeutralApiController
             return Ok(new Response<IStatusGeneric>(status.GetAllErrors()));
         }
         return Ok(new Response<string>(status.Message, status.GetAllErrors()));
+    }
+
+    [HttpGet("generate-otp")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GenerateOTPAsync(GenerateOTPRequest request)
+    {
+        var origin = Request.Headers.Origin;
+        return Ok(await _tokenService.GenerateOTPAsync(request));
+    }
+
+    [HttpGet("confirm-otp")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ConfirmOTPAsync([FromQuery] string PhoneNumber, [FromQuery] string code)
+    {
+        var origin = Request.Headers.Origin;
+        return Ok(await _tokenService.ConfirmPhoneAsync(PhoneNumber, code, GenerateIPAddress()));
+    }
+
+    private string GenerateIPAddress()
+    {
+        if (Request.Headers.ContainsKey("X-Forwarded-For"))
+            return Request.Headers["X-Forwarded-For"];
+        else
+            return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
     }
 
 
