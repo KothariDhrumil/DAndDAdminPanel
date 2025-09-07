@@ -49,25 +49,7 @@ public class AuthUsersController : VersionNeutralApiController
 
         return new PaginatedResult<List<AuthUserDisplay>>(users);
     }
-
-    [HttpGet("profile")]
-    //[HasPermission(Permissions.UserRead)]
-    public async Task<ActionResult<AuthUserDisplay>> GetCurrentAuthUserInfo()
-    {
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            string? userId = User.GetUserIdFromUser();
-            StatusGeneric.IStatusGeneric<AuthUser> status = await _authUsersAdmin.FindAuthUserByUserIdAsync(userId);
-
-            return status.HasErrors
-            ? throw new Exception(status.GetAllErrors())
-            : Ok(AuthUserDisplay.DisplayUserInfo(status.Result));
-        }
-
-        return Unauthorized();
-    }
-
-
+ 
     [HttpGet("view-sync-changes")]
     [HasPermission(Permissions.UserSync)]
     public async Task<PaginatedResult<List<SyncAuthUserWithChange>>> SyncUsers()

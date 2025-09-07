@@ -83,7 +83,6 @@ internal class TokenService(
 
         string code = await _userManager.GenerateChangePhoneNumberTokenAsync(account, account.PhoneNumber);
 
-        //var code = await _userManager.GenerateTwoFactorTokenAsync(account, _userManager.Options.Tokens.PasswordResetTokenProvider);
         await sMSService.SendOTPAsync(new SMSRequestDTO() { To = account.PhoneNumber, Body = $"{code}", Template = "DELUX_OTP" });
 
         return new Response<string>(string.Empty, "SMS Sent Successfully");
