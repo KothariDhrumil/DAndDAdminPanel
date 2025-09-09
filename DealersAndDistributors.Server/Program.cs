@@ -37,7 +37,7 @@ app.MapHealthChecks("health", new HealthCheckOptions
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 
-app.UseRequestContextLogging();
+app.UseMiddleware();
 app.UseInfrastructure(builder.Configuration);
 app.MapEndpoints();
 

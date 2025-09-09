@@ -5,10 +5,10 @@ namespace DealersAndDistributors.Server;
 
 public static class MiddlewareExtensions
 {
-    public static IApplicationBuilder UseRequestContextLogging(this IApplicationBuilder app)
+    public static IApplicationBuilder UseMiddleware(this IApplicationBuilder app)
     {
         //app.UseMiddleware<RequestContextLoggingMiddleware>();
-
+        app.UseMiddleware<ErrorHandlerMiddleware>();
         return app;
     }
 }

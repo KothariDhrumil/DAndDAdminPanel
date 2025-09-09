@@ -40,13 +40,17 @@ public static class GenericErrors
     public static Error UnAuthorized => Error.Problem(
         "NotAuthorized",
         "You are not Authorized");
-     
+
     public static Error UserNotFound => Error.Problem(
         "InvalidUser",
         "User not found");
-     
+
+    public static Error NotFound => Error.Problem(
+        "Invalid",
+        "Item not found");
+
     public static Error Fobidden => Error.Problem(
         "NotAuthorized",
         "You are not authorized to access this resource");
-     
+
 }
