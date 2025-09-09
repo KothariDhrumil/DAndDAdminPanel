@@ -22,6 +22,11 @@ public class HierarchicalTenantDto
 
     public string DataKey { get; set; } = default!;
 
+    public bool HasOwnDb { get; set; }
+
+    public string DatabaseInfoName { get; set; }
+
+
     //-------------------------------------------
     //used for Create and Move
 
@@ -36,7 +41,9 @@ public class HierarchicalTenantDto
             TenantId = x.TenantId,
             TenantFullName = x.TenantFullName,
             TenantName = x.GetTenantName(),
-            DataKey = x.GetTenantDataKey()
+            DataKey = x.GetTenantDataKey(),
+            HasOwnDb = x.HasOwnDb,
+            DatabaseInfoName = x.DatabaseInfoName,
         });
     }
 

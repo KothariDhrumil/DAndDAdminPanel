@@ -21,8 +21,7 @@ namespace DealersAndDistributors.Server.Controllers;
 /// Controller for managing authentication users and their associated operations
 /// </summary>
 public class AuthUsersController : VersionNeutralApiController
-{
-    private readonly UserManager<ApplicationUser> _userManager;
+{ 
     private readonly IAuthUsersAdminService _authUsersAdmin;
 
     /// <summary>
@@ -34,7 +33,6 @@ public class AuthUsersController : VersionNeutralApiController
         UserManager<ApplicationUser> userManager,
         IAuthUsersAdminService authUsersAdmin)
     {
-        _userManager = userManager;
         _authUsersAdmin = authUsersAdmin;
     }
 

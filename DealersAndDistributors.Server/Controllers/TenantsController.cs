@@ -26,11 +26,10 @@ public class TenantsController : VersionNeutralApiController
     [OpenApiOperation("Get a list of all tenants.", "")]
     public async Task<PaginatedResult<List<HierarchicalTenantDto>>> GetListAsync()
     {
-        var data = await HierarchicalTenantDto.TurnIntoDisplayFormat(_authTenantAdmin.QueryTenants())
+        var data = await HierarchicalTenantDto.TurnIntoDisplayFormat(_authTenantAdmin.QueryParentTenants())
                 .OrderBy(x => x.TenantFullName)
                 .ToListAsync();
         return new PaginatedResult<List<HierarchicalTenantDto>>(data);
-
     }
 
     [HttpGet("{id:int}")]
