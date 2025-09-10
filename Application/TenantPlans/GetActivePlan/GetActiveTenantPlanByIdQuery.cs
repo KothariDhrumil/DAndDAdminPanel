@@ -31,6 +31,6 @@ internal sealed class GetTenantPlanByIdQueryHandler(AuthPermissionsDbContext con
             })
             .SingleOrDefaultAsync(cancellationToken);
 
-        return TenantPlan is null ? throw new ApiException("TenantPlan not found") : new Response<TenantPlanResponse>(TenantPlan);
+        return TenantPlan is not null ? Response.Success(TenantPlan) : throw new ApiException("TenantPlan not found");
     }
 }

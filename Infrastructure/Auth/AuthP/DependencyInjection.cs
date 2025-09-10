@@ -21,7 +21,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Net.DistributedFileStoreCache;
-using NetCore.AutoRegisterDi;
 using RunMethodsSequentially;
 using Shared;
 using System.Text.Encodings.Web;
@@ -80,7 +79,7 @@ public static class DependencyInjection
 
             //Migrate the application part of the database
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<RetailDbContext>>();
-            
+
         });
 
         //This is used to set app statue as "Down" and tenant as "Down",

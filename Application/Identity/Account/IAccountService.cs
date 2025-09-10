@@ -1,12 +1,11 @@
-﻿using Azure;
-using SharedKernel;
+﻿using SharedKernel;
 
 namespace Application.Identity.Account;
 
 public interface IAccountService : ITransientService
 {
-    Task<Result<string>> ForgotPassword(string phoneNumber, string origin);
+    Task<Response> ForgotPassword(string phoneNumber, string origin);
 
-    Task<Result<string>> ResetPassword(ResetPasswordRequest model);
+    Task<Response> ResetPassword(ResetPasswordRequest model);
 }
 

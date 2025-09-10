@@ -23,7 +23,7 @@ namespace DealersAndDistributors.Server.Controllers
                 }
                 var status = await service.FindAuthUserByUserIdAsync(userId);
                 var user = await userService.GetUserDetailsAsync(userId);
-                return Ok(new Response<UserInfo>(new UserInfo()
+                return Ok(SharedKernel.Response.Success<UserInfo>(new UserInfo()
                 {
                     AuthUser = !status.HasErrors ? AuthUserDisplay.DisplayUserInfo(status.Result) : null,
                     User = user

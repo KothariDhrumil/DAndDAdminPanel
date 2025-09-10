@@ -5,6 +5,7 @@ using FluentValidation;
 using FluentValidation.Internal;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
+using System.Numerics;
 
 namespace Application.TenantPlans.Create;
 
@@ -57,7 +58,7 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new Response<int>(TenantPlan.Id, string.Empty);
+            return Response.Success(TenantPlan.Id);
         }
     }
 }

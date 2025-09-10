@@ -26,6 +26,6 @@ internal sealed class GetPlanByIdQueryHandler(AuthPermissionsDbContext context)
             })
             .SingleOrDefaultAsync(cancellationToken);
 
-        return Plan is null ? throw new ApiException("Plan not found") : new Response<PlanResponse>(Plan);
+        return Plan is null ? throw new ApiException("Plan not found") : Response.Success(Plan);
     }
 }

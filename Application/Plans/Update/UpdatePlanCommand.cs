@@ -4,6 +4,7 @@ using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
+using System.Numerics;
 
 namespace Application.Plans.Update;
 
@@ -51,6 +52,6 @@ internal sealed class UpdatePlanCommandHandler(
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new Response<int>(Plan.Id);
+        return Response.Success(Plan.Id);
     }
 }

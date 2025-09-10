@@ -7,7 +7,7 @@ using SharedKernel;
 
 namespace Application.TenantPlans.Update;
 
-public sealed class UpdateTenantPlanCommand : ICommand<int>
+public sealed class UpdateTenantPlanCommand : ICommand
 {
     public int TenantPlanId { get; set; }
     public int PlanId { get; set; }
@@ -21,9 +21,9 @@ public sealed class UpdateTenantPlanCommand : ICommand<int>
 
     internal sealed class UpdateTenantPlanCommandHandler(
     AuthPermissionsDbContext context)
-    : ICommandHandler<UpdateTenantPlanCommand, int>
+    : ICommandHandler<UpdateTenantPlanCommand>
     {
-        public async Task<Response<int>> Handle(UpdateTenantPlanCommand command, CancellationToken cancellationToken)
+        public async Task<Response> Handle(UpdateTenantPlanCommand command, CancellationToken cancellationToken)
         {
             TenantPlan? TenantPlan = await context.TenantPlans
                 .SingleOrDefaultAsync(t => t.Id == command.TenantPlanId, cancellationToken)
@@ -42,7 +42,7 @@ public sealed class UpdateTenantPlanCommand : ICommand<int>
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new Response<int>(TenantPlan.Id);
+            return Response.Success(TenantPlan.Id);
         }
     }
 }

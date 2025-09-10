@@ -3,8 +3,6 @@ using Application.Plans.Create;
 using Application.Plans.Delete;
 using Application.Plans.Get;
 using Application.Plans.Update;
-using Application.Todos.Create;
-using Application.Todos.Get;
 using DealersAndDistributors.Server.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +56,7 @@ namespace DealersAndDistributors.Server.Controllers
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IResult> Delete([FromBody] DeletePlanCommand command,
-            ICommandHandler<DeletePlanCommand, string> handler,
+            ICommandHandler<DeletePlanCommand> handler,
             CancellationToken cancellationToken)
         {
             var response = await handler.Handle(command, cancellationToken);

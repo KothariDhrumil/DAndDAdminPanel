@@ -33,6 +33,6 @@ internal sealed class GetTenantPlanQueryHandler(AuthPermissionsDbContext context
             })
             .ToListAsync(cancellationToken);
 
-        return new Response<List<TenantPlanResponse>>(TenantPlan);
+        return Response.Success(TenantPlan);
     }
 }

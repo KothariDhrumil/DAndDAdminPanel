@@ -1,12 +1,7 @@
 ﻿using Application.Abstractions.Messaging;
-using Application.Exceptions;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
-using AuthPermissions.BaseCode.PermissionsCode;
-
-using ExamplesCommonCode.CommonAdmin;
 using FluentValidation;
-using Shared;
 using SharedKernel;
 
 namespace Application.Plans.Create;
@@ -44,7 +39,7 @@ public sealed class CreatePlanCommand : ICommand<int>
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new Response<int>(plan.Id, string.Empty);
+            return Response.Success(plan.Id);
         }
     }
 }

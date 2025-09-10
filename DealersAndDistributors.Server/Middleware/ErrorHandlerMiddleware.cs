@@ -25,22 +25,19 @@ namespace DealersAndDistributors.Server.Middleware
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
-                var responseModel = new Response<string>()
-                {
-                    Succeeded = false,
-                    Message = error?.Message
-                };
+                var responseModel = Response.Failure(Error.Problem("101", "Failed"));
 
                 switch (error)
                 {
                     case ApiException e:
                         // custom application error
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        responseModel = Response.Failure(Error.Problem(HttpStatusCode.BadRequest.ToString(), string.Join(",", e.Message)));
                         break;
                     case Application.Exceptions.ValidationException e:
                         // custom application error
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        responseModel.Message = string.Join(",", e.Errors);
+                        responseModel = Response.Failure(Error.Problem(HttpStatusCode.BadRequest.ToString(), string.Join(",", e.Errors)));
                         break;
                     case KeyNotFoundException e:
                         // not found error
@@ -49,7 +46,7 @@ namespace DealersAndDistributors.Server.Middleware
                     default:
                         // unhandled error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        responseModel.Message = "Message " + error.Message + ", Inner Exception : " + error.InnerException;
+                        responseModel = Response.Failure(Error.Failure(HttpStatusCode.InternalServerError.ToString(), string.Empty));
                         break;
                 }
                 var result = JsonSerializer.Serialize(responseModel);

@@ -4,7 +4,6 @@ using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.Services;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.SupportCode.AddUsersServices;
-using DealersAndDistributors.Server.Extensions;
 using DealersAndDistributors.Server.Infrastructure;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -70,9 +69,9 @@ public sealed class AccountController : VersionNeutralApiController
         var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);
         if (status.HasErrors)
         {
-            return Ok(new Response<IStatusGeneric>(status.GetAllErrors()));
+            return Ok(SharedKernel.Response.Failure<string>(new Error("101", status.GetAllErrors(","), ErrorType.Failure)));
         }
-        return Ok(new Response<string>(status.Message, status.GetAllErrors()));
+        return Ok(SharedKernel.Response.Success<string>(status.Message));
     }
 
     [HttpGet("generate-otp")]

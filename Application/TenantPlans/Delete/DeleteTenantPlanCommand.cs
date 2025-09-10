@@ -8,12 +8,12 @@ using SharedKernel;
 
 namespace Application.TenantPlans.Delete;
 
-public sealed record DeleteTenantPlanCommand(int TenantPlanId) : ICommand<string>;
+public sealed record DeleteTenantPlanCommand(int TenantPlanId) : ICommand;
 
 internal sealed class DeleteTenantPlanCommandHandler(AuthPermissionsDbContext context)
-    : ICommandHandler<DeleteTenantPlanCommand, string>
+    : ICommandHandler<DeleteTenantPlanCommand>
 {
-    public async Task<Response<string>> Handle(DeleteTenantPlanCommand command, CancellationToken cancellationToken)
+    public async Task<Response> Handle(DeleteTenantPlanCommand command, CancellationToken cancellationToken)
     {
         TenantPlan? TenantPlanItem = await context.TenantPlans
             .SingleOrDefaultAsync(t => t.Id == command.TenantPlanId, cancellationToken);
@@ -29,7 +29,7 @@ internal sealed class DeleteTenantPlanCommandHandler(AuthPermissionsDbContext co
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new Response<string>();
+        return Response.Success();
     }
 }
 
