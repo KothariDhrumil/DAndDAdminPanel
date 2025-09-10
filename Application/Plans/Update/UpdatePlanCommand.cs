@@ -7,29 +7,50 @@ using SharedKernel;
 
 namespace Application.Plans.Update;
 
-public sealed record UpdatePlanCommand(
-    int PlanId,
-    string Name) : ICommand<int>;
+public class UpdatePlanCommand : ICommand<int>
+{
+    public int PlanId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public int PlanValidityInDays { get; set; }
+    public int PlanRate { get; set; }
+    public bool IsActive { get; set; }
+    public bool IsBillable { get; set; }
+    public bool IsApplyToAllUsers { get; set; }
 
+    public List<int> Permissions { get; set; }
+}
 
 internal sealed class UpdatePlanCommandHandler(
-    AuthPermissionsDbContext context)
+    AuthPermissionsDbContext context, IDateTimeProvider dateTimeProvider)
     : ICommandHandler<UpdatePlanCommand, int>
 {
+     
     public async Task<Response<int>> Handle(UpdatePlanCommand command, CancellationToken cancellationToken)
     {
-        Plan? PlanItem = await context.Plans
-            .SingleOrDefaultAsync(t => t.Id == command.PlanId, cancellationToken);
+        Plan? Plan = await context.Plans
+            .SingleOrDefaultAsync(t => t.Id == command.PlanId, cancellationToken) ?? throw new ApiException(GenericErrors.NotFound.Description);
 
-        if (PlanItem is null)
+        Plan.Name = command.Name;
+        Plan.IsActive = command.IsActive;
+        Plan.PlanRate = command.PlanRate;
+        Plan.PlanValidityInDays = command.PlanValidityInDays;
+        Plan.Features = string.Join(",", command.Permissions);
+
+        if (command.IsApplyToAllUsers)
         {
-            throw new ApiException(GenericErrors.NotFound.Description);
-        }
+            IQueryable<TenantPlan> companyPlans = context.TenantPlans.Where(x => x.PlanId == command.PlanId && 
+                                                                                 x.IsActive && 
+                                                                                 x.ValidFrom.Date <= dateTimeProvider.Now.Date &&
+                                                                                 x.ValidTo.Date >= dateTimeProvider.Now.Date);
 
-        PlanItem.Name = command.Name;
+            foreach (var companyPlan in companyPlans)
+            {
+                // TODO : Update to all users
+            }
+        }
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new Response<int>(PlanItem.Id);
+        return new Response<int>(Plan.Id);
     }
 }

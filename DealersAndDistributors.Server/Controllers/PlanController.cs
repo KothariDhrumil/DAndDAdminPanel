@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Messaging;
-using Application.Plans;
+using Application.Plans.Create;
 using Application.Plans.Delete;
 using Application.Plans.Get;
 using Application.Plans.Update;
