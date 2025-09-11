@@ -11,9 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SharedKernel;
 using StatusGeneric;
-
-
-
 namespace DealersAndDistributors.Server.Controllers;
 
 public sealed class AccountController : VersionNeutralApiController
@@ -53,13 +50,14 @@ public sealed class AccountController : VersionNeutralApiController
     {
         var newUserData = new AddNewUserDto
         {
-            Email = request.PhoneNumber,
+            Email = $"{request.PhoneNumber}@dealers.com",
             UserName = request.UserName,
             Password = request.Password,
             IsPersistent = false,
             FirstName = request.FirstName,
             LastName = request.LastName,
             DesignationId = request.DesignationId,
+
         };
         var newTenantData = new AddNewTenantDto
         {

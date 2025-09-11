@@ -24,7 +24,9 @@ internal class TokenService(
 
     public async Task<Response> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber.Trim());
+        var user = await _userManager.Users.FirstOrDefaultAsync(x =>
+        (!string.IsNullOrEmpty(request.PhoneNumber) && x.PhoneNumber == request.PhoneNumber.Trim())
+        || (!string.IsNullOrEmpty(request.Email) && x.Email == request.Email));
         if (user is not null)
         {
             if (!request.OtpEnabled && !await _userManager.CheckPasswordAsync(user, request.Password))
