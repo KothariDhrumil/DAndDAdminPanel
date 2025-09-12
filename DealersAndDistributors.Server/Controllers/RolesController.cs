@@ -59,8 +59,10 @@ public class RolesController : VersionNeutralApiController
     [OpenApiOperation("Create a role. This should not be used by a user that has a tenant.", "")]
     public async Task<ActionResult> RegisterRoleAsync(RoleCreateUpdateDto input)
     {
+        var tenantId = User.GetTenantIdFromUser();
+
         StatusGeneric.IStatusGeneric status = await _authRolesAdmin
-                .CreateRoleToPermissionsAsync(input.RoleName, input.GetSelectedPermissionNames(), input.Description, input.RoleType);
+                .CreateRoleToPermissionsAsync(input.RoleName, input.GetSelectedPermissionNames(), input.Description, input.RoleType, tenantId);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())

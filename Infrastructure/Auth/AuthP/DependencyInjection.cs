@@ -63,9 +63,9 @@ public static class DependencyInjection
         .RegisterAddClaimToUser<AddGlobalChangeTimeClaim>()
         .RegisterAddClaimToUser<AddTenantNameClaim>()
         .RegisterTenantChangeService<RetailTenantChangeService>()
-        .AddRolesPermissionsIfEmpty(Example7AppAuthSetupData.RolesDefinition)
-        .AddTenantsIfEmpty(Example7AppAuthSetupData.TenantDefinition)
         .AddAuthUsersIfEmpty(Example7AppAuthSetupData.UsersRolesDefinition)
+        .AddRolesPermissionsIfEmpty(Example7AppAuthSetupData.RolesDefinition)
+        .AddTenantsIfEmpty(Example7AppAuthSetupData.TenantDefinition)        
         .RegisterFindUserInfoService<IndividualAccountUserLookup>()
         .RegisterAuthenticationProviderReader<SyncIndividualAccountUsers>()
         .AddSuperUserToIndividualAccounts<ApplicationUser>()
@@ -75,7 +75,7 @@ public static class DependencyInjection
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<AppIdentityDbContext>>();
 
             //Add demo users to the database
-            //options.RegisterServiceToRunInJob<StartupServicesIndividualAccountsAddDemoUsers>();
+            options.RegisterServiceToRunInJob<StartupServicesIndividualAccountsAddDemoUsers>();
 
             //Migrate the application part of the database
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<RetailDbContext>>();
@@ -103,7 +103,7 @@ public static class DependencyInjection
         services.AddSingleton<IDatabaseStateChangeEvent, TenantKeyOrShardChangeService>(); //triggers the "update claims on a change" feature
         services.AddTransient<ISetRemoveStatus, SetRemoveStatus>(); //Used for "down for maintenance" feature  
         services.AddTransient<ISignUpGetShardingEntry, DemoShardOnlyGetDatabaseForNewTenant>(); //handles sharding tenants
-        services.AddTransient<IAddNewUserManager, IndividualUserAddUserManager<IdentityUser>>();
+        services.AddTransient<IAddNewUserManager, IndividualUserAddUserManager<ApplicationUser>>();
         services.AddTransient<ISignInAndCreateTenant, SignInAndCreateTenant>();
 
         return services;
