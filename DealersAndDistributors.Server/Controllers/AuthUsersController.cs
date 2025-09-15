@@ -50,6 +50,8 @@ public class AuthUsersController : VersionNeutralApiController
  
     [HttpGet("view-sync-changes")]
     [HasPermission(Permissions.UserSync)]
+    //hide from swagger as this is an internal only method
+    [OpenApiIgnore]
     public async Task<PaginatedResult<List<SyncAuthUserWithChange>>> SyncUsers()
     {
         var data = await _authUsersAdmin.SyncAndShowChangesAsync();
@@ -58,6 +60,7 @@ public class AuthUsersController : VersionNeutralApiController
 
     [HttpPost("apply-sync-changes")]
     [HasPermission(Permissions.UserSync)]
+    [OpenApiIgnore]
     public async Task<ActionResult> SyncUsers(IEnumerable<SyncAuthUserWithChange> data)
     {
         var status = await _authUsersAdmin.ApplySyncChangesAsync(data);

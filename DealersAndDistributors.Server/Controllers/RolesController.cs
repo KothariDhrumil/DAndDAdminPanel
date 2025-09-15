@@ -27,8 +27,8 @@ public class RolesController : VersionNeutralApiController
     {
         string? userId = User.GetUserIdFromUser();
        var data = await _authRolesAdmin.QueryRoleToPermissions(userId)
-                .OrderBy(x => x.RoleType)
-                .ToListAsync();
+                                       .OrderBy(x => x.RoleType)
+                                       .ToListAsync();
         return new PaginatedResult<List<RoleWithPermissionNamesDto>>(data);
     }
 
@@ -74,7 +74,9 @@ public class RolesController : VersionNeutralApiController
     [OpenApiOperation("Delete a role. This should not be used by a user that has a tenant.", "")]
     public async Task<ActionResult> DeleteAsync(RoleDeleteConfirmDto input)
     {
-        StatusGeneric.IStatusGeneric status = await _authRolesAdmin.DeleteRoleAsync(input.RoleName, input.ConfirmDelete?.Trim() == input.RoleName);
+        var tenantId = User.GetTenantIdFromUser();
+        
+        StatusGeneric.IStatusGeneric status = await _authRolesAdmin.DeleteRoleAsync(input.RoleName, input.ConfirmDelete?.Trim() == input.RoleName, tenantId);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
