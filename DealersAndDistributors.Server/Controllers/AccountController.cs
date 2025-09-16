@@ -57,12 +57,13 @@ public sealed class AccountController : VersionNeutralApiController
             FirstName = request.FirstName,
             LastName = request.LastName,
             DesignationId = request.DesignationId,
-
+            Roles = new List<string> { "Feature - Stock", "Feature - Sales" },
         };
         var newTenantData = new AddNewTenantDto
         {
             TenantName = request.TenantName,
-            HasOwnDb = false
+            HasOwnDb = false,
+
         };
         var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);
         if (status.HasErrors)

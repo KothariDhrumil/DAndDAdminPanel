@@ -73,6 +73,19 @@ public class TenantsController : VersionNeutralApiController
             ? throw new Exception(status.GetAllErrors())
             : Ok(status.Message);
     }
+    [HttpPut("update-role")]
+    [HasPermission(Permissions.TenantUpdate)]
+    [OpenApiOperation("Update a tenant role.", "")]
+    public async Task<ActionResult> UpdateRoleAsync(UpdateHierarchicalTenantRoleRequest request)
+    {
+        var removeDownAsync = await _upDownService.SetTenantDownWithDelayAsync(TenantDownVersions.Update, request.TenantId);
+        var status = await _authTenantAdmin.UpdateTenantRolesAsync(request.TenantId, request.TenantRoles);
+        await removeDownAsync();
+
+        return status.HasErrors
+            ? throw new Exception(status.GetAllErrors())
+            : Ok(status.Message);
+    }
 
     [HttpPost("move-hierarchy-level")]
     [HasPermission(Permissions.TenantMove)]

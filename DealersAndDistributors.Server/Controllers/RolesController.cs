@@ -26,19 +26,21 @@ public class RolesController : VersionNeutralApiController
     public async Task<PaginatedResult<List<RoleWithPermissionNamesDto>>> GetListAsync()
     {
         string? userId = User.GetUserIdFromUser();
-       var data = await _authRolesAdmin.QueryRoleToPermissions(userId)
-                                       .OrderBy(x => x.RoleType)
-                                       .ToListAsync();
+        var data = await _authRolesAdmin.QueryRoleToPermissions(userId)
+                                        .OrderBy(x => x.RoleType)
+                                        .ToListAsync();
         return new PaginatedResult<List<RoleWithPermissionNamesDto>>(data);
     }
 
     [HttpGet("permissions")]
-    [HasPermission(Permissions.PermissionRead)]
+    // [HasPermission(Permissions.PermissionRead)]
     [OpenApiOperation("Get permissions. This should not be used by a user that has a tenant.", "")]
     public PaginatedResult<List<PermissionDisplay>> ListPermissions()
     {
-        return new PaginatedResult<List<PermissionDisplay>>(_authRolesAdmin.GetPermissionDisplay(false));
-        
+        var tenantId = User.GetTenantIdFromUser();
+
+        return new PaginatedResult<List<PermissionDisplay>>(_authRolesAdmin.GetPermissionDisplay(false, tenantId: tenantId));
+
     }
 
     [HttpPut("permissions")]
@@ -75,7 +77,7 @@ public class RolesController : VersionNeutralApiController
     public async Task<ActionResult> DeleteAsync(RoleDeleteConfirmDto input)
     {
         var tenantId = User.GetTenantIdFromUser();
-        
+
         StatusGeneric.IStatusGeneric status = await _authRolesAdmin.DeleteRoleAsync(input.RoleName, input.ConfirmDelete?.Trim() == input.RoleName, tenantId);
 
         return status.HasErrors
