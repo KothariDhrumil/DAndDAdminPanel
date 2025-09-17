@@ -1,4 +1,3 @@
- 
 import { ToastrService } from 'ngx-toastr';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
@@ -18,8 +17,9 @@ import { LocalStorageService } from '../shared/services';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 import { LOGIN_ROUTE } from '../helpers/routes/app-routes';
-import { CONFIRM_OTP_API, GENERATE_OTP_API, LOGIN_API, REFRESH_TOKEN_API } from '../helpers/routes/api-endpoints';
+import { CONFIRM_OTP_API, GENERATE_OTP_API, LOGIN_API, REFRESH_TOKEN_API, REGISTER_API } from '../helpers/routes/api-endpoints';
 import { SigninRequest } from '../models/interface/SigninRequest';
+import { RegisterRequest } from '../models/interface/RegisterRequest';
 
 @Injectable({
   providedIn: 'root',
@@ -160,8 +160,9 @@ export class AuthService {
     }
   }
   /**
-   * New sign-in method supporting password and OTP login
-   * @param request { phoneNumber, password, otpEnabled, email }
-   * Returns ApiResponse<Token>
+   * Register a new user
    */
+  register(request: RegisterRequest): Observable<ApiResponse<string>> {
+    return this.http.post<ApiResponse<string>>(REGISTER_API, request);
+  }
 }

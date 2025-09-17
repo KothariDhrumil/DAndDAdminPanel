@@ -6,3 +6,4 @@ export interface SigninRequest {
   otpEnabled: boolean;
   email: string;
 }
+

@@ -1,58 +1,86 @@
+import { AuthService } from '../../../core/service/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
 @Component({
-    selector: 'app-signup',
-    templateUrl: './signup.component.html',
-    styleUrls: ['./signup.component.scss'],
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatIconModule,
-        RouterLink,
-        MatButtonModule,
-    ]
+  selector: 'app-signup',
+  templateUrl: './signup.component.html',
+  styleUrls: ['./signup.component.scss'],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    RouterLink,
+    MatButtonModule,
+    MatOptionModule,
+    MatSelectModule
+  ]
 })
 export class SignupComponent implements OnInit {
-  authForm!: UntypedFormGroup;
+  signupForm!: FormGroup<{
+    phoneNumber: FormControl<string>;
+    password: FormControl<string>;
+    tenantName: FormControl<string>;
+    firstName: FormControl<string>;
+    lastName: FormControl<string>;
+    designationId: FormControl<number>;
+  }>;
   submitted = false;
   returnUrl!: string;
   hide = true;
   chide = true;
+  designations = [
+    { id: 1, name: 'CEO' },
+    { id: 2, name: 'Manager' },
+    { id: 3, name: 'Sales' },
+    { id: 4, name: 'Support' },
+    { id: 5, name: 'Other' }
+  ];
   constructor(
-    private formBuilder: UntypedFormBuilder,
+    private formBuilder: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private authService: AuthService
+  ) { }
   ngOnInit() {
-    this.authForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      email: [
-        '',
-        [Validators.required, Validators.email, Validators.minLength(5)],
-      ],
-      password: ['', Validators.required],
-      cpassword: ['', Validators.required],
+    this.signupForm = this.formBuilder.group({
+      phoneNumber: this.formBuilder.control('', { validators: [Validators.required, Validators.pattern(/^\+?[0-9]{10,15}$/)], nonNullable: true }),
+      password: this.formBuilder.control('', { validators: [Validators.required, Validators.minLength(8)], nonNullable: true }),
+      tenantName: this.formBuilder.control('', { validators: [Validators.required], nonNullable: true }),
+      firstName: this.formBuilder.control('', { validators: [Validators.required], nonNullable: true }),
+      lastName: this.formBuilder.control('', { validators: [Validators.required], nonNullable: true }),
+      designationId: this.formBuilder.control(0, { validators: [Validators.required], nonNullable: true }),
     });
-    // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
-  get f() {
-    return this.authForm.controls;
-  }
+
   onSubmit() {
     this.submitted = true;
-    // stop here if form is invalid
-    if (this.authForm.invalid) {
+    if (this.signupForm.invalid) {
       return;
-    } else {
-      this.router.navigate(['/admin/dashboard/main']);
     }
+    const request = this.signupForm.getRawValue();
+    this.authService.register(request).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.router.navigate(['/admin/dashboard/main']);
+        } else {
+          // handle error, e.g. show message
+        }
+      },
+      error: () => {
+        // handle error, e.g. show message
+      }
+    });
   }
 }
