@@ -1,4 +1,21 @@
+import { environment } from "../../../../environments/environment";
+
 // API endpoint constants
+const baseUrl = environment.apiUrl;
+const apiVersionNeutral = '/api';
+
+ /*/ Authentication Routes */
+const authRoute = '/account';
+export const LOGIN_API = baseUrl + apiVersionNeutral + authRoute + '/authenticate';
+export const REFRESH_TOKEN_API = baseUrl + apiVersionNeutral + authRoute + '/refresh';
+export const LOGOUT = baseUrl + apiVersionNeutral + authRoute + '/logout';
+export const REGISTER_API = baseUrl + apiVersionNeutral + authRoute + '/register';
+export const GENERATE_OTP_API = baseUrl + apiVersionNeutral + authRoute + '/generate-otp';
+export const CONFIRM_OTP_API = baseUrl + apiVersionNeutral + authRoute + '/confirm-otp';
+
+
+/*/ User Management Routes */
+
 export const USER_INFO_API = '/api/admin/user-info';
 export const AUTH_ROLES_API = '/api/admin/auth-roles';
 export const LIST_ALL_AUTH_USERS_API = '/api/admin/auth-users';

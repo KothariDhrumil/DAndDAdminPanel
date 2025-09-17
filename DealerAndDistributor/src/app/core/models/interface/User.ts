@@ -1,3 +1,5 @@
+
+
 export interface User {
   [prop: string]: any;
 
@@ -9,9 +11,3 @@ export interface User {
   permissions?: any[];
 }
 
-export interface Token {
-
-  token: string;
-  refreshToken: string;
-  refreshTokenExpiryTime: Date;
-}

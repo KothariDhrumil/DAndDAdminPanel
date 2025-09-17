@@ -1,36 +1,34 @@
+ 
 import { ToastrService } from 'ngx-toastr';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import {
   BehaviorSubject,
   catchError,
-  merge,
   Observable,
-  of,
-  share,
-  switchMap,
   tap,
   throwError,
 } from 'rxjs';
 
-import { LoginService } from './login.service';
-import { Token, User } from '../models/interface';
+import { Token } from "../models/interface/Token";
+import { ApiResponse } from '../models/interface/ApiResponse';
+
+import { User } from "../models/interface/User";
 import { LocalStorageService } from '../shared/services';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
 import { LOGIN_ROUTE } from '../helpers/routes/app-routes';
+import { CONFIRM_OTP_API, GENERATE_OTP_API, LOGIN_API, REFRESH_TOKEN_API } from '../helpers/routes/api-endpoints';
+import { SigninRequest } from '../models/interface/SigninRequest';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   user$ = new BehaviorSubject<User>({});
-  private baseUrl = environment.apiUrl;
-  private currentUserTokenSource!: BehaviorSubject<string>;
+ private currentUserTokenSource!: BehaviorSubject<string>;
   public currentUserToken$!: Observable<string>;
   constructor(
-    private loginService: LoginService,
     private store: LocalStorageService,
     private toastrService: ToastrService,
     private router: Router,
@@ -48,21 +46,23 @@ export class AuthService {
   public get getToken(): string {
     return this.store.get('token')?.toString() ?? '';
   }
-
-  login(email: string, password: string, rememberMe = false) {
-    return this.loginService.login(email, password).pipe(
-      switchMap((response) => {
-        if (response) {
-          this.toastrService.clear();
-          this.toastrService.info('User Logged In');
-        } else {
-          this.toastrService.error('Login failed');
-        }
-        return of(response); // Return the response to be handled in the component
+  /**
+   * New sign-in method supporting password and OTP login
+   * @param request SigninRequest
+   * Returns Observable<ApiResponse<Token>>
+   */
+  signin(request: SigninRequest): Observable<ApiResponse<Token>> {
+    return this.http.post<ApiResponse<Token>>(LOGIN_API, request).pipe(
+      tap((response: ApiResponse<Token>) => {
+        this.setToken(response);
+      }),
+      catchError((error) => {
+        this.toastrService.error('Login failed');
+        return throwError(() => error);
       })
     );
   }
-
+  
 
   public get isAuthenticated(): boolean {
     const token = this.store.get('token');
@@ -77,7 +77,6 @@ export class AuthService {
     const isSuperAdmin = this.store.get('isSuperAdmin');
     return isSuperAdmin === true || isSuperAdmin === 'true';
   }
-
 
   private get getStorageRefreshToken(): string {
     return this.store.get('refreshToken') ?? '';
@@ -102,7 +101,7 @@ export class AuthService {
       this.toastrService.clear();
       this.toastrService.info('Refreshing token...');
     }
-    this.http.post<Token>(this.baseUrl + '/tokens/refresh', {
+    this.http.post<Token>(REFRESH_TOKEN_API, {
       'refreshToken': refreshToken,
       'token': jwtToken
     })
@@ -126,4 +125,43 @@ export class AuthService {
       );
     return next.handle(request);
   }
+   /**
+   * Generate OTP for phone number
+   */
+  generateOTP(phoneNumber: string): Observable<ApiResponse<string>> {
+    return this.http.get<ApiResponse<string>>(GENERATE_OTP_API + `?phoneNumber=${encodeURIComponent(phoneNumber)}`);
+  }
+
+  /**
+   * Confirm OTP for phone number
+   */
+  confirmOTP(phoneNumber: string, code: string): Observable<ApiResponse<Token>> {
+    return this.http.get<ApiResponse<Token>>(CONFIRM_OTP_API + `?phoneNumber=${encodeURIComponent(phoneNumber)}&code=${encodeURIComponent(code)}`)
+    .pipe(
+      tap((response: ApiResponse<Token>) => {
+        this.setToken(response);
+      }),
+      catchError((error) => {
+        this.toastrService.error('Login failed');
+        return throwError(() => error);
+      })
+    );
+  }
+
+  private setToken(response: ApiResponse<Token>) {
+    if (response.isSuccess && response.data) {
+      this.store.set('token', response.data.token);
+      this.store.set('refreshToken', response.data.refreshToken);
+      this.store.set('refreshTokenExpiryTime', response.data.refreshTokenExpiryTime);
+      this.toastrService.clear();
+      this.toastrService.info('User Logged In');
+    } else {
+      this.toastrService.error(response.error?.description || 'Login failed');
+    }
+  }
+  /**
+   * New sign-in method supporting password and OTP login
+   * @param request { phoneNumber, password, otpEnabled, email }
+   * Returns ApiResponse<Token>
+   */
 }

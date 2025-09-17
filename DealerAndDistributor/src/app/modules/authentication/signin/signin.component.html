@@ -12,37 +12,38 @@
               class="sign-up-link">Sign Up
             </a></p>
           <h2 class="login-title">Sign in</h2>
-          <form class="validate-form" [formGroup]="authForm" (ngSubmit)="onSubmit()">
-            <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>Email</mat-label>
-                  <input matInput formControlName="email" />
-                  <mat-icon class="material-icons-outlined color-icon p-3" matSuffix>face</mat-icon>
-                  @if (authForm.get('email')?.hasError('required')) {
-                  <mat-error>
-                    Email is required
-                  </mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>Password</mat-label>
-                  <input matInput [type]="isHide() ? 'password' : 'text'" formControlName="password">
-                  <mat-icon class="material-icons-outlined pwd-toggle p-3" matSuffix (click)="hide.set(!isHide())">
-                    {{isHide() ? 'visibility_off' : 'visibility'}}
-                  </mat-icon>
-                  @if (authForm.get('password')?.hasError('required')) {
-                  <mat-error>
-                    Password is required
-                  </mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </div>
+          <div class="login-tabs">
+            <button type="button" [class.active]="loginOption() === 'password'"
+              (click)="setLoginOption('password')">Login with Password</button>
+            <button type="button" [class.active]="loginOption() === 'otp'" (click)="setLoginOption('otp')">Login with
+              OTP</button>
+          </div>
+
+          <!-- Password Login Form -->
+          @if (loginOption() === 'password') {
+          <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()" class="validate-form">
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Email or Mobile Number</mat-label>
+              <input matInput formControlName="emailOrPhone" />
+              <mat-icon class="material-icons-outlined color-icon p-3" matSuffix>person</mat-icon>
+              @if (passwordForm.controls.emailOrPhone.hasError('required') &&
+              passwordForm.controls.emailOrPhone.touched) {
+              <mat-error>Email or Mobile is required</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Password</mat-label>
+              <input matInput [type]="isHide() ? 'password' : 'text'" formControlName="password">
+              <mat-icon class="material-icons-outlined pwd-toggle p-3" matSuffix (click)="hide.set(!isHide())">
+                {{isHide() ? 'visibility_off' : 'visibility'}}
+              </mat-icon>
+              @if (passwordForm.controls.password.hasError('required') && passwordForm.controls.password.touched) {
+              <mat-error>Password is required</mat-error>
+              }
+              @if (passwordForm.controls.password.hasError('minlength') && passwordForm.controls.password.touched) {
+              <mat-error>Password must be at least 6 characters</mat-error>
+              }
+            </mat-form-field>
             <div class="d-flex justify-content-between align-items-center mb-5">
               <div class="form-check">
                 <label class="form-check-label">
@@ -59,12 +60,60 @@
             }
             <div class="container-auth-form-btn">
               <div style="text-align:center">
-                <button mat-flat-button color="accent" [class.auth-spinner]="isLoading()" [disabled]="isLoading() || !authForm.valid"
-                  class="auth-form-btn" type="submit">Login</button>
+                <button mat-flat-button color="accent" [class.auth-spinner]="isLoading()"
+                  [disabled]="isLoading() || passwordForm.invalid" class="auth-form-btn" type="submit">Login</button>
               </div>
             </div>
           </form>
-          <h6 class="social-login-title">OR</h6>
+          }
+
+          <!-- OTP Login Form -->
+          @if (loginOption() === 'otp') {
+            <form [formGroup]="otpForm" (ngSubmit)="onSubmit()" class="validate-form">
+              @if (otpStep() === 'input') {
+                <mat-form-field class="example-full-width" appearance="outline">
+                  <mat-label>Mobile Number</mat-label>
+                  <input matInput formControlName="phoneNumber" />
+                  <mat-icon class="material-icons-outlined color-icon p-3" matSuffix>person</mat-icon>
+                  @if (otpForm.controls.phoneNumber.hasError('required') && otpForm.controls.phoneNumber.touched) {
+                    <mat-error>Mobile number is required</mat-error>
+                  }
+                </mat-form-field>
+                @if (isError()) {
+                  <div class="alert alert-danger mt-3 mb-0">{{isError()}}</div>
+                }
+                <div class="container-auth-form-btn">
+                  <div style="text-align:center">
+                    <button mat-flat-button color="accent" [class.auth-spinner]="isLoading()"
+                      [disabled]="isLoading() || otpForm.controls.phoneNumber.invalid" class="auth-form-btn" type="submit">Generate OTP</button>
+                  </div>
+                </div>
+              }
+              @if (otpStep() === 'verify') {
+                <mat-form-field class="example-full-width" appearance="outline">
+                  <mat-label>OTP</mat-label>
+                  <input matInput formControlName="otp" />
+                  <mat-icon class="material-icons-outlined color-icon p-3" matSuffix>key</mat-icon>
+                  @if (otpForm.controls.otp.hasError('required') && otpForm.controls.otp.touched) {
+                    <mat-error>OTP is required</mat-error>
+                  }
+                  @if (otpForm.controls.otp.hasError('pattern') && otpForm.controls.otp.touched) {
+                    <mat-error>OTP must be 6 digits</mat-error>
+                  }
+                </mat-form-field>
+                @if (isError()) {
+                  <div class="alert alert-danger mt-3 mb-0">{{isError()}}</div>
+                }
+                <div class="container-auth-form-btn">
+                  <div style="text-align:center">
+                    <button mat-flat-button color="accent" [class.auth-spinner]="isLoading()"
+                      [disabled]="isLoading() || otpForm.controls.otp.invalid" class="auth-form-btn" type="submit">Confirm OTP</button>
+                  </div>
+                </div>
+              }
+            </form>
+          }
+          <!-- <h6 class="social-login-title">OR</h6>
           <ul class="list-unstyled social-icon mb-0 mt-3">
             <li class="list-inline-item"><a href="javascript:void(0)" class="rounded">
                 <i class="fab fa-google"></i>
@@ -78,7 +127,8 @@
             <li class="list-inline-item"><a href="javascript:void(0)" class="rounded">
                 <i class="fab fa-linkedin-in"></i>
               </a></li>
-          </ul>
+          </ul> -->
+
         </div>
       </div>
     </div>

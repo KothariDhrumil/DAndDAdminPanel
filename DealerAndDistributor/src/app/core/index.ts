@@ -6,6 +6,6 @@ export { RightSidebarService } from './service/rightsidebar.service';
 
 // models
 
-export { Role } from './models/role';
+export { Role } from './models/enums/role';
 export type { InConfiguration } from './models/config.interface';
 export * from './initializers';

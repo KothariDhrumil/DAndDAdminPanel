@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "bs":"ng build && ng serve",
     "test": "ng test",
     "serve:ssr:DealerAndDistributor": "node dist/DealerAndDistributor/server/server.mjs"
   },

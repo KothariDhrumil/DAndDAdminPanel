@@ -1,5 +1,5 @@
 
-import { User } from '../models/interface';
+import { User } from "../models/interface/User";
 import { base64, currentTimestamp, filterObject } from './helpers';
 import { HttpRequest } from '@angular/common/http';
 
