@@ -37,7 +37,7 @@ public class AuthUsersController : VersionNeutralApiController
     }
 
     [HttpGet("listusers")]
-    //[HasPermission(Permissions.AccessAll)]
+    [HasPermission(Permissions.AccessAll)]
     [OpenApiOperation("List users filtered by authUser tenant.", "")]
     public async Task<PaginatedResult<List<AuthUserDisplay>>> ListAuthUsersFilteredByTenantAsync(int pageNumber, int pageSize, string orderBy)
     {

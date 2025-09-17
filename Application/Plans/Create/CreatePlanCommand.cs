@@ -13,6 +13,8 @@ public sealed class CreatePlanCommand : ICommand<int>
     public int PlanValidityInDays { get; set; }
     public int PlanRate { get; set; }
     public bool IsActive { get; set; }
+     
+    public List<int> RoleIds { get; set; }
         
     internal sealed class CreatePlanCommandHandler(
         AuthPermissionsDbContext context)
@@ -29,9 +31,9 @@ public sealed class CreatePlanCommand : ICommand<int>
                 IsActive = command.IsActive,
                 PlanRate = command.PlanRate,
                 PlanValidityInDays = command.PlanValidityInDays,
-                Description = command.Description,               
+                Description = command.Description,
+                Features = string.Join(",", command.RoleIds)
             };
-
             context.Plans.Add(plan);
 
             await context.SaveChangesAsync(cancellationToken);

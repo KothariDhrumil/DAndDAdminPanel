@@ -51,13 +51,13 @@ public sealed class AccountController : VersionNeutralApiController
         var newUserData = new AddNewUserDto
         {
             Email = $"{request.PhoneNumber}@dealers.com",
-            UserName = request.UserName,
+            UserName = request.PhoneNumber,
             Password = request.Password,
             IsPersistent = false,
             FirstName = request.FirstName,
             LastName = request.LastName,
-            DesignationId = request.DesignationId,
             Roles = new List<string> { "Feature - Stock", "Feature - Sales" },
+            PhoneNumber = request.PhoneNumber
         };
         var newTenantData = new AddNewTenantDto
         {
@@ -75,7 +75,7 @@ public sealed class AccountController : VersionNeutralApiController
 
     [HttpGet("generate-otp")]
     [AllowAnonymous]
-    public async Task<IActionResult> GenerateOTPAsync(GenerateOTPRequest request)
+    public async Task<IActionResult> GenerateOTPAsync([FromQuery] GenerateOTPRequest request)
     {
         var origin = Request.Headers.Origin;
         return Ok(await _tokenService.GenerateOTPAsync(request));

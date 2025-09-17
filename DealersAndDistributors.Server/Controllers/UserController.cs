@@ -11,7 +11,7 @@ namespace DealersAndDistributors.Server.Controllers
 {
     public class UserController : VersionNeutralApiController
     {
-        [HttpGet("UserInfo")]
+        [HttpGet("info")]
         public async Task<IActionResult> UserInfo([FromServices] IAuthUsersAdminService service, [FromServices] IUserService userService)
         {
             if (User.Identity?.IsAuthenticated == true)
@@ -33,9 +33,9 @@ namespace DealersAndDistributors.Server.Controllers
         }
 
         [HttpGet("permissions")]
-        public List<string> UserPermissions([FromServices] IUsersPermissionsService service)
+        public IActionResult UserPermissions([FromServices] IUsersPermissionsService service)
         {
-            return service.PermissionsFromUser(HttpContext.User);
+            return Ok(SharedKernel.Response.Success(service.PermissionsFromUser(HttpContext.User)));
         }
     }
 }

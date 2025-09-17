@@ -2,7 +2,7 @@
 
 namespace Application.Identity.Tokens;
 
-public record TokenRequest(string? PhoneNumber, string? Password, bool OtpEnabled, string? Email);
+public record TokenRequest(string? PhoneNumber, string? Password, string? Email);
 
 public class TokenRequestValidator : AbstractValidator<TokenRequest>
 {
@@ -21,7 +21,7 @@ public class TokenRequestValidator : AbstractValidator<TokenRequest>
 
         RuleFor(p => p.Password)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty().When(x => !x.OtpEnabled);
+            .NotEmpty();
     }
 }
 

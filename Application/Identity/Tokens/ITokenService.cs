@@ -12,6 +12,6 @@ public interface ITokenService : ITransientService
 
     Task<Response<TokenResponse>> ConfirmPhoneAsync(string phoneNumber, string code, string ipAddress);
 
-    Task<Response> GenerateOTPAsync(GenerateOTPRequest request);
+    Task<Response<string>> GenerateOTPAsync(GenerateOTPRequest request);
 }
 

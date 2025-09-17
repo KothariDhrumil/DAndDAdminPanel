@@ -29,20 +29,20 @@ internal class TokenService(
         || (!string.IsNullOrEmpty(request.Email) && x.Email == request.Email));
         if (user is not null)
         {
-            if (!request.OtpEnabled && !await _userManager.CheckPasswordAsync(user, request.Password))
+            if (!await _userManager.CheckPasswordAsync(user, request.Password))
             {
                 throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
             }
-            if (request.OtpEnabled)
-            {
-                string code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
-                if (code != null)
-                {
-                    //var code = await _userManager.GenerateTwoFactorTokenAsync(account, _userManager.Options.Tokens.PasswordResetTokenProvider);
-                    await sMSService.SendOTPAsync(new SMSRequestDTO() { To = request.PhoneNumber, Body = $"{code}", Template = "DELUX_OTP" });
-                    return Response.Success();
-                }
-            }
+            //if (request.OtpEnabled)
+            //{
+            //    string code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
+            //    if (code != null)
+            //    {
+            //        //var code = await _userManager.GenerateTwoFactorTokenAsync(account, _userManager.Options.Tokens.PasswordResetTokenProvider);
+            //        await sMSService.SendOTPAsync(new SMSRequestDTO() { To = request.PhoneNumber, Body = $"{code}", Template = "DELUX_OTP" });
+            //        return Response.Success();
+            //    }
+            //}
             TokenAndRefreshToken result = await _tokenBuilder.GenerateTokenAndRefreshTokenAsync(user.Id);
             return Response.Success(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
         }
@@ -79,14 +79,14 @@ internal class TokenService(
         throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
     }
 
-    public async Task<Response> GenerateOTPAsync(GenerateOTPRequest request)
+    public async Task<Response<string>> GenerateOTPAsync(GenerateOTPRequest request)
     {
         var account = await _userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) ?? throw new Exception($"{request.PhoneNumber} not registered");
 
         string code = await _userManager.GenerateChangePhoneNumberTokenAsync(account, account.PhoneNumber);
 
-        await sMSService.SendOTPAsync(new SMSRequestDTO() { To = account.PhoneNumber, Body = $"{code}", Template = "DELUX_OTP" });
+        //await sMSService.SendOTPAsync(new SMSRequestDTO() { To = account.PhoneNumber, Body = $"{code}", Template = "DELUX_OTP" });
 
-        return Response.Success();
+        return Response.Success(code);
     }
 }

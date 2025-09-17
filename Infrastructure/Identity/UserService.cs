@@ -19,6 +19,7 @@ namespace Infrastructure.Identity
         {
 
             return await _userManager.Users
+                                      .AsNoTracking()
                                      .Where(x => x.Id == UserId)
                                      .Select(user =>
                                      new UserViewModel()

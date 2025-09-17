@@ -17,8 +17,7 @@ public class UpdatePlanCommand : ICommand<int>
     public bool IsActive { get; set; }
     public bool IsBillable { get; set; }
     public bool IsApplyToAllUsers { get; set; }
-
-    public List<int> Permissions { get; set; }
+    public List<int> RoleIds { get; set; }
 }
 
 internal sealed class UpdatePlanCommandHandler(
@@ -35,7 +34,7 @@ internal sealed class UpdatePlanCommandHandler(
         Plan.IsActive = command.IsActive;
         Plan.PlanRate = command.PlanRate;
         Plan.PlanValidityInDays = command.PlanValidityInDays;
-        Plan.Features = string.Join(",", command.Permissions);
+        Plan.Features = string.Join(",", command.RoleIds);
 
         if (command.IsApplyToAllUsers)
         {
