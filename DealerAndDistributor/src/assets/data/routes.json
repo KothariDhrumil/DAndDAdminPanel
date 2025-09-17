@@ -52,7 +52,10 @@
       "groupTitle": false,
       "badge": "",
       "badgeClass": "",
-      "role": ["Stock"],
+      "role": [
+        "Stock",
+        "AccessAll"
+      ],
       "submenu": [
         {
           "path": "/user/stock/StockRead",
@@ -64,7 +67,8 @@
           "badge": "",
           "badgeClass": "",
           "role": [
-            "StockRead"
+            "StockRead",
+            "AccessAll"
           ],
           "submenu": []
         },
@@ -78,7 +82,8 @@
           "badge": "",
           "badgeClass": "",
           "role": [
-            "StockWrite"
+            "StockWrite",
+            "AccessAll"
           ],
           "submenu": []
         }

@@ -124,17 +124,19 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
         tap((response) => {
           this.loading.set(false);
           if (response.isSuccess && response.data) {
-            this.startupService.load().subscribe({
-              next: () => {
+            this.startupService.load()
+              .then(() => {
                 if (this.authService.isSuperAdmin) {
-                 return this.router.navigateByUrl(SUPERADMIN_DASHBOARD_ROUTE);
+                  return this.router.navigateByUrl(SUPERADMIN_DASHBOARD_ROUTE);
                 }
                 return this.router.navigateByUrl(this.returnUrl);
-              },
-              error: (error: unknown) => {
-                this.error.set('Failed to load roles/permissions');
-              }
-            });
+              })
+              .catch((error) => {
+                console.error('Failed to load user permissions:', error);
+                this.error.set('Failed to load user permissions. Please try again.');
+                // Optionally clear the auth token if permissions failed to load
+                this.authService.logout();
+              });
           } else {
             this.error.set(response.error?.description || 'Login failed');
           }

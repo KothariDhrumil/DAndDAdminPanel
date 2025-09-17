@@ -16,13 +16,23 @@ export class LoggedInUserService {
 
   getUserInfo(): Observable<userInfo> {
     return this.http.get<ApiResponse<userInfo>>(USER_INFO_API).pipe(
-      map(response => response.data)
+      map(response => {
+        if (!response.isSuccess || !response.data) {
+          throw new Error(response.error?.description || 'Failed to get user info');
+        }
+        return response.data;
+      })
     );
   }
 
   getPermissions(): Observable<string[]> {
     return this.http.get<ApiResponse<string[]>>(USER_PERMISSIONS_API).pipe(
-      map(response => response.data)
+      map(response => {
+        if (!response.isSuccess || !response.data) {
+          throw new Error(response.error?.description || 'Failed to get user permissions');
+        }
+        return response.data || [];
+      })
     );
   }
 }
