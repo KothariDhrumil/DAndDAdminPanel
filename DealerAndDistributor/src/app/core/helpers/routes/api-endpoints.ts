@@ -15,8 +15,13 @@ export const CONFIRM_OTP_API = baseUrl + apiVersionNeutral + authRoute + '/confi
 
 
 /*/ User Management Routes */
+const userRoute = '/user';
 
-export const USER_INFO_API = '/api/admin/user-info';
+export const USER_INFO_API = baseUrl + apiVersionNeutral + userRoute + '/info';
+export const USER_PERMISSIONS_API = baseUrl + apiVersionNeutral + userRoute + '/permissions';
+
+/*/ Admin Routes */
+
 export const AUTH_ROLES_API = '/api/admin/auth-roles';
 export const LIST_ALL_AUTH_USERS_API = '/api/admin/auth-users';
 export const SYNC_AUTH_USER_WITH_CHANGE_LIST_API = '/api/admin/sync-auth-user-with-change-list';

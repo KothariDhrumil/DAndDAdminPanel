@@ -8,3 +8,4 @@ export interface RegisterRequest {
   lastName: string;
   designationId: number;
 }
+

@@ -1,5 +1,5 @@
-  // State for OTP flow
-  
+// State for OTP flow
+
 import { Component, ChangeDetectionStrategy, OnInit, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../core';
 import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
 import { StartupService } from '../../../core/service/startup.service';
-import { DASHBOARD_ROUTE } from '../../../core/helpers/routes/app-routes';
+import { DASHBOARD_ROUTE, SUPERADMIN_DASHBOARD_ROUTE, USER_DASHBOARD_ROUTE } from '../../../core/helpers/routes/app-routes';
 import { catchError, take, tap } from 'rxjs';
 import { SigninRequest } from '../../../core/models/interface/SigninRequest';
 
@@ -66,7 +66,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   readonly isHide = computed(() => this.hide());
 
   ngOnInit() {
-    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || DASHBOARD_ROUTE;
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || USER_DASHBOARD_ROUTE;
     if (this.authService.isAuthenticated) {
       this.router.navigateByUrl(this.returnUrl);
     }
@@ -124,7 +124,17 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
         tap((response) => {
           this.loading.set(false);
           if (response.isSuccess && response.data) {
-            this.router.navigateByUrl(this.returnUrl);
+            this.startupService.load().subscribe({
+              next: () => {
+                if (this.authService.isSuperAdmin) {
+                 return this.router.navigateByUrl(SUPERADMIN_DASHBOARD_ROUTE);
+                }
+                return this.router.navigateByUrl(this.returnUrl);
+              },
+              error: (error: unknown) => {
+                this.error.set('Failed to load roles/permissions');
+              }
+            });
           } else {
             this.error.set(response.error?.description || 'Login failed');
           }

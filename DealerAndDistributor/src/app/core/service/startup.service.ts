@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { switchMap, tap } from 'rxjs/operators';
 import { NgxRolesService, NgxPermissionsService } from 'ngx-permissions';
-import { LoggedInUserService, LoggedInUserInfo } from './loggedinuser.service';
+import { LoggedInUserService } from './loggedinuser.service';
 import { forkJoin } from 'rxjs';
 import { LocalStorageService } from '../shared/services';
+import { authUser } from "../models/interface/authUser";
+import { userInfo } from '../models/interface/LoggedInUserInfo';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +15,6 @@ export class StartupService {
     private rolesService: NgxRolesService,
     private permissonsService: NgxPermissionsService,
     private loggedInUserService: LoggedInUserService,
-
     private storageService: LocalStorageService
   ) { }
 
@@ -22,7 +23,7 @@ export class StartupService {
    */
   load() {
     return forkJoin({
-      user: this.loggedInUserService.getAuthUserInfo(),
+      user: this.loggedInUserService.getUserInfo(),
       permissions: this.loggedInUserService.getPermissions(),
     }).pipe(
       tap(({ user, permissions }) => {
@@ -31,16 +32,20 @@ export class StartupService {
     );
   }
 
-  private setRolesAndPermissions(user: LoggedInUserInfo, permissions: string[]) {
+  private setRolesAndPermissions(user: userInfo, permissions: string[]) {
     this.permissonsService.loadPermissions(permissions);
     this.rolesService.flushRoles();
-    const roles: Record<string, string[]> = {};
-    user.roleNames.forEach(roleName => {
-      roles[roleName] = permissions;
+   
+    user.authUser.roleNames.forEach(roleName => {
       if (roleName === 'SuperAdmin') {
         this.storageService.set('isSuperAdmin', true);
+        this.rolesService.addRole('SUPERADMIN', () => true); // always true
+      }
+      else {
+        this.rolesService.addRole(roleName, []);
       }
     });
-    this.rolesService.addRolesWithPermissions(roles);
+    // Add features also as roles (so they can be used)
+    user.authUser.tenantFeatures?.forEach(f => this.rolesService.addRole(f, () => true));
   }
 }

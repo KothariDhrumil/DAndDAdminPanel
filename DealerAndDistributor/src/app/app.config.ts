@@ -24,7 +24,7 @@ import { FeatherModule } from 'angular-feather';
 import { allIcons } from 'angular-feather/icons';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { DirectionService, LanguageService, appInitializerProviders } from './core';
+import { DirectionService, LanguageService } from './core';
 import { ErrorInterceptor } from './core/interceptor/error.interceptor';
 import { provideToastr } from 'ngx-toastr';
 import { JwtInterceptor } from './core/interceptor/jwt.interceptor';

@@ -86,6 +86,11 @@ export class AuthService {
   logout() {
     // remove user from local storage to log user out
     this.store.clear();
+
+    // TODO : call logout API using HTTPClient and JWT token for server-side logout if required
+    
+
+
     this.router.navigateByUrl(LOGIN_ROUTE);
   }
 

@@ -1,16 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { map, Observable } from 'rxjs';
+import { USER_INFO_API, USER_PERMISSIONS_API } from '../helpers/routes/api-endpoints';
+import { ApiResponse } from '../models/interface/ApiResponse';
+import { authUser } from "../models/interface/authUser";
+import { userInfo } from '../models/interface/LoggedInUserInfo';
 
-export interface LoggedInUserInfo {
-  userName: string;
-  email: string;
-  userId: string;
-  roleNames: string[];
-  hasTenant: boolean;
-  tenantName: string;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -19,11 +14,15 @@ export class LoggedInUserService {
 
   constructor(private http: HttpClient) { }
 
-  getAuthUserInfo(): Observable<LoggedInUserInfo> {
-    return this.http.get<LoggedInUserInfo>(environment.apiUrl + 'loggedinuser/authuserinfo');
+  getUserInfo(): Observable<userInfo> {
+    return this.http.get<ApiResponse<userInfo>>(USER_INFO_API).pipe(
+      map(response => response.data)
+    );
   }
 
   getPermissions(): Observable<string[]> {
-    return this.http.get<string[]>(environment.apiUrl + 'loggedinuser/permissions');
+    return this.http.get<ApiResponse<string[]>>(USER_PERMISSIONS_API).pipe(
+      map(response => response.data)
+    );
   }
 }

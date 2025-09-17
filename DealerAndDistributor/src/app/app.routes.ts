@@ -11,14 +11,14 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'product',
-        loadComponent: () =>
-          import('./modules/product/product.module').then((m) => m.ProductComponent),
+        path: 'user',
+        loadChildren: () =>
+          import('./modules/user/user.routes').then(m => m.USER_ROUTES),
       },
       {
         path: 'superadmin',
         loadChildren: () =>
-           import('./modules/superadmin/superadmin.routes').then(m => m.SUPERADMIN_ROUTES),
+          import('./modules/superadmin/superadmin.routes').then(m => m.SUPERADMIN_ROUTES),
       },
       // Example:
       // { path: 'dashboard', component: DashboardComponent },

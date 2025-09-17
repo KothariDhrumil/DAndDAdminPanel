@@ -24,6 +24,7 @@ import { SidebarService } from './sidebar.service';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { AuthService, Role } from '../../core';
 import { UnsubscribeOnDestroyAdapter } from '../../core/shared';
+import { CdkNoDataRow } from "@angular/cdk/table";
 
 @Component({
   selector: 'app-sidebar',
@@ -37,7 +38,8 @@ import { UnsubscribeOnDestroyAdapter } from '../../core/shared';
     FeatherModule,
     TranslateModule,
     NgxPermissionsModule,
-  ],
+    CdkNoDataRow
+],
   host: {
     '(window:resize)': 'windowResizecall()',
     '(document:mousedown)': 'onGlobalClick($event)'
@@ -104,21 +106,21 @@ export class SidebarComponent
         this.sidebarItems = routes;
       });
 
-    if (this.authService.currentUserValue) {
-      const userRole = this.authService.currentUserValue.roles?.[0]?.name;
-      this.userFullName = this.authService.currentUserValue.name;
-      this.userImg =
-        './assets/images/user/' + this.authService.currentUserValue.avatar;
-      if (userRole === Role.Admin) {
-        this.userType = this.capitalizeString(Role.Admin);
-      } else if (userRole === Role.Client) {
-        this.userType = this.capitalizeString(Role.Client);
-      } else if (userRole === Role.Employee) {
-        this.userType = this.capitalizeString(Role.Employee);
-      } else {
-        this.userType = this.capitalizeString(Role.Admin);
-      }
-    }
+    // if (this.authService.currentUserValue) {
+    //   const userRole = this.authService.currentUserValue.roles?.[0]?.name;
+    //   this.userFullName = this.authService.currentUserValue.name;
+    //   this.userImg =
+    //     './assets/images/user/' + this.authService.currentUserValue.avatar;
+    //   if (userRole === Role.Admin) {
+    //     this.userType = this.capitalizeString(Role.Admin);
+    //   } else if (userRole === Role.Client) {
+    //     this.userType = this.capitalizeString(Role.Client);
+    //   } else if (userRole === Role.Employee) {
+    //     this.userType = this.capitalizeString(Role.Employee);
+    //   } else {
+    //     this.userType = this.capitalizeString(Role.Admin);
+    //   }
+    // }
 
     // this.sidebarItems = ROUTES.filter((sidebarItem) => sidebarItem);
     this.initLeftSidebar();
