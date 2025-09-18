@@ -5,6 +5,7 @@ import { Tenant } from '../../models/tenant.model';
 
 import { TenantsService } from '../../service/tenants.service';
 import { GenericTableComponent } from '../../../../../core/shared/components/generic-table/generic-table.component';
+import { BreadcrumbComponent } from '../../../../../core/shared/components/breadcrumb/breadcrumb.component';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { GenericTableComponent } from '../../../../../core/shared/components/gen
   templateUrl: './tenants.component.html',
    // styleUrl: './tenants.component.scss',
   standalone: true,
-  imports: [CommonModule, GenericTableComponent],
+  imports: [CommonModule, GenericTableComponent, BreadcrumbComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TenantsComponent {

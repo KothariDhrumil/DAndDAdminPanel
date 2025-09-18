@@ -3,14 +3,16 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
-import { MatTooltip } from '@angular/material/tooltip';
-import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
-import { DatePipe, NgClass, NgOptimizedImage, NgStyle } from '@angular/common';
+import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { CommonModule, DatePipe, NgClass, NgOptimizedImage, NgStyle } from '@angular/common';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
+import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, SortInfo, PageInfo } from './generic-table.model';
+import { MatDivider } from '@angular/material/divider';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-generic-table',
@@ -20,14 +22,14 @@ import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, Sor
   imports: [
     MatPaginator,
     MatSort,
-    MatTooltip,
-    MatMenu,
+    MatTooltipModule,
+    MatMenuModule,
     NgOptimizedImage,
     MatFormField,
     MatInput,
     MatCheckbox,
-    MatButton,
-    MatIcon,
+    MatButtonModule,
+    MatIconModule,
     MatTableModule ,
     MatSort,
     MatSortHeader,
@@ -37,6 +39,8 @@ import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, Sor
     DatePipe,
     NgClass,
     
+    MatDivider,
+    FormsModule    
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

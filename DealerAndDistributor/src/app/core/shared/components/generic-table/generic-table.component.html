@@ -1,143 +1,173 @@
-@if (config().title) {
-  <div class="table-header">
-    <h2>{{ config().title }}</h2>
-  </div>
-}
+<div class="row">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="card">
+      <div class="materialTableHeader">
+        <div class="left">
+          <ul class="header-buttons-left ms-0">
+            @if (config().title) {
+            <li class="tbl-title">
+              <h2>{{ config().title }}</h2>
+            </li>
+            }
+            @if (config().enableSearch) {
+            <li class="tbl-search-box">
+              <label for="search-input"><i class="material-icons search-icon">search</i></label>
+              <input id="search-input" placeholder="Search" type="text" #filter (keyup)="applyFilter($event)"
+                class="browser-default search-field" aria-label="Search box">
+            </li>
+            }
 
-<div class="table-container">
-  <div class="table-actions">
-    @if (config().enableSearch) {
-      <mat-form-field>
-        <mat-label>Filter</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="Search..." #input>
-      </mat-form-field>
-    }
+          </ul>
 
-    <div class="action-buttons">
-      @if (config().enableAdd) {
-        <button mat-raised-button color="primary" (click)="add()">
-          <mat-icon>add</mat-icon> Add New
-        </button>
-      }
-      @if (config().enableRefresh) {
-        <button mat-icon-button (click)="refresh()" matTooltip="Refresh">
-          <mat-icon>refresh</mat-icon>
-        </button>
-      }
-      @if (config().enableColumnHide) {
-        <button mat-icon-button [matMenuTriggerFor]="columnMenu" matTooltip="Show/Hide Columns">
-          <mat-icon>view_column</mat-icon>
-        </button>
-      }
-      @if (config().enableExport) {
-        <button mat-icon-button (click)="export()" matTooltip="Export">
-          <mat-icon>download</mat-icon>
-        </button>
-      }
-    </div>
-  </div>
+        </div>
+        <div class="right">
+          <div class="right-side-btn">
+            @if (config().enableAdd) {
+            <button mat-raised-button class="tbl-header-btn col-green" matTooltip="Add" (click)="add()">
+              <mat-icon>add_circle_outline</mat-icon>
+            </button>
+            }
+            @if (config().enableRefresh) {
+            <button mat-icon-button (click)="refresh()" class="tbl-header-btn col-brown" matTooltip="Refresh">
+              <mat-icon>refresh</mat-icon>
+            </button>
+            }
+            @if (config().enableColumnHide) {
+            <button mat-icon-button [matMenuTriggerFor]="columnMenu" class="tbl-header-btn col-orange"
+              matTooltip="Show/Hide Column">
+              <mat-icon>filter_list</mat-icon>
+            </button>
 
-  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSort($event)">
-    @if (config().enableSelection) {
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="masterToggle()"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container>
-    }
+            }
+            @if (config().enableExport) {
+            <button mat-icon-button (click)="export()" class="tbl-header-btn col-blue" matTooltip="Xlsx Download">
+              <mat-icon class="material-icons-outlined">file_download</mat-icon>
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="overflow-auto">
+        <div class="responsive_table">
 
-    @for (column of columns(); track column.def) {
-      @if (isColumnVisible(column)) {
-        <ng-container [matColumnDef]="column.def">
-          <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.def : ''">
-            {{ column.label }}
-          </th>
-          <td mat-cell *matCellDef="let row" [ngStyle]="{'cursor': config().enableContextMenu ? 'context-menu' : 'default'}"
-              (click)="onRowClick(row)" (contextmenu)="onContextMenu($event, row)">
-            @switch (column.type) {
-              @case ('text') {
+          <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSort($event)">
+            @if (config().enableSelection) {
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="masterToggle()" [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                  [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+            }
+
+            @for (column of columns(); track column.def) {
+            @if (isColumnVisible(column)) {
+            <ng-container [matColumnDef]="column.def">
+              <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.def : ''">
+                {{ column.label }}
+              </th>
+              <td mat-cell *matCellDef="let row"
+                [ngStyle]="{'cursor': config().enableContextMenu ? 'context-menu' : 'default'}"
+                (click)="onRowClick(row)" (contextmenu)="onContextMenu($event, row)">
+                @switch (column.type) {
+                @case ('text') {
                 @if (column.tooltip) {
-                  <span [matTooltip]="row[column.def]">{{ row[column.def] }}</span>
+                <span [matTooltip]="row[column.def]">{{ row[column.def] }}</span>
                 } @else {
-                  {{ row[column.def] }}
+                {{ row[column.def] }}
                 }
-              }
-              @case ('date') {
+                }
+                @case ('date') {
                 {{ row[column.def] | date }}
-              }
-              @case ('phone') {
+                }
+                @case ('phone') {
                 <a [href]="'tel:' + row[column.def]">{{ row[column.def] }}</a>
-              }
-              @case ('email') {
+                }
+                @case ('email') {
                 <a [href]="'mailto:' + row[column.def]">{{ row[column.def] }}</a>
-              }
-              @case ('image') {
+                }
+                @case ('image') {
                 <img [ngSrc]="row[column.def]" width="40" height="40" [alt]="row[column.def]">
-              }
-              @case ('badge') {
+                }
+                @case ('badge') {
                 <span class="badge" [ngClass]="row[column.def].toLowerCase()">{{ row[column.def] }}</span>
-              }
-              @case ('check') {
+                }
+                @case ('check') {
                 <mat-icon>{{ row[column.def] ? 'check' : 'close' }}</mat-icon>
-              }
-              @case ('actionBtn') {
+                }
+                @case ('actionBtn') {
                 <div class="action-buttons">
                   @if (config().enableEdit) {
-                    <button mat-icon-button color="primary" (click)="edit(row); $event.stopPropagation()" matTooltip="Edit">
-                      <mat-icon>edit</mat-icon>
-                    </button>
+                  <button mat-icon-button color="primary" (click)="edit(row); $event.stopPropagation()"
+                    matTooltip="Edit">
+                    <mat-icon>edit</mat-icon>
+                  </button>
                   }
                   @if (config().enableDelete) {
-                    <button mat-icon-button color="warn" (click)="delete(row); $event.stopPropagation()" matTooltip="Delete">
-                      <mat-icon>delete</mat-icon>
-                    </button>
+                  <button mat-icon-button color="warn" (click)="delete(row); $event.stopPropagation()"
+                    matTooltip="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
                   }
                 </div>
-              }
+                }
+                }
+              </td>
+            </ng-container>
             }
-          </td>
-        </ng-container>
-      }
-    }
+            }
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
 
-    <!-- No results row -->
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell" [attr.colspan]="displayedColumns().length">
-        @if (filterValue()) {
-          No results matching "{{ filterValue() }}"
-        } @else {
-          No data available
-        }
-      </td>
-    </tr>
-  </table>
+            <!-- No results row -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" [attr.colspan]="displayedColumns().length">
+                @if (filterValue()) {
+                No results matching "{{ filterValue() }}"
+                } @else {
+                No data available
+                }
+              </td>
+            </tr>
+          </table>
 
-  <mat-paginator 
-                [pageSize]="config().pageSize"
-                [pageSizeOptions]="config().pageSizeOptions"
-                [length]="totalRecords()"
-                (page)="onPageChange($event)">
-  </mat-paginator>
+          <mat-paginator [pageSize]="config().pageSize" [pageSizeOptions]="config().pageSizeOptions"
+            [length]="totalRecords()" (page)="onPageChange($event)">
+          </mat-paginator>
+        </div>
+
+        <!-- Column visibility menu -->
+        <!-- <mat-menu #columnMenu="matMenu">
+            @for (column of columns(); track column.def) {
+            <button mat-menu-item (click)="toggleColumnVisibility(column)">
+              <mat-icon>{{ isColumnVisible(column) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+              <span>{{ column.label }}</span>
+            </button>
+            }
+          </mat-menu> -->
+
+        <mat-menu #columnMenu="matMenu" class="column-menu show-hide-column" [overlapTrigger]="false">
+          <div style="padding: 0px 15px; max-height: 300px; overflow: auto; min-width: 200px;">
+            <span class="table-column-label">Show/Hide Column</span>
+            <mat-divider></mat-divider>
+            @for (cd of columns(); track $index) {
+            <div class="mb-1.5">
+              <!-- add checkbox button with click event -->
+              <mat-checkbox color="primary" (click)="toggleColumnVisibility(cd)" [checked]="isColumnVisible(cd)">
+                {{ cd.label }}
+              </mat-checkbox>
+            </div>
+            }
+          </div>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
 </div>
-
-<!-- Column visibility menu -->
-<mat-menu #columnMenu="matMenu">
-  @for (column of columns(); track column.def) {
-    <button mat-menu-item (click)="toggleColumnVisibility(column)">
-      <mat-icon>{{ isColumnVisible(column) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
-      <span>{{ column.label }}</span>
-    </button>
-  }
-</mat-menu>

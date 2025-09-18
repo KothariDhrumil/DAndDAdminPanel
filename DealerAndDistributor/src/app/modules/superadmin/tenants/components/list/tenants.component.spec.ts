@@ -4,11 +4,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { GenericTableComponent } from '../../../core/shared/components/generic-table/generic-table.component';
 import { TenantsService } from './service/tenants.service';
 import { of } from 'rxjs';
+import { BreadcrumbComponent } from '../../../../../core/shared/components/breadcrumb/breadcrumb.component';
 
 describe('TenantsComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, GenericTableComponent],
+            imports: [HttpClientTestingModule, GenericTableComponent,BreadcrumbComponent],
             providers: [TenantsService],
         });
     });
