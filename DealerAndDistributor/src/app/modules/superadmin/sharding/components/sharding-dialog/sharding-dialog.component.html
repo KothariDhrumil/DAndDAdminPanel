@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit Sharding' : 'Add Sharding' }}</h2>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" required />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Database Name</mat-label>
+    <input matInput formControlName="databaseName" required />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Connection Name</mat-label>
+    <input matInput formControlName="connectionName" required />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Database Type</mat-label>
+    <input matInput formControlName="databaseType" required />
+  </mat-form-field>
+  <div mat-dialog-actions>
+    <button mat-button type="button" (click)="cancel()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">{{ isEdit ? 'Update' : 'Add' }}</button>
+  </div>
+</form>

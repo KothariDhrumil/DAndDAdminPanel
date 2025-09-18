@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -52,7 +53,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
   // Inputs
   data = input.required<any[]>();
   columns = input.required<ColumnDefinition[]>();
-  totalRecords = input.required<number>();
+  totalRecords = input<number>(0);
   config = input<TableConfig>({
     enableSelection: false,
     enableSearch: true,
@@ -88,8 +89,38 @@ export class GenericTableComponent implements OnInit, OnChanges {
   dataSource!: MatTableDataSource<any>;
   selection = new SelectionModel<any>(true, []);
 
-  constructor() {
+  constructor(private matDialog: MatDialog) {
     // Do not rely on inputs in constructor
+  }
+
+  formDialogComponent = input<any>(); // Pass form dialog component (add/edit)
+  deleteDialogComponent = input<any>(); // Pass delete dialog component
+  
+  openDialog(action: 'add' | 'edit', data?: any) {
+    if (!this.formDialogComponent()) return;
+    const dialogRef = this.matDialog.open(this.formDialogComponent(), {
+      width: '60vw',
+      maxWidth: '100vw',
+      data: { item: data, action },
+      autoFocus: false,
+    });
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        this.tableEvent.emit({ type: 'refresh' });
+      }
+    });
+  }
+
+  openDeleteDialog(data: any) {
+    if (!this.deleteDialogComponent()) return;
+    const dialogRef = this.matDialog.open(this.deleteDialogComponent(), {
+      data,
+    });
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        this.tableEvent.emit({ type: 'refresh' });
+      }
+    });
   }
 
   ngOnInit() {

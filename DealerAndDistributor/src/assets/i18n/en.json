@@ -23,6 +23,13 @@
         "List": "Tenant List",
         "Create": "Tenant Create"
       }
+    },
+    "Sharding": {
+      "Text": "Sharding",
+      "List": {
+        "List": "Sharding List",
+        "Create": "Sharding Create"
+      }
     }
   }
 }

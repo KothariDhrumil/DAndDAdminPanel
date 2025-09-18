@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ action === 'add' ? 'Add Sharding' : 'Edit Sharding' }}</h2>
+<form [formGroup]="form" (ngSubmit)="submit()" class="sharding-form">
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" required />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Database Name</mat-label>
+    <input matInput formControlName="databaseName" required />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Connection Name</mat-label>
+    <input matInput formControlName="connectionName" required />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Database Type</mat-label>
+    <mat-select formControlName="databaseType">
+      <mat-option value="SqlServer">SqlServer</mat-option>
+      <!-- <mat-option value="MySql">MySql</mat-option>
+      <mat-option value="Postgres">Postgres</mat-option> -->
+    </mat-select>
+  </mat-form-field>
+  <div class="actions">
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">{{ action === 'add' ? 'Add' : 'Update' }}</button>
+    <button mat-button type="button" (click)="cancel()">Cancel</button>
+  </div>
+</form>

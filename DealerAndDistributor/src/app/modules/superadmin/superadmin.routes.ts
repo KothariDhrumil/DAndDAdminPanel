@@ -10,4 +10,8 @@ export const SUPERADMIN_ROUTES: Routes = [
     path: 'tenants',
     loadComponent: () => import('./tenants/components/list/tenants.component').then(m => m.TenantsComponent)
   },
+  {
+    path: 'sharding',
+    loadComponent: () => import('./sharding/components/sharding-list/sharding-list.component').then(m => m.ShardingListComponent)
+  }
 ];

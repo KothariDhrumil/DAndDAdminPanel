@@ -1,0 +1,17 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="'Sharding'" [items]="['Superadmin']" [active_item]="'Sharding'">
+      </app-breadcrumb>
+    </div>
+
+    <app-generic-table
+      [data]="shardings()"
+      [columns]="columns() || []"
+      [config]="tableConfig"
+
+      
+    ></app-generic-table>
+  </div>
+</section>

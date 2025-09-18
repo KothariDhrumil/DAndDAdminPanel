@@ -88,6 +88,52 @@
           "submenu": []
         }         
       ]
+    },
+    {
+      "path": "",
+      "title": "MenuItems.Sharding.Text",
+      "iconType": "feather",
+      "icon": "monitor",
+      "class": "menu-toggle",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [
+        "Tenant",
+        "AccessAll"
+      ],
+      "submenu": [
+        {
+          "path": "/superadmin/sharding",
+          "title": "MENUITEMS.Sharding.List.List",
+          "iconType": "",
+          "icon": "",
+          "class": "ml-menu",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "TenantRead",
+            "AccessAll"
+          ],
+          "submenu": []
+        },
+        {
+          "path": "/superadmin/sharding/create",
+          "title": "MENUITEMS.Sharding.List.Create",
+          "iconType": "",
+          "icon": "",
+          "class": "ml-menu",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "TenantCreate",
+            "AccessAll"
+          ],
+          "submenu": []
+        }         
+      ]
     }
   ]
 }
