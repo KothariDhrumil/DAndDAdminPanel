@@ -1,23 +1,83 @@
-<h2 mat-dialog-title>{{ isEdit ? 'Edit Sharding' : 'Add Sharding' }}</h2>
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <mat-form-field appearance="fill">
-    <mat-label>Name</mat-label>
-    <input matInput formControlName="name" required />
-  </mat-form-field>
-  <mat-form-field appearance="fill">
-    <mat-label>Database Name</mat-label>
-    <input matInput formControlName="databaseName" required />
-  </mat-form-field>
-  <mat-form-field appearance="fill">
-    <mat-label>Connection Name</mat-label>
-    <input matInput formControlName="connectionName" required />
-  </mat-form-field>
-  <mat-form-field appearance="fill">
-    <mat-label>Database Type</mat-label>
-    <input matInput formControlName="databaseType" required />
-  </mat-form-field>
-  <div mat-dialog-actions>
-    <button mat-button type="button" (click)="cancel()">Cancel</button>
-    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">{{ isEdit ? 'Update' : 'Add' }}</button>
-  </div>
-</form>
+<div class="addContainer">
+    <div class="modalHeader">
+        <div class="avatarDetails">
+            <div class="modalTitle">
+                {{ isEdit ? 'Edit Sharding' : 'Add Sharding' }}
+            </div>
+        </div>
+        <button mat-icon-button mat-dialog-close class="modal-close-button" aria-label="Close dialog" type="button">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <div mat-dialog-content>
+        <form class="m-4" [formGroup]="form" (ngSubmit)="submit()">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                    <mat-form-field class="example-full-width mb-3" appearance="outline">
+                        <mat-label>Name</mat-label>
+                        <input matInput formControlName="name" required>
+                        @if (form.get('name')?.hasError('required')) {
+                        <mat-error>
+                            Name is required
+                        </mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                    <mat-form-field class="example-full-width mb-3" appearance="outline">
+                        <mat-label>Database Name</mat-label>
+                        <input matInput formControlName="databaseName" required>
+                        @if (form.get('databaseName')?.hasError('required')) {
+                        <mat-error>
+                            Database Name is required
+                        </mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                    <mat-form-field class="example-full-width mb-3" appearance="outline">
+                        <mat-label>Connection Name</mat-label>
+                        <mat-select formControlName="connectionName" required>
+                            @for (name of connectionNames();track name) {
+                            <mat-option [value]="name">{{ name }}</mat-option>
+                            }
+                        </mat-select>
+                        @if (form.get('connectionName')?.hasError('required')) {
+                        <mat-error>
+                            Connection Name is required
+                        </mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                    <mat-form-field class="example-full-width mb-3" appearance="outline">
+                        <mat-label>Database Type</mat-label>
+                        <mat-select formControlName="databaseType" required>
+                        @for (type of databaseTypes(); track type) {
+                            <mat-option [value]="type">{{ type }}</mat-option>
+                        }
+                        </mat-select>
+                        @if (form.get('databaseType')?.hasError('required')) {
+                        <mat-error>
+                            Database Type is required
+                        </mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+                    <div mat-dialog-actions class="example-button-row">
+                        <button mat-flat-button class="formSubmitBtn" color="primary" [disabled]="form.invalid"
+                            type="submit">
+                            {{ isEdit ? 'Update' : 'Add' }}
+                        </button>
+                        <button mat-flat-button mat-dialog-close class="formCancelBtn" tabindex="-1">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

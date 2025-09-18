@@ -11,3 +11,10 @@ export interface ShardingRequest {
   connectionName: string;
   databaseType: string;
 }
+
+
+export interface DbDetailsResponse {
+    databaseInfo: any;
+    allPossibleConnectionNames: string[];
+    possibleDatabaseTypes: string[];
+}

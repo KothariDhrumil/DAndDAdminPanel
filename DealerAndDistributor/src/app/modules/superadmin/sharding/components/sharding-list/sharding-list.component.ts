@@ -21,6 +21,8 @@ import { ColumnDefinition, TableConfig } from '../../../../../core/shared/compon
     ]
 })
 export class ShardingListComponent implements OnInit {
+    public ShardingDialogComponent = ShardingDialogComponent;
+    public DeleteConfirmDialogComponent = DeleteConfirmDialogComponent;
     _shardings = signal<Sharding[]>([]);
     isLoading = signal(true);
 
@@ -80,16 +82,12 @@ export class ShardingListComponent implements OnInit {
                 break;
             case 'edit':
                 if (event.result && event.data) {
-                    this.shardingService.update(event.data.name, event.result).subscribe(() => {
-                        this.loadShardings();
-                    });
+                    this.loadShardings();
                 }
                 break;
             case 'delete':
                 if (event.result && event.data) {
-                    this.shardingService.delete(event.data.name).subscribe(() => {
-                        this.loadShardings();
-                    });
+                    this.loadShardings();
                 }
                 break;
             case 'refresh':

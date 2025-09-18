@@ -25,7 +25,7 @@ import { FeatherIconsComponent } from '../feather-icons/feather-icons.component'
   standalone: true,
   imports: [
     MatPaginator,
-    NgOptimizedImage,    
+    NgOptimizedImage,
     MatSortHeader,
     NgStyle,
     MatMenuTrigger,
@@ -37,7 +37,7 @@ import { FeatherIconsComponent } from '../feather-icons/feather-icons.component'
     MatTableModule,
     MatSortModule,
     NgClass,
-    MatCheckboxModule,    
+    MatCheckboxModule,
     MatRippleModule,
     MatSelectModule,
     MatMenuModule,
@@ -95,7 +95,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   formDialogComponent = input<any>(); // Pass form dialog component (add/edit)
   deleteDialogComponent = input<any>(); // Pass delete dialog component
-  
+
   openDialog(action: 'add' | 'edit', data?: any) {
     if (!this.formDialogComponent()) return;
     const dialogRef = this.matDialog.open(this.formDialogComponent(), {
@@ -152,8 +152,8 @@ export class GenericTableComponent implements OnInit, OnChanges {
   applyFilter(event: Event) {
     const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.filterValue.set(value);
-    this.tableEvent.emit({ 
-      type: 'filter', 
+    this.tableEvent.emit({
+      type: 'filter',
       filter: value,
       sort: this.currentSort(),
       page: this.currentPage()
@@ -191,7 +191,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
   toggleColumnVisibility(column: ColumnDefinition) {
     const currentColumns = this.visibleColumns();
     const index = currentColumns.indexOf(column.def);
-    
+
     if (index === -1) {
       this.visibleColumns.update(cols => [...cols, column.def]);
     } else {
@@ -224,7 +224,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   onContextMenu(event: MouseEvent, row: any) {
     if (!this.config().enableContextMenu) return;
-    
+
     event.preventDefault();
     this.contextMenuPosition.set({
       x: `${event.clientX}px`,
@@ -238,15 +238,15 @@ export class GenericTableComponent implements OnInit, OnChanges {
   }
 
   add() {
-    this.tableEvent.emit({ type: 'add' });
+    this.openDialog('add');
   }
 
   edit(row: any) {
-    this.tableEvent.emit({ type: 'edit', data: row });
+    this.openDialog('edit', row);
   }
 
   delete(row: any) {
-    this.tableEvent.emit({ type: 'delete', data: row });
+     this.openDeleteDialog(row);
   }
 
   export() {

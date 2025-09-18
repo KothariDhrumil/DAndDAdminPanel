@@ -1,54 +1,11 @@
 {
   "routes": [
     {
-      "path": "",
-      "title": "MENUITEMS.DASHBOARD.TEXT",
-      "iconType": "feather",
-      "icon": "monitor",
-      "class": "menu-toggle",
-      "groupTitle": false,
-      "badge": "",
-      "badgeClass": "",
-      "role": [
-        "SUPERADMIN"
-      ],
-      "submenu": [
-        {
-          "path": "/admin/dashboard/main",
-          "title": "MENUITEMS.DASHBOARD.LIST.DASHBOARD1",
-          "iconType": "",
-          "icon": "",
-          "class": "ml-menu",
-          "groupTitle": false,
-          "badge": "",
-          "badgeClass": "",
-          "role": [
-            ""
-          ],
-          "submenu": []
-        },
-        {
-          "path": "/admin/dashboard/dashboard2",
-          "title": "MENUITEMS.DASHBOARD.LIST.DASHBOARD2",
-          "iconType": "",
-          "icon": "",
-          "class": "ml-menu",
-          "groupTitle": false,
-          "badge": "",
-          "badgeClass": "",
-          "role": [
-            ""
-          ],
-          "submenu": []
-        }
-      ]
-    },
-    {
-      "path": "",
+      "path": "/superadmin/tenants",
       "title": "MENUITEMS.Tenants.Text",
       "iconType": "feather",
       "icon": "monitor",
-      "class": "menu-toggle",
+      "class": "",
       "groupTitle": false,
       "badge": "",
       "badgeClass": "",
@@ -56,45 +13,14 @@
         "Tenant",
         "AccessAll"
       ],
-      "submenu": [
-        {
-          "path": "/superadmin/tenants",
-          "title": "MENUITEMS.Tenants.List.List",
-          "iconType": "",
-          "icon": "",
-          "class": "ml-menu",
-          "groupTitle": false,
-          "badge": "",
-          "badgeClass": "",
-          "role": [
-            "TenantRead",
-            "AccessAll"
-          ],
-          "submenu": []
-        },
-        {
-          "path": "/superadmin/tenants/create",
-          "title": "MENUITEMS.Tenants.List.Create",
-          "iconType": "",
-          "icon": "",
-          "class": "ml-menu",
-          "groupTitle": false,
-          "badge": "",
-          "badgeClass": "",
-          "role": [
-            "TenantCreate",
-            "AccessAll"
-          ],
-          "submenu": []
-        }         
-      ]
+      "submenu": []
     },
     {
-      "path": "",
-      "title": "MenuItems.Sharding.Text",
+      "path": "/superadmin/sharding",
+      "title": "MENUITEMS.Sharding.Text",
       "iconType": "feather",
       "icon": "monitor",
-      "class": "menu-toggle",
+      "class": "",
       "groupTitle": false,
       "badge": "",
       "badgeClass": "",
@@ -102,38 +28,7 @@
         "Tenant",
         "AccessAll"
       ],
-      "submenu": [
-        {
-          "path": "/superadmin/sharding",
-          "title": "MENUITEMS.Sharding.List.List",
-          "iconType": "",
-          "icon": "",
-          "class": "ml-menu",
-          "groupTitle": false,
-          "badge": "",
-          "badgeClass": "",
-          "role": [
-            "TenantRead",
-            "AccessAll"
-          ],
-          "submenu": []
-        },
-        {
-          "path": "/superadmin/sharding/create",
-          "title": "MENUITEMS.Sharding.List.Create",
-          "iconType": "",
-          "icon": "",
-          "class": "ml-menu",
-          "groupTitle": false,
-          "badge": "",
-          "badgeClass": "",
-          "role": [
-            "TenantCreate",
-            "AccessAll"
-          ],
-          "submenu": []
-        }         
-      ]
+      "submenu": []
     }
   ]
 }
