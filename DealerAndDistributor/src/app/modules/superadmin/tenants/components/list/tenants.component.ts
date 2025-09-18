@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ColumnDefinition, TableConfig } from '../../../../../core/shared/components/generic-table/generic-table.model';
+import { ApiRequest } from '../../../../../core/models/interface/ApiRequest';
 import { Tenant } from '../../models/tenant.model';
 
 import { TenantsService } from '../../service/tenants.service';
@@ -34,28 +35,34 @@ export class TenantsComponent {
       { def: 'hasOwnDb', label: 'Own DB', type: 'check' },
       { def: 'databaseInfoName', label: 'Database', type: 'text' },
       { def: 'parentId', label: 'Parent ID', type: 'text' },
+      { def: 'actions', label: 'Actions', type: 'actionBtn', visible: true },
     ];
   });
 
   
 
   tableConfig: TableConfig = {
-    enableSelection: false,
+    enableSelection: true,
     enableSearch: true,
     enableExport: false,
     enableRefresh: true,
     enableColumnHide: true,
-    enableAdd: false,
-    enableEdit: false,
-    enableDelete: false,
+    enableAdd: true,
+    enableEdit: true,
+    enableDelete: true,
     enableContextMenu: false,
     pageSize: 10,
     pageSizeOptions: [5, 10, 25, 50, 100],
-    title: 'Tenants'
+    title: 'Tenants',
+
   };
 
   constructor() {
-    this.tenantsService.getTenants().subscribe(res => {
+    this.loadTenants();
+  }
+
+  loadTenants(request?: ApiRequest) {
+    this.tenantsService.getTenants(request).subscribe(res => {
       if (res.isSuccess && Array.isArray(res.data)) {
         this._tenants.set(res.data);
         this._totalRecords.set(res.totalRecords);
@@ -63,7 +70,48 @@ export class TenantsComponent {
     });
   }
 
-  onTableEvent(event: unknown) {
-    // handle table events if needed
+  onTableEvent(event: any) {
+    let request: ApiRequest = {};
+    switch (event.type) {
+      case 'filter':
+        request.filter = event.filter;
+        break;
+      case 'sort':
+        request.sort = event.sort;
+        break;
+      case 'page':
+        request.page = event.page;
+        break;
+      case 'refresh':
+        // No extra params, just reload
+        break;
+      // You can extend for search, etc.
+    }
+    if (['filter', 'sort', 'page', 'refresh'].includes(event.type)) {
+      this.loadTenants(request);
+    }
+    // Handle other events
+    switch (event.type) {
+      case 'selection':
+        // event.data contains selected rows
+        break;
+      case 'row':
+        // event.data contains clicked row
+        break;
+      case 'add':
+        // Open add tenant dialog or route
+        break;
+      case 'edit':
+        // event.data contains row to edit
+        break;
+      case 'delete':
+        // event.data contains row to delete
+        break;
+      case 'export':
+        // Export tenants data (CSV, Excel, etc.)
+        break;
+      default:
+        break;
+    }
   }
 }

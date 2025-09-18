@@ -1,18 +1,21 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
+import { MatSort, MatSortHeader, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { CommonModule, DatePipe, NgClass, NgOptimizedImage, NgStyle } from '@angular/common';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
-import { MatCheckbox } from '@angular/material/checkbox';
+import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, SortInfo, PageInfo } from './generic-table.model';
 import { MatDivider } from '@angular/material/divider';
 import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
 
 @Component({
   selector: 'app-generic-table',
@@ -21,26 +24,27 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [
     MatPaginator,
-    MatSort,
-    MatTooltipModule,
-    MatMenuModule,
-    NgOptimizedImage,
-    MatFormField,
-    MatInput,
-    MatCheckbox,
-    MatButtonModule,
-    MatIconModule,
-    MatTableModule ,
-    MatSort,
+    NgOptimizedImage,    
     MatSortHeader,
     NgStyle,
     MatMenuTrigger,
-    MatLabel,
     DatePipe,
     NgClass,
-    
+    MatTooltipModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatSortModule,
+    NgClass,
+    MatCheckboxModule,    
+    MatRippleModule,
+    MatSelectModule,
+    MatMenuModule,
+    MatPaginatorModule,
+    DatePipe,
     MatDivider,
-    FormsModule    
+    FormsModule,
+    FeatherIconsComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

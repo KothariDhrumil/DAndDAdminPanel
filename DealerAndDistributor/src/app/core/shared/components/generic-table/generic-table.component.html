@@ -16,14 +16,12 @@
                 class="browser-default search-field" aria-label="Search box">
             </li>
             }
-
           </ul>
-
         </div>
         <div class="right">
           <div class="right-side-btn">
             @if (config().enableAdd) {
-            <button mat-raised-button class="tbl-header-btn col-green" matTooltip="Add" (click)="add()">
+            <button mat-icon-button class="tbl-header-btn col-green" matTooltip="Add" (click)="add()">
               <mat-icon>add_circle_outline</mat-icon>
             </button>
             }
@@ -104,15 +102,15 @@
                 @case ('actionBtn') {
                 <div class="action-buttons">
                   @if (config().enableEdit) {
-                  <button mat-icon-button color="primary" (click)="edit(row); $event.stopPropagation()"
-                    matTooltip="Edit">
-                    <mat-icon>edit</mat-icon>
-                  </button>
+                   <button mat-icon-button color="accent" (click)="edit(row); $event.stopPropagation()"
+                      class="tbl-action-btn" matTooltip="Edit">
+                      <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+                    </button>
                   }
                   @if (config().enableDelete) {
-                  <button mat-icon-button color="warn" (click)="delete(row); $event.stopPropagation()"
-                    matTooltip="Delete">
-                    <mat-icon>delete</mat-icon>
+                  <button mat-icon-button color="accent" (click)="delete(row); $event.stopPropagation()"
+                    matTooltip="Delete"  class="tbl-action-btn">
+                    <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
                   </button>
                   }
                 </div>
