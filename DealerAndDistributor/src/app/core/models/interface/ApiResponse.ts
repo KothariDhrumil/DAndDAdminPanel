@@ -7,6 +7,13 @@ export interface ApiResponse<T> {
 }
 
 
+export interface PaginatedApiResponse<T> extends ApiResponse<T> {
+  pageNumber: number;
+  pageSize: number;
+  totalRecords: number;
+}
+
+
 export interface ApiError {
   code: string;
   description: string;

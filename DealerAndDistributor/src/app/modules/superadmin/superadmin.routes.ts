@@ -6,5 +6,8 @@ export const SUPERADMIN_ROUTES: Routes = [
     path: 'dashboard',
     component: SuperadminDashboardComponent,
   },
-  // Add more superadmin child routes here
+  {
+    path: 'tenants',
+    loadComponent: () => import('./tenants/components/list/tenants.component').then(m => m.TenantsComponent)
+  },
 ];

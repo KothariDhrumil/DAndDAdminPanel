@@ -17,11 +17,11 @@
         "PRODUCT2": "Product 2"
       }
     },
-    "STOCK": {
-      "TEXT": "Stock",
-      "LIST": {
-        "StockRead": "Stock Read",
-        "StockWrite": "Stock Write"
+    "Tenants": {
+      "Text": "Tenants",
+      "List": {
+        "List": "Tenant List",
+        "Create": "Tenant Create"
       }
     }
   }

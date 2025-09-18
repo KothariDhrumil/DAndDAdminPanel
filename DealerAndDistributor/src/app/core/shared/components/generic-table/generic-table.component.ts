@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -40,11 +40,11 @@ import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, Sor
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GenericTableComponent {
+export class GenericTableComponent implements OnInit, OnChanges {
   // Inputs
   data = input.required<any[]>();
   columns = input.required<ColumnDefinition[]>();
-  totalRecords = input<number>(0);
+  totalRecords = input.required<number>();
   config = input<TableConfig>({
     enableSelection: false,
     enableSearch: true,
@@ -81,8 +81,25 @@ export class GenericTableComponent {
   selection = new SelectionModel<any>(true, []);
 
   constructor() {
-    this.visibleColumns.set(this.columns().map(col => col.def));
+    // Do not rely on inputs in constructor
+  }
+
+  ngOnInit() {
+    // Initialize columns and data when component is initialized
+    if (this.columns() && Array.isArray(this.columns())) {
+      this.visibleColumns.set(this.columns().map(col => col.def));
+    }
     this.initDataSource();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // React to input changes
+    if (changes['columns'] && this.columns() && Array.isArray(this.columns())) {
+      this.visibleColumns.set(this.columns().map(col => col.def));
+    }
+    if (changes['data'] && this.data()) {
+      this.initDataSource();
+    }
   }
 
   private initDataSource() {

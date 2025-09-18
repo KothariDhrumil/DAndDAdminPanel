@@ -45,7 +45,7 @@
     },
     {
       "path": "",
-      "title": "MENUITEMS.STOCK.TEXT",
+      "title": "MENUITEMS.Tenants.Text",
       "iconType": "feather",
       "icon": "monitor",
       "class": "menu-toggle",
@@ -53,13 +53,13 @@
       "badge": "",
       "badgeClass": "",
       "role": [
-        "Stock",
+        "Tenant",
         "AccessAll"
       ],
       "submenu": [
         {
-          "path": "/user/stock/StockRead",
-          "title": "MENUITEMS.STOCK.LIST.StockRead",
+          "path": "/superadmin/tenants",
+          "title": "MENUITEMS.Tenants.List.List",
           "iconType": "",
           "icon": "",
           "class": "ml-menu",
@@ -67,14 +67,14 @@
           "badge": "",
           "badgeClass": "",
           "role": [
-            "StockRead",
+            "TenantRead",
             "AccessAll"
           ],
           "submenu": []
         },
         {
-          "path": "/user/stock/StockWrite",
-          "title": "MENUITEMS.STOCK.LIST.StockWrite",
+          "path": "/superadmin/tenants/create",
+          "title": "MENUITEMS.Tenants.List.Create",
           "iconType": "",
           "icon": "",
           "class": "ml-menu",
@@ -82,11 +82,11 @@
           "badge": "",
           "badgeClass": "",
           "role": [
-            "StockWrite",
+            "TenantCreate",
             "AccessAll"
           ],
           "submenu": []
-        }
+        }         
       ]
     }
   ]

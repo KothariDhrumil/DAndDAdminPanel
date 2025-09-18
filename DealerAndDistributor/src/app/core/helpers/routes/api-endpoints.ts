@@ -18,7 +18,11 @@ export const CONFIRM_OTP_API = baseUrl + apiVersionNeutral + authRoute + '/confi
 const userRoute = '/user';
 
 export const USER_INFO_API = baseUrl + apiVersionNeutral + userRoute + '/info';
+
 export const USER_PERMISSIONS_API = baseUrl + apiVersionNeutral + userRoute + '/permissions';
+
+/*/ Superadmin Routes */
+export const TENANTS_API = baseUrl + apiVersionNeutral + '/tenants';
 
 /*/ Admin Routes */
 

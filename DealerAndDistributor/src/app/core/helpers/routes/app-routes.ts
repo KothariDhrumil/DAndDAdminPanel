@@ -6,3 +6,4 @@ export const LOCK_SCREEN_ROUTE = '/authentication/lock-screen';
 export const DASHBOARD_ROUTE = '/admin/dashboard';
 export const USER_DASHBOARD_ROUTE = '/user/dashboard';
 export const SUPERADMIN_DASHBOARD_ROUTE = '/superadmin/dashboard';
+export const SUPERADMIN_TENANTS_ROUTE = '/superadmin/tenants';

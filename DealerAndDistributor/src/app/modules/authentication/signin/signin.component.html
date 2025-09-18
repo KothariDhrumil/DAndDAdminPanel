@@ -24,7 +24,7 @@
           <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()" class="validate-form">
             <mat-form-field class="example-full-width" appearance="outline">
               <mat-label>Email or Mobile Number</mat-label>
-              <input matInput formControlName="emailOrPhone" />
+              <input matInput formControlName="emailOrPhone" autocomplete="off" (input)="passwordForm.controls.emailOrPhone.markAsDirty(); passwordForm.controls.emailOrPhone.markAsTouched()" />
               <mat-icon class="material-icons-outlined color-icon p-3" matSuffix>person</mat-icon>
               @if (passwordForm.controls.emailOrPhone.hasError('required') &&
               passwordForm.controls.emailOrPhone.touched) {
@@ -33,7 +33,7 @@
             </mat-form-field>
             <mat-form-field class="example-full-width" appearance="outline">
               <mat-label>Password</mat-label>
-              <input matInput [type]="isHide() ? 'password' : 'text'" formControlName="password">
+              <input matInput [type]="isHide() ? 'password' : 'text'" formControlName="password" autocomplete="off" (input)="passwordForm.controls.password.markAsDirty(); passwordForm.controls.password.markAsTouched()">
               <mat-icon class="material-icons-outlined pwd-toggle p-3" matSuffix (click)="hide.set(!isHide())">
                 {{isHide() ? 'visibility_off' : 'visibility'}}
               </mat-icon>
@@ -73,7 +73,7 @@
               @if (otpStep() === 'input') {
                 <mat-form-field class="example-full-width" appearance="outline">
                   <mat-label>Mobile Number</mat-label>
-                  <input matInput formControlName="phoneNumber" />
+                  <input matInput formControlName="phoneNumber" autocomplete="off" (input)="otpForm.controls.phoneNumber.markAsDirty(); otpForm.controls.phoneNumber.markAsTouched()" />
                   <mat-icon class="material-icons-outlined color-icon p-3" matSuffix>person</mat-icon>
                   @if (otpForm.controls.phoneNumber.hasError('required') && otpForm.controls.phoneNumber.touched) {
                     <mat-error>Mobile number is required</mat-error>
@@ -92,7 +92,7 @@
               @if (otpStep() === 'verify') {
                 <mat-form-field class="example-full-width" appearance="outline">
                   <mat-label>OTP</mat-label>
-                  <input matInput formControlName="otp" />
+                  <input matInput formControlName="otp" autocomplete="off" (input)="otpForm.controls.otp.markAsDirty(); otpForm.controls.otp.markAsTouched()" />
                   <mat-icon class="material-icons-outlined color-icon p-3" matSuffix>key</mat-icon>
                   @if (otpForm.controls.otp.hasError('required') && otpForm.controls.otp.touched) {
                     <mat-error>OTP is required</mat-error>

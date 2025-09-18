@@ -49,8 +49,8 @@ export class StartupService {
       
       this.setRolesAndPermissions(result.user, result.permissions);
     } catch (error) {
-      console.error('Startup service error:', error);
-      throw error instanceof Error ? error : new Error('Failed to load user permissions');
+      // console.error('Startup service error:', error);
+      //throw error instanceof Error ? error : new Error('Failed to load user permissions');
     }
   }
 
