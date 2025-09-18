@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
 using Shared;
+using SharedKernel;
 
 namespace DealersAndDistributors.Server.Controllers;
 
@@ -23,23 +24,23 @@ public class RolesController : VersionNeutralApiController
     [HttpGet]
     [HasPermission(Permissions.RoleRead)]
     [OpenApiOperation("Get a list of all roles.", "")]
-    public async Task<PaginatedResult<List<RoleWithPermissionNamesDto>>> GetListAsync()
+    public async Task<IActionResult> GetListAsync()
     {
         string? userId = User.GetUserIdFromUser();
         var data = await _authRolesAdmin.QueryRoleToPermissions(userId)
                                         .OrderBy(x => x.RoleType)
                                         .ToListAsync();
-        return new PaginatedResult<List<RoleWithPermissionNamesDto>>(data);
+        return Ok(PagedResult<List<RoleWithPermissionNamesDto>>.Success(data));
     }
 
     [HttpGet("permissions")]
-    // [HasPermission(Permissions.PermissionRead)]
+    [HasPermission(Permissions.PermissionRead)]
     [OpenApiOperation("Get permissions. This should not be used by a user that has a tenant.", "")]
-    public PaginatedResult<List<PermissionDisplay>> ListPermissions()
+    public IActionResult ListPermissions()
     {
         var tenantId = User.GetTenantIdFromUser();
 
-        return new PaginatedResult<List<PermissionDisplay>>(_authRolesAdmin.GetPermissionDisplay(false, tenantId: tenantId));
+        return Ok(PagedResult<List<PermissionDisplay>>.Success(_authRolesAdmin.GetPermissionDisplay(false, tenantId: tenantId)));
 
     }
 
@@ -53,7 +54,7 @@ public class RolesController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     [HttpPost]
@@ -68,7 +69,7 @@ public class RolesController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     [HttpDelete]
@@ -82,6 +83,6 @@ public class RolesController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 }

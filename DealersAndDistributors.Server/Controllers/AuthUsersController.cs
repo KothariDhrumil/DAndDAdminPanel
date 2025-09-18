@@ -11,9 +11,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using NSwag.Annotations;
 using Shared;
+using SharedKernel;
+using System.Security.Claims;
 
 namespace DealersAndDistributors.Server.Controllers;
 
@@ -21,7 +22,7 @@ namespace DealersAndDistributors.Server.Controllers;
 /// Controller for managing authentication users and their associated operations
 /// </summary>
 public class AuthUsersController : VersionNeutralApiController
-{ 
+{
     private readonly IAuthUsersAdminService _authUsersAdmin;
 
     /// <summary>
@@ -39,36 +40,36 @@ public class AuthUsersController : VersionNeutralApiController
     [HttpGet("listusers")]
     [HasPermission(Permissions.AccessAll)]
     [OpenApiOperation("List users filtered by authUser tenant.", "")]
-    public async Task<PaginatedResult<List<AuthUserDisplay>>> ListAuthUsersFilteredByTenantAsync(int pageNumber, int pageSize, string orderBy)
+    public async Task<IActionResult> ListAuthUsersFilteredByTenantAsync(int pageNumber, int pageSize, string orderBy)
     {
         string? authDataKey = User.GetAuthDataKeyFromUser();
         IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(authDataKey);
         var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.UserTenant.TenantFullName)).ToListAsync();
 
-        return new PaginatedResult<List<AuthUserDisplay>>(users);
-    }
- 
-    [HttpGet("view-sync-changes")]
-    [HasPermission(Permissions.UserSync)]
-    //hide from swagger as this is an internal only method
-    [OpenApiIgnore]
-    public async Task<PaginatedResult<List<SyncAuthUserWithChange>>> SyncUsers()
-    {
-        var data = await _authUsersAdmin.SyncAndShowChangesAsync();
-        return new PaginatedResult<List<SyncAuthUserWithChange>>(data);
+        return Ok(PagedResult<List<AuthUserDisplay>>.Success(users));
     }
 
-    [HttpPost("apply-sync-changes")]
-    [HasPermission(Permissions.UserSync)]
-    [OpenApiIgnore]
-    public async Task<ActionResult> SyncUsers(IEnumerable<SyncAuthUserWithChange> data)
-    {
-        var status = await _authUsersAdmin.ApplySyncChangesAsync(data);
-        if (status.HasErrors)
-            throw new Exception(status.GetAllErrors());
+    //[HttpGet("view-sync-changes")]
+    //[HasPermission(Permissions.UserSync)]
+    ////hide from swagger as this is an internal only method
+    //[OpenApiIgnore]
+    //public async Task<PaginatedResult<List<SyncAuthUserWithChange>>> SyncUsers()
+    //{
+    //    var data = await _authUsersAdmin.SyncAndShowChangesAsync();
+    //    return new PaginatedResult<List<SyncAuthUserWithChange>>(data);
+    //}
 
-        return Ok(status.Message);
-    }
+    //[HttpPost("apply-sync-changes")]
+    //[HasPermission(Permissions.UserSync)]
+    //[OpenApiIgnore]
+    //public async Task<ActionResult> SyncUsers(IEnumerable<SyncAuthUserWithChange> data)
+    //{
+    //    var status = await _authUsersAdmin.ApplySyncChangesAsync(data);
+    //    if (status.HasErrors)
+    //        throw new Exception(status.GetAllErrors());
+
+    //    return Ok(status.Message);
+    //}
 
     [HttpPut]
     [HasPermission(Permissions.UserChange)]
@@ -80,7 +81,7 @@ public class AuthUsersController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     // todo Change the input type to represent only required changes
@@ -94,7 +95,7 @@ public class AuthUsersController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     [HttpDelete("{id}")]
@@ -106,15 +107,6 @@ public class AuthUsersController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
-    }
-}
-
-public class PaginatedResult<T>
-{
-    public T Data { get; set; }
-    public PaginatedResult(T data)
-    {
-        Data = data;
+            : Ok(Result.Success(status.Message));
     }
 }

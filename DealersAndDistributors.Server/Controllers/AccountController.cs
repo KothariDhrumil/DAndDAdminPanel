@@ -68,9 +68,9 @@ public sealed class AccountController : VersionNeutralApiController
         var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);
         if (status.HasErrors)
         {
-            return Ok(SharedKernel.Response.Failure<string>(new Error("101", status.GetAllErrors(","), ErrorType.Failure)));
+            return Ok(SharedKernel.Result.Failure<string>(new Error("101", status.GetAllErrors(","), ErrorType.Failure)));
         }
-        return Ok(SharedKernel.Response.Success<string>(status.Message));
+        return Ok(SharedKernel.Result.Success<string>(status.Message));
     }
 
     [HttpGet("generate-otp")]

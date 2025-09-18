@@ -21,13 +21,13 @@ internal class AccountService : IAccountService
         this.sMSService = sMSService;
     }
 
-    public async Task<Response> ForgotPassword(string phoneNumber, string origin)
+    public async Task<Result> ForgotPassword(string phoneNumber, string origin)
     {
         var account = await _userManager.FindByNameAsync(phoneNumber);
 
         // always return ok response to prevent email enumeration
         if (account == null)
-            return Response.Failure(GenericErrors.UserNotFound);
+            return Result.Failure(GenericErrors.UserNotFound);
 
         string code = await _userManager.GenerateChangePhoneNumberTokenAsync(account, phoneNumber);
 
@@ -35,17 +35,17 @@ internal class AccountService : IAccountService
 
         await sMSService.SendOTPAsync(new SMSRequestDTO() { To = phoneNumber, Body = $"{code}", Template = "DELUX_OTP" });
 
-        return Response.Success(code);
+        return Result.Success(code);
     }
 
 
-    public async Task<Response> ResetPassword(ResetPasswordRequest model)
+    public async Task<Result> ResetPassword(ResetPasswordRequest model)
     {
         var account = await _userManager.FindByNameAsync(model.PhoneNumber);
 
         // always return ok response to prevent email enumeration
         if (account == null)
-            return Response.Failure(GenericErrors.UserNotFound);
+            return Result.Failure(GenericErrors.UserNotFound);
 
         var result = await _userManager.VerifyChangePhoneNumberTokenAsync(account, model.Code, model.PhoneNumber);
 
@@ -55,8 +55,8 @@ internal class AccountService : IAccountService
 
             await _userManager.ResetPasswordAsync(account, token, model.Password);
 
-            return Response.Success(account.Id);
+            return Result.Success(account.Id);
         }
-        return Response.Failure(GenericErrors.UserNotFound);
+        return Result.Failure(GenericErrors.UserNotFound);
     }
 }

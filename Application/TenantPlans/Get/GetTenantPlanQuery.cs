@@ -11,7 +11,7 @@ public sealed record GetTenantPlanQuery() : IQuery<List<TenantPlanResponse>>;
 internal sealed class GetTenantPlanQueryHandler(AuthPermissionsDbContext context)
     : IQueryHandler<GetTenantPlanQuery, List<TenantPlanResponse>>
 {
-    public async Task<Response<List<TenantPlanResponse>>> Handle(GetTenantPlanQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<TenantPlanResponse>>> Handle(GetTenantPlanQuery query, CancellationToken cancellationToken)
     {
         List<TenantPlanResponse> TenantPlan = await context
             .TenantPlans
@@ -33,6 +33,6 @@ internal sealed class GetTenantPlanQueryHandler(AuthPermissionsDbContext context
             })
             .ToListAsync(cancellationToken);
 
-        return Response.Success(TenantPlan);
+        return Result.Success(TenantPlan);
     }
 }

@@ -25,7 +25,7 @@ internal sealed class UpdatePlanCommandHandler(
     : ICommandHandler<UpdatePlanCommand, int>
 {
      
-    public async Task<Response<int>> Handle(UpdatePlanCommand command, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(UpdatePlanCommand command, CancellationToken cancellationToken)
     {
         Plan? Plan = await context.Plans
             .SingleOrDefaultAsync(t => t.Id == command.PlanId, cancellationToken) ?? throw new ApiException(GenericErrors.NotFound.Description);
@@ -51,6 +51,6 @@ internal sealed class UpdatePlanCommandHandler(
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return Response.Success(Plan.Id);
+        return Result.Success(Plan.Id);
     }
 }

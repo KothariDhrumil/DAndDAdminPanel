@@ -6,12 +6,12 @@ namespace Application.Identity.Tokens;
 
 public interface ITokenService : ITransientService
 {
-    Task<Response> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken);
+    Task<Result> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken);
 
-    Task<Response<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request);
+    Task<Result<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request);
 
-    Task<Response<TokenResponse>> ConfirmPhoneAsync(string phoneNumber, string code, string ipAddress);
+    Task<Result<TokenResponse>> ConfirmPhoneAsync(string phoneNumber, string code, string ipAddress);
 
-    Task<Response<string>> GenerateOTPAsync(GenerateOTPRequest request);
+    Task<Result<string>> GenerateOTPAsync(GenerateOTPRequest request);
 }
 

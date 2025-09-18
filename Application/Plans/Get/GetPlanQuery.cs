@@ -11,7 +11,7 @@ public sealed record GetPlanQuery() : IQuery<List<PlanResponse>>;
 internal sealed class GetPlanQueryHandler(AuthPermissionsDbContext context)
     : IQueryHandler<GetPlanQuery, List<PlanResponse>>
 {
-    public async Task<Response<List<PlanResponse>>> Handle(GetPlanQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<PlanResponse>>> Handle(GetPlanQuery query, CancellationToken cancellationToken)
     {
         List<PlanResponse> plans = await context.Plans
             .Select(PlanItem => new PlanResponse()
@@ -25,6 +25,6 @@ internal sealed class GetPlanQueryHandler(AuthPermissionsDbContext context)
             })
             .ToListAsync(cancellationToken);
 
-        return Response.Success(plans);
+        return Result.Success(plans);
     }
 }

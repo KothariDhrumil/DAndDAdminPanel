@@ -23,7 +23,7 @@ public sealed class UpdateTenantPlanCommand : ICommand
     AuthPermissionsDbContext context)
     : ICommandHandler<UpdateTenantPlanCommand>
     {
-        public async Task<Response> Handle(UpdateTenantPlanCommand command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(UpdateTenantPlanCommand command, CancellationToken cancellationToken)
         {
             TenantPlan? TenantPlan = await context.TenantPlans
                 .SingleOrDefaultAsync(t => t.Id == command.TenantPlanId, cancellationToken)
@@ -42,7 +42,7 @@ public sealed class UpdateTenantPlanCommand : ICommand
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Response.Success(TenantPlan.Id);
+            return Result.Success(TenantPlan.Id);
         }
     }
 }

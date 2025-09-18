@@ -11,7 +11,7 @@ public sealed record GetPlanByIdQuery(int PlanId) : IQuery<PlanResponse>;
 internal sealed class GetPlanByIdQueryHandler(AuthPermissionsDbContext context)
     : IQueryHandler<GetPlanByIdQuery, PlanResponse>
 {
-    public async Task<Response<PlanResponse>> Handle(GetPlanByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PlanResponse>> Handle(GetPlanByIdQuery query, CancellationToken cancellationToken)
     {
         PlanResponse? Plan = await context.Plans
             .Where(PlanItem => PlanItem.Id == query.PlanId)
@@ -26,6 +26,6 @@ internal sealed class GetPlanByIdQueryHandler(AuthPermissionsDbContext context)
             })
             .SingleOrDefaultAsync(cancellationToken);
 
-        return Plan is null ? throw new ApiException("Plan not found") : Response.Success(Plan);
+        return Plan is null ? throw new ApiException("Plan not found") : Result.Success(Plan);
     }
 }

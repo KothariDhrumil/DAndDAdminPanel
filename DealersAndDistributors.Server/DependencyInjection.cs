@@ -20,7 +20,7 @@ public static class DependencyInjection
                   .SelectMany(v => v.Errors)
                   .Select(v => v.ErrorMessage));
 
-                return new BadRequestObjectResult(Response.Failure(Error.Problem("400",errors)));
+                return new BadRequestObjectResult(Result.Failure(Error.Problem("400",errors)));
             };
         });
 

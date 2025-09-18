@@ -25,7 +25,7 @@ namespace DealersAndDistributors.Server.Controllers
         public async Task<IResult> Get(IQueryHandler<GetPlanQuery, List<PlanResponse>> handler, CancellationToken cancellationToken)
         {
             var query = new GetPlanQuery();
-            Response<List<PlanResponse>> resonse = await handler.Handle(query, cancellationToken);
+            Result<List<PlanResponse>> resonse = await handler.Handle(query, cancellationToken);
             return Results.Ok(resonse);
         }
 

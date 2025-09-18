@@ -20,7 +20,7 @@ public sealed class CreatePlanCommand : ICommand<int>
         AuthPermissionsDbContext context)
         : ICommandHandler<CreatePlanCommand, int>
     {
-        public async Task<Response<int>> Handle(CreatePlanCommand command, CancellationToken cancellationToken)
+        public async Task<Result<int>> Handle(CreatePlanCommand command, CancellationToken cancellationToken)
         {
             // TODO : Check for unique / Duplicate name
 
@@ -38,7 +38,7 @@ public sealed class CreatePlanCommand : ICommand<int>
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Response.Success(plan.Id);
+            return Result.Success(plan.Id);
         }
     }
 }

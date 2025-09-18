@@ -13,7 +13,7 @@ public sealed record DeleteTenantPlanCommand(int TenantPlanId) : ICommand;
 internal sealed class DeleteTenantPlanCommandHandler(AuthPermissionsDbContext context)
     : ICommandHandler<DeleteTenantPlanCommand>
 {
-    public async Task<Response> Handle(DeleteTenantPlanCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteTenantPlanCommand command, CancellationToken cancellationToken)
     {
         TenantPlan? TenantPlanItem = await context.TenantPlans
             .SingleOrDefaultAsync(t => t.Id == command.TenantPlanId, cancellationToken);
@@ -29,7 +29,7 @@ internal sealed class DeleteTenantPlanCommandHandler(AuthPermissionsDbContext co
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return Response.Success();
+        return Result.Success();
     }
 }
 

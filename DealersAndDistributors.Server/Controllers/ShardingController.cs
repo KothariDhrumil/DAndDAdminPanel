@@ -3,6 +3,7 @@ using AuthPermissions.AspNetCore.ShardingServices;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
+using SharedKernel;
 
 namespace DealersAndDistributors.Server.Controllers;
 
@@ -18,7 +19,7 @@ public class ShardingController : VersionNeutralApiController
     public ActionResult<List<ShardingEntry>> GetShardingEntries()
     {
         var entries = _shardingService.GetAllShardingEntries();
-        return Ok(entries);
+        return Ok(Result.Success(entries));
     }
 
 
@@ -31,7 +32,7 @@ public class ShardingController : VersionNeutralApiController
             AllPossibleConnectionNames = _shardingService.GetConnectionStringNames(),
             PossibleDatabaseTypes = _shardingService.PossibleDatabaseProviders
         };
-        return Ok(dto);
+        return Ok(Result.Success(dto));
     }
 
     //Create a new sharding entry
@@ -43,7 +44,7 @@ public class ShardingController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     //Update an existing sharding entry
@@ -54,7 +55,7 @@ public class ShardingController : VersionNeutralApiController
         var status = _shardingService.UpdateShardingEntry(updatedEntry);
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     //Delete a sharding entry
@@ -65,7 +66,7 @@ public class ShardingController : VersionNeutralApiController
         var status = _shardingService.RemoveShardingEntry(connectionName);
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     [HasPermission(Permissions.CheckDatabaseInfo)]
@@ -76,7 +77,7 @@ public class ShardingController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 }
 

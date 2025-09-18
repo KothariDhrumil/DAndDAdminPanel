@@ -12,13 +12,13 @@ internal static class LoggingDecorator
         : ICommandHandler<TCommand, TResponse>
         where TCommand : ICommand<TResponse>
     {
-        public async Task<Response<TResponse>> Handle(TCommand command, CancellationToken cancellationToken)
+        public async Task<Result<TResponse>> Handle(TCommand command, CancellationToken cancellationToken)
         {
             string commandName = typeof(TCommand).Name;
 
             logger.LogInformation("Processing command {Command}", commandName);
 
-            Response<TResponse> result = await innerHandler.Handle(command, cancellationToken);
+            Result<TResponse> result = await innerHandler.Handle(command, cancellationToken);
 
             if (result.IsSuccess)
             {
@@ -46,7 +46,7 @@ internal static class LoggingDecorator
         : ICommandHandler<TCommand>
         where TCommand : ICommand
     {
-        public async Task<Response> Handle(TCommand command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(TCommand command, CancellationToken cancellationToken)
         {
             string commandName = typeof(TCommand).Name;
 
@@ -80,13 +80,13 @@ internal static class LoggingDecorator
         : IQueryHandler<TQuery, TResponse>
         where TQuery : IQuery<TResponse>
     {
-        public async Task<Response<TResponse>> Handle(TQuery query, CancellationToken cancellationToken)
+        public async Task<Result<TResponse>> Handle(TQuery query, CancellationToken cancellationToken)
         {
             string queryName = typeof(TQuery).Name;
 
             logger.LogInformation("Processing query {Query}", queryName);
 
-            Response<TResponse> result = await innerHandler.Handle(query, cancellationToken);
+            Result<TResponse> result = await innerHandler.Handle(query, cancellationToken);
 
             if (result.IsSuccess)
             {

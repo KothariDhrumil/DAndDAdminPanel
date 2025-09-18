@@ -24,7 +24,7 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
         AuthPermissionsDbContext context)
         : ICommandHandler<CreateTenantPlanCommand, int>
     {
-        public async Task<Response<int>> Handle(CreateTenantPlanCommand command, CancellationToken cancellationToken)
+        public async Task<Result<int>> Handle(CreateTenantPlanCommand command, CancellationToken cancellationToken)
         {
 
             // TODO :first get the plan details from plan table 
@@ -58,7 +58,7 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Response.Success(TenantPlan.Id);
+            return Result.Success(TenantPlan.Id);
         }
     }
 }

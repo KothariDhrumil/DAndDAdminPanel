@@ -23,7 +23,7 @@ namespace DealersAndDistributors.Server.Controllers
                 }
                 var status = await service.FindAuthUserByUserIdAsync(userId);
                 var user = await userService.GetUserDetailsAsync(userId);
-                return Ok(SharedKernel.Response.Success<UserInfo>(new UserInfo()
+                return Ok(SharedKernel.Result.Success<UserInfo>(new UserInfo()
                 {
                     AuthUser = !status.HasErrors ? AuthUserDisplay.DisplayUserInfo(status.Result) : null,
                     User = user
@@ -35,7 +35,7 @@ namespace DealersAndDistributors.Server.Controllers
         [HttpGet("permissions")]
         public IActionResult UserPermissions([FromServices] IUsersPermissionsService service)
         {
-            return Ok(SharedKernel.Response.Success(service.PermissionsFromUser(HttpContext.User)));
+            return Ok(SharedKernel.Result.Success(service.PermissionsFromUser(HttpContext.User)));
         }
     }
 }

@@ -54,7 +54,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
                 }
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 context.Response.ContentType = "application/json";
-                var result = JsonConvert.SerializeObject(Response.Failure<Error>(GenericErrors.UnAuthorized));
+                var result = JsonConvert.SerializeObject(Result.Failure<Error>(GenericErrors.UnAuthorized));
                 return context.Response.WriteAsync(result);
 
             },
@@ -65,7 +65,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.ContentType = "application/json";
-                    var result = JsonConvert.SerializeObject(Response.Failure(GenericErrors.UnAuthorized));
+                    var result = JsonConvert.SerializeObject(Result.Failure(GenericErrors.UnAuthorized));
                     return context.Response.WriteAsync(result);
                 }
                 return Task.CompletedTask;
@@ -74,7 +74,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 context.Response.ContentType = "application/json";
-                var result = JsonConvert.SerializeObject(Response.Failure(GenericErrors.Fobidden));
+                var result = JsonConvert.SerializeObject(Result.Failure(GenericErrors.Fobidden));
                 return context.Response.WriteAsync(result);
             },
         };

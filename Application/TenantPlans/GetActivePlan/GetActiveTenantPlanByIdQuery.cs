@@ -11,7 +11,7 @@ public sealed record GetActiveTenantPlanByIdQuery(int TenantId) : IQuery<TenantP
 internal sealed class GetTenantPlanByIdQueryHandler(AuthPermissionsDbContext context)
     : IQueryHandler<GetActiveTenantPlanByIdQuery, TenantPlanResponse>
 {
-    public async Task<Response<TenantPlanResponse>> Handle(GetActiveTenantPlanByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<TenantPlanResponse>> Handle(GetActiveTenantPlanByIdQuery query, CancellationToken cancellationToken)
     {
         TenantPlanResponse? TenantPlan = await context
             .TenantPlans
@@ -31,6 +31,6 @@ internal sealed class GetTenantPlanByIdQueryHandler(AuthPermissionsDbContext con
             })
             .SingleOrDefaultAsync(cancellationToken);
 
-        return TenantPlan is not null ? Response.Success(TenantPlan) : throw new ApiException("TenantPlan not found");
+        return TenantPlan is not null ? Result.Success(TenantPlan) : throw new ApiException("TenantPlan not found");
     }
 }

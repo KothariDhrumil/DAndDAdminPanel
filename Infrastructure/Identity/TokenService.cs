@@ -22,7 +22,7 @@ internal class TokenService(
     private readonly ISMSService sMSService = sMSService;
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
-    public async Task<Response> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken)
+    public async Task<Result> AuthenticateAsync(TokenRequest request, CancellationToken cancellationToken)
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(x =>
         (!string.IsNullOrEmpty(request.PhoneNumber) && x.PhoneNumber == request.PhoneNumber.Trim())
@@ -44,21 +44,21 @@ internal class TokenService(
             //    }
             //}
             TokenAndRefreshToken result = await _tokenBuilder.GenerateTokenAndRefreshTokenAsync(user.Id);
-            return Response.Success(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
+            return Result.Success(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
         }
         throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
     }
 
-    public async Task<Response<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request)
+    public async Task<Result<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request)
     {
         (var updatedTokens, int _) = await _tokenBuilder.RefreshTokenUsingRefreshTokenAsync(request.Adapt<TokenAndRefreshToken>());
         if (updatedTokens == null)
             throw new HttpRequestException("Refresh Authentication Token Failed.", null, System.Net.HttpStatusCode.Unauthorized);
 
-        return Response.Success(new TokenResponse(updatedTokens.Token, updatedTokens.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays))); ;
+        return Result.Success(new TokenResponse(updatedTokens.Token, updatedTokens.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays))); ;
     }
 
-    public async Task<Response<TokenResponse>> ConfirmPhoneAsync(string phoneNumber, string code, string ipAddress)
+    public async Task<Result<TokenResponse>> ConfirmPhoneAsync(string phoneNumber, string code, string ipAddress)
     {
         var user = await _userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
         if (user is not null)
@@ -72,14 +72,14 @@ internal class TokenService(
                     await _userManager.UpdateAsync(user);
                 }
                 TokenAndRefreshToken result = await _tokenBuilder.GenerateTokenAndRefreshTokenAsync(user.Id);
-                return Response.Success(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
+                return Result.Success(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
             }
             throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
         }
         throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
     }
 
-    public async Task<Response<string>> GenerateOTPAsync(GenerateOTPRequest request)
+    public async Task<Result<string>> GenerateOTPAsync(GenerateOTPRequest request)
     {
         var account = await _userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) ?? throw new Exception($"{request.PhoneNumber} not registered");
 
@@ -87,6 +87,6 @@ internal class TokenService(
 
         //await sMSService.SendOTPAsync(new SMSRequestDTO() { To = account.PhoneNumber, Body = $"{code}", Template = "DELUX_OTP" });
 
-        return Response.Success(code);
+        return Result.Success(code);
     }
 }

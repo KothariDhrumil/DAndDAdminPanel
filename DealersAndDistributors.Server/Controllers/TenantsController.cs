@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
 using Shared;
+using SharedKernel;
 
 namespace DealersAndDistributors.Server.Controllers;
 public class TenantsController : VersionNeutralApiController
@@ -24,23 +25,23 @@ public class TenantsController : VersionNeutralApiController
     [HttpGet]
     [HasPermission(Permissions.TenantList)]
     [OpenApiOperation("Get a list of all tenants.", "")]
-    public async Task<PaginatedResult<List<HierarchicalTenantDto>>> GetListAsync()
+    public async Task<ActionResult<List<HierarchicalTenantDto>>> GetListAsync()
     {
         var data = await HierarchicalTenantDto.TurnIntoDisplayFormat(_authTenantAdmin.QueryParentTenants())
                 .OrderBy(x => x.TenantFullName)
                 .ToListAsync();
-        return new PaginatedResult<List<HierarchicalTenantDto>>(data);
+        return Ok(Result<List<HierarchicalTenantDto>>.Success(data));
     }
 
     [HttpGet("{id:int}")]
     [HasPermission(Permissions.TenantList)]
     [OpenApiOperation("Get tenant details.", "")]
-    public async Task<HierarchicalTenantDto?> GetAsync(int id)
+    public async Task<ActionResult<HierarchicalTenantDto?>> GetAsync(int id)
     {
         var status = await _authTenantAdmin.GetTenantViaIdAsync(id);
         return status.HasErrors
            ? throw new Exception(status.GetAllErrors())
-           : HierarchicalTenantDto.TurnIntoDisplayFormat(new List<Tenant> { status.Result }.AsQueryable()).SingleOrDefault();
+           : Ok(Result.Success(HierarchicalTenantDto.TurnIntoDisplayFormat(new List<Tenant> { status.Result }.AsQueryable()).SingleOrDefault()));
     }
 
     [HttpPost("create")]
@@ -57,7 +58,7 @@ public class TenantsController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     [HttpPut]
@@ -71,7 +72,7 @@ public class TenantsController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
     [HttpPut("update-role")]
     [HasPermission(Permissions.TenantUpdate)]
@@ -84,7 +85,7 @@ public class TenantsController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     [HttpPost("move-hierarchy-level")]
@@ -100,7 +101,7 @@ public class TenantsController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
 
@@ -115,7 +116,7 @@ public class TenantsController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            :Ok(status.Message);
+            :Ok(Result.Success(status.Message));
     }
 
 
@@ -132,6 +133,6 @@ public class TenantsController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 }
