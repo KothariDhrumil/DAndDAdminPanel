@@ -46,11 +46,29 @@ public class PagedResult<T> : Result<T>
 {
     public int PageNumber { get; set; }
     public int PageSize { get; set; }
+    public int TotalRecords { get; set; }
 
-    public PagedResult(T data, int pageNumber, int pageSize, Error error) : base(data, true, error)
+    public PagedResult(T data, Error error, int pageNumber = 1, int pageSize = 10, int? totalRecords = null) : base(data, true, error)
     {
         PageNumber = pageNumber;
         PageSize = pageSize;
         Data = data;
+
+        // If totalRecords is not provided, try to get count from data
+        if (totalRecords.HasValue)
+        {
+            TotalRecords = totalRecords.Value;
+        }
+        else if (data is IEnumerable<object> enumerable)
+        {
+            TotalRecords = enumerable.Count();
+        }
+        else
+        {
+            TotalRecords = data != null ? 1 : 0;
+        }
     }
+
+    public static PagedResult<TValue> Success<TValue>(TValue value, int pageNumber = 1, int pageSize = 10, int? totalRecords = null) =>
+        new(value, Error.None, pageNumber, pageSize, totalRecords);
 }

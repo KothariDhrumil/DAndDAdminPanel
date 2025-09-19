@@ -15,7 +15,7 @@ public class ShardingController : VersionNeutralApiController
         _shardingService = shardingService;
     }
 
-    [HttpGet("get-all-sharding-entries")]
+    [HttpGet]
     public ActionResult<List<ShardingEntry>> GetShardingEntries()
     {
         var entries = _shardingService.GetAllShardingEntries();
@@ -24,7 +24,7 @@ public class ShardingController : VersionNeutralApiController
 
 
 
-    [HttpGet("get-sharding-db-details")]
+    [HttpGet("get-db-details")]
     public ActionResult<ShardingEntryEdit> GetShardingDBDetails()
     {
         var dto = new ShardingEntryEdit

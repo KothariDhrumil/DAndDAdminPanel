@@ -30,7 +30,7 @@ public class TenantsController : VersionNeutralApiController
         var data = await HierarchicalTenantDto.TurnIntoDisplayFormat(_authTenantAdmin.QueryParentTenants())
                 .OrderBy(x => x.TenantFullName)
                 .ToListAsync();
-        return Ok(Result<List<HierarchicalTenantDto>>.Success(data));
+        return Ok(PagedResult<List<HierarchicalTenantDto>>.Success(data));
     }
 
     [HttpGet("{id:int}")]
