@@ -29,5 +29,7 @@ export const API_GET_DB_DETAILS = API_SHARDING + '/get-db-details';
 /*/ Admin Routes */
 
 export const AUTH_ROLES_API = '/api/admin/auth-roles';
+// Shared roles endpoint for roles-and-permissions component
+export const API_ROLES = baseUrl + apiVersionNeutral +'/roles';
 export const LIST_ALL_AUTH_USERS_API = '/api/admin/auth-users';
 export const SYNC_AUTH_USER_WITH_CHANGE_LIST_API = '/api/admin/sync-auth-user-with-change-list';

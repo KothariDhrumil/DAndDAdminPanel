@@ -7,6 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "bs":"ng build && ng serve",
+    "dev": "ng serve --watch=false --live-reload=false",
+    "dev:polling": "ng serve --poll=2000",
     "test": "ng test",
     "serve:ssr:DealerAndDistributor": "node dist/DealerAndDistributor/server/server.mjs"
   },

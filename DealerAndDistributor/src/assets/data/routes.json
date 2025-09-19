@@ -29,6 +29,21 @@
         "AccessAll"
       ],
       "submenu": []
+    },
+    {
+      "path": "/superadmin/roles-and-permissions",
+      "title": "MENUITEMS.RolesAndPermissions.Text",
+      "iconType": "feather",
+      "icon": "monitor",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [
+        "RoleManagement",
+        "AccessAll"
+      ],
+      "submenu": []
     }
   ]
 }

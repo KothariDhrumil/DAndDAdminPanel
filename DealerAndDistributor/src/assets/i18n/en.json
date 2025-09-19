@@ -30,6 +30,13 @@
         "List": "Sharding List",
         "Create": "Sharding Create"
       }
+    },
+    "RolesAndPermissions": {
+      "Text": "Roles & Permissions",
+      "List": {
+        "List": "Roles & Permissions List",
+        "Create": "Roles & Permissions Create"
+      }
     }
   }
 }

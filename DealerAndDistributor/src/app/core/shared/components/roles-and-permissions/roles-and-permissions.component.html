@@ -1,0 +1,24 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="'Roles'" [items]="['Management']" [active_item]="'Roles'">
+      </app-breadcrumb>
+    </div>
+    
+    <ng-container *ngIf="!loading(); else loadingTpl">
+      <app-generic-table
+        [data]="roles()"
+        [columns]="columns()"
+        [config]="tableConfig()"
+        [totalRecords]="totalRecords()"
+        (tableEvent)="onTableEvent($event)">
+      </app-generic-table>
+    </ng-container>
+    <ng-template #loadingTpl>
+      <div class="d-flex justify-content-center my-4">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    </ng-template>
+  </div>
+</section>

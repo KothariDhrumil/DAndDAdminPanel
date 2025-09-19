@@ -13,5 +13,11 @@ export const SUPERADMIN_ROUTES: Routes = [
   {
     path: 'sharding',
     loadComponent: () => import('./sharding/components/sharding-list/sharding-list.component').then(m => m.ShardingListComponent)
+  },
+  {
+    path: 'roles-and-permissions',
+    loadComponent: () => import('../../core/shared/components/roles-and-permissions/roles-and-permissions.component')
+      .then(m => m.RolesAndPermissionsComponent)
   }
+
 ];

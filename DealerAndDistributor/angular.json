@@ -30,7 +30,7 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/azure-blue.css",
-               "./node_modules/@swimlane/ngx-datatable/index.css",
+              "./node_modules/@swimlane/ngx-datatable/index.css",
               "./node_modules/@swimlane/ngx-datatable/themes/material.css",
               "./node_modules/@swimlane/ngx-datatable/assets/icons.css",
               "src/assets/scss/style.scss",
@@ -41,21 +41,13 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            }            
           },
           "configurations": {
             "production": {
               "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "3mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
+                { "type": "initial", "maximumWarning": "2mb", "maximumError": "3mb" },
+                { "type": "anyComponentStyle", "maximumWarning": "4kB", "maximumError": "8kB" }
               ],
               "outputHashing": "all"
             },
@@ -63,9 +55,15 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "browser-dev": {
+              "outputMode": "static",
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "development"
         },
         "serve": {
           "builder": "@angular/build:dev-server",
@@ -75,9 +73,12 @@
             },
             "development": {
               "buildTarget": "DealerAndDistributor:build:development"
+            },
+            "browser-dev": {
+              "buildTarget": "DealerAndDistributor:build:browser-dev"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "browser-dev"
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
@@ -88,10 +89,7 @@
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              },
+              { "glob": "**/*", "input": "public" },
               "src/favicon.ico",
               "src/assets"
             ],

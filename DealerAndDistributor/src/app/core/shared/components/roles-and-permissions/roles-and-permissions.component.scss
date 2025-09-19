@@ -1,0 +1,45 @@
+.roles-and-permissions {
+  width: 100%;
+  
+  .loader {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+  }
+  
+  // Handle table cell content overflow
+  ::ng-deep {
+    .mat-mdc-cell {
+      padding: 8px 16px;
+    }
+    
+    .mat-mdc-tooltip {
+      white-space: pre-line;
+      max-width: 400px;
+      font-size: 12px;
+    }
+    
+    // Target the actual column classes from the HTML
+    .cdk-column-permissionNames {
+      max-width: 300px;
+      
+      span {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    
+    .cdk-column-description {
+      max-width: 250px;
+      
+      span {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
