@@ -1,11 +1,10 @@
 export interface Role {
-  roleId: string;
-  roleName: string;
-  description: string;
-  roleType: RoleTypes | string;
-  permissionNames: string[];
+	roleId: string;
+	roleName: string;
+	description: string;
+	roleType: RoleTypes | string;
+	permissionNames: string[];
 }
-
 /**
  * Role types enum defining the different types of roles in the system
  */

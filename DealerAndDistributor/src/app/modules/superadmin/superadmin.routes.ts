@@ -16,8 +16,14 @@ export const SUPERADMIN_ROUTES: Routes = [
   },
   {
     path: 'roles-and-permissions',
-    loadComponent: () => import('../../core/shared/components/roles-and-permissions/roles-and-permissions.component')
+    loadComponent: () => import('../roles-and-permission/component/list/roles-and-permissions.component')
       .then(m => m.RolesAndPermissionsComponent)
+  }
+  ,
+  {
+    path: 'roles-and-permissions/add',
+    loadComponent: () => import('../roles-and-permission/component/add-role/add-role.component')
+      .then(m => m.AddRoleComponent)
   }
 
 ];

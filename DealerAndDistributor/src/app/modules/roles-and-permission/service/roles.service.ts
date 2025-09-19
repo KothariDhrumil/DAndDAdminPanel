@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { PaginatedApiResponse } from '../../../core/models/interface/ApiResponse';
+import { API_ROLES } from '../../../core/helpers/routes/api-endpoints';
+import { ApiRequest } from '../../../core/models/interface/ApiRequest';
+import { toApiRequestParams } from '../../../core/helpers/http/to-api-request-params';
 import { Role } from '../models/role.model';
-import { PaginatedApiResponse } from '../../../../../core/models/interface/ApiResponse';
-import { API_ROLES } from '../../../../../core/helpers/routes/api-endpoints';
-import { ApiRequest } from '../../../../../core/models/interface/ApiRequest';
-import { toApiRequestParams } from '../../../../../core/helpers/http/to-api-request-params';
 
 @Injectable({ providedIn: 'root' })
 export class RolesService {

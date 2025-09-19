@@ -6,8 +6,9 @@ import { ColumnDefinition, TableConfig, TableEventArgs } from '../../../../core/
 import { BreadcrumbComponent } from '../../../../core/shared/components/breadcrumb/breadcrumb.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Role, RoleTypes } from './models/role.model';
-import { RolesService } from './service/roles.service';
+
+import { RolesService } from '../../service/roles.service';
+import { Role, RoleTypes } from '../../models/role.model';
 
 @Component({
     selector: 'app-roles-and-permissions',
@@ -69,7 +70,7 @@ export class RolesAndPermissionsComponent implements OnInit {
         enableSearch: true,
         enableRefresh: true,
         pageSizeOptions: [5, 10, 25, 50],
-        title: 'Roles and Permissions 3',
+        title: 'Roles and Permissions',
         enableAdd: true,
         enableEdit: true,
         enableDelete: true,

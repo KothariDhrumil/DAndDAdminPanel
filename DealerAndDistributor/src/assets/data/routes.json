@@ -43,7 +43,23 @@
         "RoleManagement",
         "AccessAll"
       ],
-      "submenu": []
+      "submenu": [
+        {
+          "path": "/superadmin/roles-and-permissions/add",
+          "title": "Add Role",
+          "iconType": "feather",
+          "icon": "plus",
+          "class": "",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "RoleManagement",
+            "AccessAll"
+          ],
+          "submenu": []
+        }
+      ]
     }
   ]
 }

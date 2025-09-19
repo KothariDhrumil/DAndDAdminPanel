@@ -1,0 +1,110 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="'Roles'" [items]="['Management']" [active_item]="'Roles'">
+      </app-breadcrumb>
+    </div>
+    <div class="row clearfix">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+        <div class="card">
+          <div class="header">
+            <h2>Roles</h2>
+          </div>
+          <div class="body">
+
+            <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                  <mat-form-field class="example-full-width mb-3" appearance="outline">
+                    <mat-label>Role Name</mat-label>
+                    <input matInput formControlName="roleName" required>
+                    @if (form.get('roleName')?.hasError('required')) {
+                    <mat-error>
+                      Role Name is required
+                    </mat-error>
+                    }
+                    @if (form.controls['roleName'].errors?.['maxlength']) {
+                    <mat-error>Max 50 characters</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                  <mat-form-field class="example-full-width mb-3" appearance="outline">
+                    <mat-label>Role Type</mat-label>
+                    <mat-select formControlName="roleType" required>
+                      @for (type of roleTypes; track type) {
+                      <mat-option [value]="type">{{ type }}</mat-option>
+                      }
+                    </mat-select>
+                    @if (form.get('roleType')?.hasError('required')) {
+                    <mat-error>
+                      Role Type is required
+                    </mat-error>
+                    }
+                    <mat-hint>Optional</mat-hint>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <mat-form-field appearance="outline" class="full-width">
+
+                  <mat-label>Description</mat-label>
+                  <textarea matInput formControlName="description" maxlength="200"></textarea>
+
+                  @if (form.controls['description'].errors?.['maxlength']) {
+                  <mat-error>Max 200 characters</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="row">
+
+                <h3>Select Permissions</h3>
+                @if (loading()) {
+                <div class="loading-spinner">
+                  <span class="spinner"></span>
+                </div>
+                }
+                @if (!loading()) {
+                <div class="row clearfix">
+                  @for (group of groupedPermissionsArray(); track group[0]) {
+                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="card perm-group-card">
+                      <div class="header perm-group-header d-flex align-items-center justify-content-between">
+                        <h2 class="perm-group-title">{{ group[0] }}</h2>
+                        <mat-checkbox [checked]="isGroupChecked(group[1])"
+                          (change)="onGroupCheckboxChange(group[1], $event.checked)"
+                          class="group-checkbox"></mat-checkbox>
+                      </div>
+                      <div class="body">
+                        @for (perm of group[1]; track perm.permissionName) {
+                        <div class="d-flex align-items-center">
+                          <mat-checkbox [checked]="form.controls['permissions'].value.includes(perm.permissionName)"
+                            (change)="onPermissionToggle(perm.permissionName, $event.checked)"
+                            class="perm-checkbox"></mat-checkbox>
+                          <div class="ms-2">
+                            <span>{{ perm.shortName }}</span>
+                            <span class="text-muted"> - {{ perm.description }}</span>
+                          </div>
+                        </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  }
+                </div>
+                }
+
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">Add
+                  Role</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

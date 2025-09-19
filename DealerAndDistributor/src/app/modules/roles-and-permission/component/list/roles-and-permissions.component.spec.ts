@@ -1,8 +1,8 @@
 import { RolesAndPermissionsComponent } from './roles-and-permissions.component';
-import { RolesService } from './service/roles.service';
+import { RolesService } from '../../service/roles.service';
 import { of } from 'rxjs';
 import { PaginatedApiResponse } from '../../../../core/models/interface/ApiResponse';
-import { Role } from './models/role.model';
+import { Role } from '../../../../core/shared/components/roles-and-permissions/models/role.model';
 
 describe('RolesAndPermissionsComponent', () => {
   let component: RolesAndPermissionsComponent;
