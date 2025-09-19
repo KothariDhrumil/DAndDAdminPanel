@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PermissionApiResponse } from '../add-role/models/permission.model';
+import { PermissionApiResponse } from '../models/permission.model';
 import { API_ROLES } from '../../../core/helpers/routes/api-endpoints';
 
 @Injectable({ providedIn: 'root' })

@@ -8,11 +8,15 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { PermissionService } from '../../service/permission.service';
-import { Permission } from '../../add-role/models/permission.model';
-import { RoleTypes } from '../../models/role.model';
-import {  MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { RolesService } from '../../service/roles.service';
+import { Permission } from '../../models/permission.model';
+import { RoleTypes } from "../../models/enums/roletypes.enum";
+import { RoleDetail, PermissionsWithSelect } from '../../models/role-detail.model';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { BreadcrumbComponent } from "../../../../core/shared/components/breadcrumb/breadcrumb.component";
 import { MatListModule } from "@angular/material/list";
+import { ActivatedRoute } from '@angular/router';
+import { Role } from '../../../../core';
 
 @Component({
   selector: 'app-add-role',
@@ -32,13 +36,15 @@ import { MatListModule } from "@angular/material/list";
     MatProgressSpinnerModule,
     BreadcrumbComponent,
     MatListModule
-    
-],
+
+  ],
   host: {
     'class': 'add-role-page'
   }
 })
 export class AddRoleComponent implements OnInit {
+  isEditMode = false;
+  roleIdToEdit: string | null = null;
   isGroupChecked(group: Permission[]): boolean {
     const selected = this.form.value.permissions as string[];
     return group.every(perm => selected.includes(perm.permissionName));
@@ -77,10 +83,15 @@ export class AddRoleComponent implements OnInit {
     return groups;
   });
 
-  readonly roleTypes = Object.values(RoleTypes);
+  readonly roleTypes = Object.keys(RoleTypes).filter(k => isNaN(Number(k)));
   form: FormGroup;
 
-  constructor(private fb: FormBuilder, private permissionService: PermissionService) {
+  constructor(
+    private fb: FormBuilder,
+    private permissionService: PermissionService,
+    private rolesService: RolesService,
+    private route: ActivatedRoute
+  ) {
     this.form = this.fb.group({
       roleName: ['', [Validators.required, Validators.maxLength(50)]],
       description: ['', [Validators.maxLength(200)]],
@@ -91,14 +102,31 @@ export class AddRoleComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading.set(true);
-    this.permissionService.getPermissions().subscribe({
-      next: (resp) => {
-        this.permissions.set(resp.data);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      }
+    this.route.paramMap.subscribe(params => {
+      this.roleIdToEdit = params.get('roleId');
+      this.isEditMode = !!this.roleIdToEdit;
+      this.permissionService.getPermissions().subscribe({
+        next: (resp) => {
+          this.permissions.set(resp.data);
+          if (this.isEditMode && this.roleIdToEdit) {
+            this.rolesService.getRoleById(Number(this.roleIdToEdit)).subscribe({
+              next: (apiResp) => {
+                const role = apiResp.data;
+                this.form.patchValue({
+                  roleName: role.roleName,
+                  description: role.description,
+                  roleType: (RoleTypes as any)[role.roleType],
+                  permissions: role.permissionsWithSelect?.filter(p => p.selected).map(p => p.permissionName) ?? []
+                });
+              }
+            });
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
+      });
     });
   }
 
@@ -113,7 +141,41 @@ export class AddRoleComponent implements OnInit {
 
   onSubmit(): void {
     if (this.form.invalid) return;
-    // TODO: Call role creation service here
-    // ...existing code...
+    let roleTypeInt: number;
+    if (typeof this.form.value.roleType === 'string') {
+      roleTypeInt = (RoleTypes as any)[this.form.value.roleType];
+    } else {
+      roleTypeInt = this.form.value.roleType;
+    }
+    const payload: RoleDetail = {
+      roleName: this.form.value.roleName,
+      description: this.form.value.description,
+      roleType: roleTypeInt,
+      permissionsWithSelect: this.form.value.permissions.map((perm: string) => ({
+        permissionName: perm,
+        selected: true,
+        groupName: this.permissions().find(p => p.permissionName === perm)?.groupName ?? '',
+        description: this.permissions().find(p => p.permissionName === perm)?.description ?? ''
+      }))
+    };
+    if (this.isEditMode && this.roleIdToEdit) {
+      this.rolesService.updateRole(Number(this.roleIdToEdit), payload).subscribe({
+        next: () => {
+          // Show success message or navigate back
+        },
+        error: () => {
+          // Show error message
+        }
+      });
+    } else {
+      this.rolesService.createRole(payload).subscribe({
+        next: () => {
+          // Show success message or reset form
+        },
+        error: () => {
+          // Show error message
+        }
+      });
+    }
   }
 }

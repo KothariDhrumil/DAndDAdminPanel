@@ -1,9 +1,13 @@
-
-export interface ApiResponse<T> {
-  data: T;
+export interface ApiResponseBase {
   isSuccess: boolean;
   isFailure: boolean;
   error: ApiError;
+
+}
+
+
+export interface ApiResponse<T> extends ApiResponseBase {
+  data: T;
 }
 
 

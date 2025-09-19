@@ -8,7 +8,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RolesService } from '../../service/roles.service';
-import { Role, RoleTypes } from '../../models/role.model';
+import { Role } from '../../models/role.model';
+import { RoleTypes } from "../../models/enums/roletypes.enum";
+import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-roles-and-permissions',
@@ -63,7 +66,8 @@ export class RolesAndPermissionsComponent implements OnInit {
             type: 'text',
             sortable: false,
             tooltip: true
-        }
+        },
+        { def: 'actions', label: 'Actions', type: 'actionBtn', sortable: false }
     ]);
 
     readonly tableConfig = signal<TableConfig>({
@@ -77,7 +81,11 @@ export class RolesAndPermissionsComponent implements OnInit {
         pageSize: 10,
     });
 
-    constructor(private readonly rolesService: RolesService) { }
+        constructor(
+            private readonly rolesService: RolesService,
+            private readonly router: Router,
+            private readonly route: ActivatedRoute
+        ) { }
 
     ngOnInit(): void {
         this.fetchRoles(1, 10);
@@ -148,6 +156,25 @@ export class RolesAndPermissionsComponent implements OnInit {
             this.fetchRoles(pageInfo.pageIndex + 1, pageInfo.pageSize);
         } else if (event.type === 'refresh') {
             this.fetchRoles(1, 10);
+        } else if (event.type === 'edit' && event.data) {
+            this.openEditDialog(event.data);
+        } else if (event.type === 'add') {
+            this.router.navigate(['add'], { relativeTo: this.route });
+        } else if (event.type === 'delete') {
+            const role: Role = event.data;
+            this.rolesService.deleteRole(role.roleId).subscribe({
+                next: () => {
+                    this.fetchRoles(1, 10);
+                },
+                error: () => {
+                    // Handle error
+                }
+            });
         }
+    }
+
+    openEditDialog(role: Role): void {
+    // Route to add-role with roleId for editing using relative navigation
+    this.router.navigate(['edit', role.roleId], { relativeTo: this.route });
     }
 }

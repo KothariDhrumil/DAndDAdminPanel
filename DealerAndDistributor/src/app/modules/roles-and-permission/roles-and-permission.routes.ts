@@ -5,12 +5,22 @@ import { AddRoleComponent } from './component/add-role/add-role.component';
 export const rolesAndPermissionRoutes: Routes = [
   {
     path: '',
-    component: RolesAndPermissionsComponent,
-    title: 'Roles List'
-  },
-  {
-    path: 'add',
-    component: AddRoleComponent,
-    title: 'Add Role'
+    children: [
+      {
+        path: '',
+        component: RolesAndPermissionsComponent,
+        title: 'Roles List'
+      },
+      {
+        path: 'add',
+        component: AddRoleComponent,
+        title: 'Add Role'
+      },
+      {
+        path: 'edit/:roleId',
+        component: AddRoleComponent,
+        title: 'Edit Role'
+      }
+    ]
   }
 ];

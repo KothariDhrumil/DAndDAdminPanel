@@ -238,15 +238,27 @@ export class GenericTableComponent implements OnInit, OnChanges {
   }
 
   add() {
-    this.openDialog('add');
+    if (this.formDialogComponent()) {
+      this.openDialog('add');
+    } else {
+      this.tableEvent.emit({ type: 'add' });
+    }
   }
 
   edit(row: any) {
-    this.openDialog('edit', row);
+    if (this.formDialogComponent()) {
+      this.openDialog('edit', row);
+    } else {
+      this.tableEvent.emit({ type: 'edit', data: row });
+    }
   }
 
   delete(row: any) {
-     this.openDeleteDialog(row);
+    if (this.deleteDialogComponent()) {
+      this.openDeleteDialog(row);
+    } else {
+      this.tableEvent.emit({ type: 'delete', data: row });
+    }
   }
 
   export() {

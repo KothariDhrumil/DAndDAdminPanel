@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { RoleTypes } from '../models/role.model';
+import { RoleTypes } from "../models/enums/roletypes.enum";
 
 @Pipe({
   name: 'roleTypeFormat',
