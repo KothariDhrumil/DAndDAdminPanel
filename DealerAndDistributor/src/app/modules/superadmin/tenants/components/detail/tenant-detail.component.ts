@@ -9,11 +9,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { BreadcrumbComponent } from '../../../../../core/shared/components/breadcrumb/breadcrumb.component';
 import { ActivatedRoute } from '@angular/router';
-import { TenantDetailService, TenantPlanItem } from './service/tenant-detail.service';
+import { TenantDetailService } from '../../service/tenant-detail.service';
+import { TenantPlanItem } from '../../models/tenant-plan.model';
 import { Tenant } from '../../models/tenant.model';
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { AddTenantPlanDialogComponent } from './add-tenant-plan-dialog/add-tenant-plan-dialog.component';
+import { GenericTableComponent } from '../../../../../core/shared/components/generic-table/generic-table.component';
+import { ColumnDefinition, TableConfig } from '../../../../../core/shared/components/generic-table/generic-table.model';
+import { TenantsService } from '../../service/tenants.service';
+import { AddChildTenantDialogComponent } from './add-child-tenant-dialog/add-child-tenant-dialog.component';
+import { RenameTenantDialogComponent } from './rename-tenant-dialog/rename-tenant-dialog.component';
+import { Router } from '@angular/router';
+import { SUPERADMIN_TENANT_DETAIL_ROUTE } from '../../../../../core/helpers/routes/app-routes';
 
 @Component({
     selector: 'app-tenant-detail',
@@ -33,6 +44,9 @@ import { MatFormFieldModule } from "@angular/material/form-field";
         MatCheckbox,
         MatInputModule,
         MatFormFieldModule
+        , MatProgressSpinnerModule
+        , MatDialogModule
+        , GenericTableComponent
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
@@ -45,10 +59,50 @@ export class TenantDetailComponent implements OnInit {
     readonly activePlan = signal<TenantPlanItem | null>(null);
     readonly planHistory = signal<TenantPlanItem[]>([]);
 
+    // Loading and error states
+    readonly loadingTenant = signal(false);
+    readonly errorTenant = signal<string | null>(null);
+    readonly loadingActivePlan = signal(false);
+    readonly errorActivePlan = signal<string | null>(null);
+    readonly loadingHistory = signal(false);
+    readonly errorHistory = signal<string | null>(null);
+
+    // Child tenants state
+    readonly childTenants = signal<Tenant[]>([]);
+    readonly loadingChildren = signal(false);
+    readonly errorChildren = signal<string | null>(null);
+    readonly childColumns = signal<ColumnDefinition[]>([
+        { def: 'tenantId', label: 'ID', type: 'text', sortable: true },
+        { def: 'tenantFullName', label: 'Full Name', type: 'text', sortable: true },
+        { def: 'tenantName', label: 'Name', type: 'text', sortable: true },
+        { def: 'dataKey', label: 'Data Key', type: 'text' },
+        { def: 'hasOwnDb', label: 'Own DB', type: 'check' },
+        { def: 'databaseInfoName', label: 'Database', type: 'text' },
+        { def: 'parentId', label: 'Parent ID', type: 'text' },
+        { def: 'actions', label: 'Actions', type: 'actionBtn' }
+    ]);
+    readonly childTableConfig: TableConfig = {
+        enableSelection: true,
+        enableSearch: true,
+        enableExport: false,
+        enableRefresh: true,
+        enableColumnHide: true,
+        enableAdd: true,
+        enableEdit: true,
+        enableDelete: false,
+        enableContextMenu: false,
+        pageSize: 10,
+        pageSizeOptions: [5, 10, 25, 50, 100],
+        title: 'Child Tenants'
+    };
+
     constructor(
         private readonly route: ActivatedRoute,
-        private readonly service: TenantDetailService
-    ) {}
+        private readonly service: TenantDetailService,
+        private readonly dialog: MatDialog,
+        private readonly tenantsService: TenantsService,
+        private readonly router: Router
+    ) { }
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(pm => {
@@ -58,32 +112,174 @@ export class TenantDetailComponent implements OnInit {
             if (Number.isNaN(tenantId)) return;
 
             // Load tenant
-            this.service.getTenantById(tenantId).subscribe(res => {
-                if (res?.isSuccess && res.data) {
-                    this.tenant.set(res.data);
+            this.loadingTenant.set(true);
+            this.errorTenant.set(null);
+            this.service.getTenantById(tenantId).subscribe({
+                next: res => {
+                    if (res?.isSuccess && res.data) {
+                        this.tenant.set(res.data);
+                    } else {
+                        this.errorTenant.set('Failed to load tenant');
+                    }
+                    this.loadingTenant.set(false);
+                },
+                error: _ => {
+                    this.errorTenant.set('Failed to load tenant');
+                    this.loadingTenant.set(false);
                 }
             });
 
             // Load active plan, then plan history
-            this.service.getActivePlan(tenantId).subscribe(ap => {
-                if (ap?.isSuccess && ap.data) {
-                    this.activePlan.set(ap.data);
-                    const histKey = ap.data.tenantPlanId ?? tenantId;
-                    this.loadPlanHistory(histKey);
-                } else {
-                    // Fallback to using tenantId if active plan not found
-                    this.loadPlanHistory(tenantId);
+            this.loadingActivePlan.set(true);
+            this.errorActivePlan.set(null);
+            this.service.getActivePlan(tenantId).subscribe({
+                next: ap => {
+                    if (ap?.isSuccess && ap.data) {
+                        this.activePlan.set(ap.data);
+                    } else {
+                        this.errorActivePlan.set('No active plan');
+                    }
+                    this.loadingActivePlan.set(false);
+                },
+                error: _ => {
+                    this.errorActivePlan.set('Failed to load active plan');
+                    this.loadingActivePlan.set(false);
                 }
-            }, _ => this.loadPlanHistory(tenantId));
+            });
+
+            this.loadPlanHistory(tenantId);
+            this.loadChildTenants(tenantId);
         });
     }
 
     private loadPlanHistory(key: number) {
-        this.service.getPlanHistory(key).subscribe(ph => {
-            const data = ph?.data as any;
-            if (!data) { this.planHistory.set([]); return; }
-            // Handle both array or single object responses gracefully
-            this.planHistory.set(Array.isArray(data) ? data as TenantPlanItem[] : [data as TenantPlanItem]);
+        this.loadingHistory.set(true);
+        this.errorHistory.set(null);
+        this.service.getPlanHistory(key).subscribe({
+            next: ph => {
+                const data = ph?.data as any;
+                if (!data) { this.planHistory.set([]); this.errorHistory.set('No plan history'); }
+                else {
+                    // Handle both array or single object responses gracefully
+                    this.planHistory.set(Array.isArray(data) ? data as TenantPlanItem[] : [data as TenantPlanItem]);
+                }
+                this.loadingHistory.set(false);
+            },
+            error: _ => {
+                this.errorHistory.set('Failed to load plan history');
+                this.loadingHistory.set(false);
+            }
+        });
+    }
+
+    openAddPlan(): void {
+        const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
+        if (!tenantId) return;
+        const hasActive = !!this.activePlan();
+        const ref = this.dialog.open(AddTenantPlanDialogComponent, { data: { tenantId, hasActivePlan: hasActive }, width: '640px' });
+        ref.afterClosed().subscribe(ok => {
+            if (ok) {
+                // Refresh active plan and history
+                this.ngOnInit();
+            }
+        });
+    }
+
+    openEditPlan(): void {
+        const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
+        if (!tenantId) return;
+        const ap = this.activePlan();
+        if (!ap) return;
+        const ref = this.dialog.open(AddTenantPlanDialogComponent, {
+            data: { tenantId, hasActivePlan: true, tenantPlanId: ap.tenantPlanId, activePlan: ap },
+            width: '640px'
+        });
+        ref.afterClosed().subscribe(ok => {
+            if (ok) {
+                this.ngOnInit();
+            }
+        });
+    }
+
+    // Child tenants
+    private loadChildTenants(parentId: number) {
+        this.loadingChildren.set(true);
+        this.errorChildren.set(null);
+        this.tenantsService.getChildTenants(parentId).subscribe({
+            next: (res) => {
+                if (res?.isSuccess && Array.isArray(res.data)) {
+                    this.childTenants.set(res.data);
+                } else {
+                    this.childTenants.set([]);
+                    this.errorChildren.set('No child tenants');
+                }
+                this.loadingChildren.set(false);
+            },
+            error: _ => { this.errorChildren.set('Failed to load child tenants'); this.loadingChildren.set(false); }
+        });
+    }
+
+    onChildTableEvent(event: any) {
+        const parentId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
+        switch (event?.type) {
+            case 'refresh':
+                if (parentId) this.loadChildTenants(parentId);
+                break;
+            case 'row':
+            case 'edit':
+                if (event?.data?.tenantId) this.routeToTenant(event.data.tenantId);
+                break;
+            case 'add':
+                this.openAddChild();
+                break;
+        }
+    }
+
+    private openAddChild() {
+        const parentId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
+        if (!parentId) return;
+        const ref = this.dialog.open(AddChildTenantDialogComponent, { data: { parentTenantId: parentId } });
+        ref.afterClosed().subscribe(result => {
+            if (result?.tenantName) {
+                this.tenantsService.createChildTenant(parentId, result.tenantName).subscribe({
+                    next: (res) => { if (res?.isSuccess) this.loadChildTenants(parentId); },
+                    error: _ => { /* optionally show a toast */ }
+                });
+            }
+        });
+    }
+
+    private routeToTenant(tenantId: number) {
+        this.router.navigate([`${SUPERADMIN_TENANT_DETAIL_ROUTE}/${tenantId}`]);
+    }
+
+    // Rename tenant
+    openRenameTenantDialog() {
+        const current = this.tenant();
+        if (!current) return;
+        const ref = this.dialog.open(RenameTenantDialogComponent, {
+            data: { tenantName: current.tenantName },
+            width: '420px'
+        });
+        ref.afterClosed().subscribe(result => {
+            if (result?.tenantName && result.tenantName !== current.tenantName) {
+                this.renameTenant(current.tenantId, result.tenantName);
+            }
+        });
+    }
+
+    private renameTenant(tenantId: number, tenantName: string) {
+        this.loadingTenant.set(true);
+        this.errorTenant.set(null);
+        this.tenantsService.renameTenant(tenantId, tenantName).subscribe({
+            next: res => {
+                // Reload everything to reflect changes
+                this.ngOnInit();
+            },
+            error: _ => {
+                this.errorTenant.set('Failed to rename tenant');
+                this.loadingTenant.set(false);
+            }
         });
     }
 }

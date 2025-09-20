@@ -1,0 +1,29 @@
+<div class="w-100">
+    <label class="rs-label">{{ label }}</label>
+    <div class="rs-container">
+        @if (loading()) {
+        <div class="rs-loading">
+            <mat-spinner diameter="24"></mat-spinner>
+            <span>Loading roles…</span>
+        </div>
+        } @else if (error()) {
+        <div class="rs-error">{{ error() }}</div>
+        } @else {
+        <mat-selection-list [multiple]="true" [disabled]="disabled" class="rs-list">
+            <div class="rs-grid">
+                @for (opt of options(); track opt.id) {
+                <mat-list-option [selected]="isSelected(opt.id)" (click)="toggle(opt.id)" [disabled]="disabled">
+                    <div class="rs-option">
+                        <!-- <mat-checkbox [checked]="isSelected(opt.id)" [disabled]="disabled"></mat-checkbox> -->
+                        <div class="rs-text">
+                            <div class="rs-name">{{ opt.name }}</div>
+                            @if (opt.description) { <div class="rs-desc">{{ opt.description }}</div> }
+                        </div>
+                    </div>
+                </mat-list-option>
+                }
+            </div>
+        </mat-selection-list>
+        }
+    </div>
+</div>

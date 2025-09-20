@@ -7,12 +7,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { BreadcrumbComponent } from '../../../../../core/shared/components/breadcrumb/breadcrumb.component';
 import { PlansService } from '../../service/plans.service';
-import { RolesService } from '../../../../roles-and-permission/service/roles.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SUPERADMIN_PLANS_ROUTE } from '../../../../../core/helpers/routes/app-routes';
-import { PaginatedApiResponse, ApiResponse } from '../../../../../core/models/interface/ApiResponse';
-import { Role } from '../../../../roles-and-permission/models/role.model';
 import { Plan, PlanRequest } from '../../models/plan.model';
+import { RolesSelectorComponent } from '../../../../../core/shared/components/roles-selector/roles-selector.component';
+import { ApiResponse } from '../../../../../core/models/interface/ApiResponse';
 
 @Component({
   selector: 'app-plans-upsert',
@@ -27,7 +26,8 @@ import { Plan, PlanRequest } from '../../models/plan.model';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    RolesSelectorComponent
   ],
   host: { class: 'plans-upsert-page' }
 })
@@ -45,12 +45,10 @@ export class PlansUpsertComponent implements OnInit {
   isEdit = signal(false);
   currentId: number | null = null;
 
-  roles = signal<Role[]>([]);
   breadcrumbTitle = computed(() => this.isEdit() ? 'Edit Plan' : 'Create Plan');
 
   constructor(
     private readonly plansService: PlansService,
-    private readonly rolesService: RolesService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
@@ -62,21 +60,11 @@ export class PlansUpsertComponent implements OnInit {
       this.isEdit.set(!!id);
       this.currentId = id ? Number(id) : null;
 
-      // Load roles first (roleTypes=0)
-      this.rolesService.getRolesByType([0]).subscribe({
-        next: (res: ApiResponse<Role[]>) => {
-          this.roles.set(res.data ?? []);
-          if (this.currentId) {
-            this.loadPlan(this.currentId);
-          } else {
-            this.loading.set(false);
-          }
-        },
-        error: () => {
-          this.roles.set([]);
-          if (this.currentId) this.loadPlan(this.currentId); else this.loading.set(false);
-        }
-      });
+      if (this.currentId) {
+        this.loadPlan(this.currentId);
+      } else {
+        this.loading.set(false);
+      }
     });
   }
 

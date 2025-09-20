@@ -1,0 +1,13 @@
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+}
+
+.w-100 { width: 100%; }

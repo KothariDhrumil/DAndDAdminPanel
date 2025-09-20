@@ -8,7 +8,7 @@
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
         <div class="card">
           <div class="header">
-            <h2>Roles</h2>
+            <h2>{{ breadcrumbTitle() }}</h2>
           </div>
           <div class="body">
 
@@ -43,12 +43,7 @@
                 </mat-select>
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="w-100">
-                <mat-label>Roles</mat-label>
-                <mat-select formControlName="roleIds" multiple>
-                  <mat-option *ngFor="let r of roles()" [value]="r.roleId">{{ r.roleName }}</mat-option>
-                </mat-select>
-              </mat-form-field>
+              <app-roles-selector formControlName="roleIds"  label="Roles"></app-roles-selector>
 
               <div class="actions">
                 <button mat-stroked-button color="primary" type="button" (click)="cancel()">Cancel</button>
