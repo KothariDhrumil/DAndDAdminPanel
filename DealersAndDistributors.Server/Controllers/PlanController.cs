@@ -31,16 +31,16 @@ namespace DealersAndDistributors.Server.Controllers
             return Results.Ok(resonse);
         }
 
-        /// <summary>
-        /// Get a plan by id with permissions.
-        /// </summary>
-        [HttpGet("{id:int}")]
-        public async Task<IResult> GetById(int id, IQueryHandler<GetPlanByIdQuery, Application.Plans.GetById.PlanDetailsResponse> handler, CancellationToken cancellationToken)
-        {
-            var query = new GetPlanByIdQuery(id);
-            var response = await handler.Handle(query, cancellationToken);
-            return Results.Ok(response);
-        }
+        ///// <summary>
+        ///// Get a plan by id with permissions.
+        ///// </summary>
+        //[HttpGet("{id:int}")]
+        //public async Task<IResult> GetById(int id, IQueryHandler<GetPlanByIdQuery, Application.Plans.GetById.PlanDetailsResponse> handler, CancellationToken cancellationToken)
+        //{
+        //    var query = new GetPlanByIdQuery(id);
+        //    var response = await handler.Handle(query, cancellationToken);
+        //    return Results.Ok(response);
+        //}
 
         /// <summary>
         /// Creates a new plan item.

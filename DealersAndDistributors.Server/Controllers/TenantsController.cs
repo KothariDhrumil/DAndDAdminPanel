@@ -33,6 +33,17 @@ public class TenantsController : VersionNeutralApiController
         return Ok(PagedResult<List<HierarchicalTenantDto>>.Success(data));
     }
 
+    [HttpGet("childs/{id:int}")]
+    [HasPermission(Permissions.TenantList)]
+    [OpenApiOperation("Get a list of all tenants.", "")]
+    public async Task<ActionResult<List<HierarchicalTenantDto>>> GetChildListAsync(int Id)
+    {
+        var data = await HierarchicalTenantDto.TurnIntoDisplayFormat(await _authTenantAdmin.QueryChildTenants(Id))
+                .OrderBy(x => x.TenantFullName)
+                .ToListAsync();
+        return Ok(PagedResult<List<HierarchicalTenantDto>>.Success(data));
+    }
+
     [HttpGet("{id:int}")]
     [HasPermission(Permissions.TenantList)]
     [OpenApiOperation("Get tenant details.", "")]

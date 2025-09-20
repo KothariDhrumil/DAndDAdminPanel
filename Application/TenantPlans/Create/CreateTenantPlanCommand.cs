@@ -19,7 +19,7 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
     public string Remarks { get; set; } = string.Empty;
 
     // Effective roles to assign to this tenant plan (from UI)
-    public List<int> RoleIds { get; set; } = new();
+    public List<int> Roles { get; set; } = new();
 
     internal sealed class CreateTenantPlanCommandHandler(
         AuthPermissionsDbContext context,
@@ -29,9 +29,9 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
         public async Task<Result<int>> Handle(CreateTenantPlanCommand command, CancellationToken cancellationToken)
         {
             // Load roles by ids provided by UI (effective roles)
-            var effectiveRoles = command.RoleIds?.Count > 0
+            var effectiveRoles = command.Roles?.Count > 0
                 ? await context.RoleToPermissions
-                    .Where(x => command.RoleIds.Contains(x.RoleId))
+                    .Where(x => command.Roles.Contains(x.RoleId))
                     .ToListAsync(cancellationToken)
                 : new List<RoleToPermissions>();
 
@@ -47,7 +47,7 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
             };
 
             context.TenantPlans.Add(tenantPlan);
-            await context.SaveChangesAsync(cancellationToken);
+            
 
             // If this plan is active, update the tenant's roles so permissions are applied
             if (command.IsActive)
@@ -55,10 +55,9 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
                 var roleIds = effectiveRoles.Select(r => r.RoleId).ToList();
                 var status = await authTenantAdmin.UpdateTenantRolesAsync(command.TenantId, roleIds);
                 if (status.HasErrors)
-                {
                     throw new Application.Exceptions.ApiException(status.GetAllErrors());
-                }
             }
+            await context.SaveChangesAsync(cancellationToken);
 
             return Result.Success(tenantPlan.Id);
         }

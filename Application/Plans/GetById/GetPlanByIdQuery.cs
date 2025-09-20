@@ -30,7 +30,7 @@ internal sealed class GetPlanByIdQueryHandler(AuthPermissionsDbContext context, 
             IsActive = planEntity.IsActive,
             PlanRate = planEntity.PlanRate,
             PlanValidityInDays = planEntity.PlanValidityInDays,
-            RoleIds = planEntity.Roles.Select(r => r.RoleId).ToList()
+            RoleIds = [.. planEntity.Roles.Select(r => r.RoleId)]
             //Permissions = planEntity.RoleIds != null && planEntity.RoleIds.Any()
             //    ? string.Join(", ", await context.RoleToPermissions
             //        .AsNoTracking()

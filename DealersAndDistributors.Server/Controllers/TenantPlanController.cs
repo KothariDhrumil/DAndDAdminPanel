@@ -27,10 +27,22 @@ namespace DealersAndDistributors.Server.Controllers
         [HttpGet("active/{tenantId:int}")]
         public async Task<IResult> GetActiveByTenantId(
             int tenantId,
-            IQueryHandler<GetActiveTenantPlanByIdQuery, ActiveTenentPlanResponse> handler,
+            IQueryHandler<GetActiveTenantPlanByIdQuery, TenentPlanResponse> handler,
             CancellationToken cancellationToken)
         {
             var query = new GetActiveTenantPlanByIdQuery(tenantId);
+            var response = await handler.Handle(query, cancellationToken);
+            return Results.Ok(response);
+        }
+
+        // GET: plans for a specific tenant
+        [HttpGet("{id:int}")]
+        public async Task<IResult> GetByTenantId(
+            int Id,
+            IQueryHandler<GetTenantPlanByIdQuery, List<TenentPlanResponse>> handler,
+            CancellationToken cancellationToken)
+        {
+            var query = new GetTenantPlanByIdQuery(Id);
             var response = await handler.Handle(query, cancellationToken);
             return Results.Ok(response);
         }

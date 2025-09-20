@@ -2,7 +2,7 @@
 
 namespace Application.TenantPlans.GetActivePlan;
 
-public sealed class ActiveTenentPlanResponse
+public sealed class TenentPlanResponse
 {
     public int Id { get; set; }
     public int TenantPlanId { get; set; }

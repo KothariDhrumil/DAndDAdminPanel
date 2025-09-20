@@ -20,7 +20,7 @@ public sealed class UpdateTenantPlanCommand : ICommand
     public string Remarks { get; set; } = string.Empty;
 
     // Effective roles sent by UI
-    public List<int> RoleIds { get; set; } = new();
+    public List<int> Roles { get; set; } = new();
 
     internal sealed class UpdateTenantPlanCommandHandler(
     AuthPermissionsDbContext context,
@@ -48,7 +48,7 @@ public sealed class UpdateTenantPlanCommand : ICommand
 
             // Current roles
             var currentRoleIds = tenantPlan.Roles.Select(r => r.RoleId).ToHashSet();
-            var incomingRoleIds = (command.RoleIds ?? new()).ToHashSet();
+            var incomingRoleIds = (command.Roles ?? new()).ToHashSet();
 
             // Determine roles to add / remove
             var toAdd = incomingRoleIds.Except(currentRoleIds).ToList();
@@ -79,21 +79,18 @@ public sealed class UpdateTenantPlanCommand : ICommand
             tenantPlan.ValidTo = command.ValidTo;
             tenantPlan.Remarks = command.Remarks;
 
-            await context.SaveChangesAsync(cancellationToken);
-
             // If the plan is active, update the tenant roles to reflect effective roles
             if (tenantPlan.IsActive)
             {
                 var effectiveRoleIds = tenantPlan.Roles.Select(r => r.RoleId).ToList();
                 var status = await authTenantAdmin.UpdateTenantRolesAsync(command.TenantId, effectiveRoleIds);
                 if (status.HasErrors)
-                {
                     throw new ApiException(status.GetAllErrors());
-                }
             }
 
-            return Result.Success(tenantPlan.Id);
+            await context.SaveChangesAsync(cancellationToken);
 
+            return Result.Success(tenantPlan.Id);
         }
     }
 }

@@ -21,7 +21,8 @@ internal sealed class GetPlanQueryHandler(AuthPermissionsDbContext context)
                 PlanValidityInDays = PlanItem.PlanValidityInDays,
                 PlanRate = PlanItem.PlanRate,
                 IsActive = PlanItem.IsActive,
-                Name = PlanItem.Name
+                Name = PlanItem.Name,
+                RoleIds = PlanItem.Roles.Select(r => r.RoleId).ToList()
             })
             .ToListAsync(cancellationToken);
 

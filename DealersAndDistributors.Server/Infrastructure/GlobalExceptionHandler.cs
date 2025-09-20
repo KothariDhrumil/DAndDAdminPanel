@@ -38,7 +38,7 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
             default:
                 // unhandled error
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                responseModel = Result.Failure(Error.Failure(HttpStatusCode.InternalServerError.ToString(), string.Empty));
+                responseModel = Result.Failure(Error.Failure(HttpStatusCode.InternalServerError.ToString(), exception.Message));
                 break;
         } 
 

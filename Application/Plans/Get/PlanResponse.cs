@@ -8,4 +8,6 @@ public class PlanResponse
     public int PlanValidityInDays { get; set; }
     public int PlanRate { get; set; } = 0;
     public bool IsActive { get; set; }
+    // A list of permission names included in this plan
+    public List<int> RoleIds { get; set; }
 }
