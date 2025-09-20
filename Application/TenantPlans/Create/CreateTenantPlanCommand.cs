@@ -1,17 +1,15 @@
 ﻿using Application.Abstractions.Messaging;
+using AuthPermissions.AdminCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using FluentValidation;
-using FluentValidation.Internal;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
-using System.Numerics;
 
 namespace Application.TenantPlans.Create;
 
 public sealed class CreateTenantPlanCommand : ICommand<int>
 {
-
     public int PlanId { get; set; }
     public int TenantId { get; set; }
     public bool IsActive { get; set; }
@@ -20,21 +18,24 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
     public DateTime ValidTo { get; set; }
     public string Remarks { get; set; } = string.Empty;
 
-    public List<int> Roles { get; set; } = new List<int>();
+    // Effective roles to assign to this tenant plan (from UI)
+    public List<int> RoleIds { get; set; } = new();
 
     internal sealed class CreateTenantPlanCommandHandler(
-        AuthPermissionsDbContext context)
+        AuthPermissionsDbContext context,
+        IAuthTenantAdminService authTenantAdmin)
         : ICommandHandler<CreateTenantPlanCommand, int>
     {
         public async Task<Result<int>> Handle(CreateTenantPlanCommand command, CancellationToken cancellationToken)
         {
+            // Load roles by ids provided by UI (effective roles)
+            var effectiveRoles = command.RoleIds?.Count > 0
+                ? await context.RoleToPermissions
+                    .Where(x => command.RoleIds.Contains(x.RoleId))
+                    .ToListAsync(cancellationToken)
+                : new List<RoleToPermissions>();
 
-            // TODO :first get the plan details from plan table 
-            // and update the plan
-            var planEntity = await context.Plans.Include(x => x.Roles)
-                .Where(x => x.Id == command.PlanId).FirstOrDefaultAsync();
-
-            var TenantPlan = new TenantPlan()
+            var tenantPlan = new TenantPlan()
             {
                 IsActive = command.IsActive,
                 TenentId = command.TenantId,
@@ -42,35 +43,24 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
                 ValidTo = command.ValidTo,
                 Remarks = command.Remarks,
                 PlanId = command.PlanId,
+                Roles = effectiveRoles
             };
-            if (command.Roles != null && command.Roles.Any())
+
+            context.TenantPlans.Add(tenantPlan);
+            await context.SaveChangesAsync(cancellationToken);
+
+            // If this plan is active, update the tenant's roles so permissions are applied
+            if (command.IsActive)
             {
-                var roles = await context.RoleToPermissions
-                    .Where(x => command.Roles.Contains(x.RoleId))
-                    .ToListAsync(cancellationToken);
-                foreach (var role in roles)
+                var roleIds = effectiveRoles.Select(r => r.RoleId).ToList();
+                var status = await authTenantAdmin.UpdateTenantRolesAsync(command.TenantId, roleIds);
+                if (status.HasErrors)
                 {
-                    planEntity.Roles.Add(role);
+                    throw new Application.Exceptions.ApiException(status.GetAllErrors());
                 }
             }
 
-            // TODO : generate Invoice once plan is assigned 
-            //if (planRate > 0)
-            //{
-            //    var invoiceNo = await invoiceSettingRepositoryAsync.GenerateInvoiceNo();
-            //    companyPlan.Invoice = new Invoice()
-            //    {
-            //        InvoiceNo = invoiceNo,
-            //        Status = Domain.Enums.InvoiceStatus.UnPaid,
-            //        Amount = planRate
-            //    };
-            //}
-
-            context.TenantPlans.Add(TenantPlan);
-
-            await context.SaveChangesAsync(cancellationToken);
-
-            return Result.Success(TenantPlan.Id);
+            return Result.Success(tenantPlan.Id);
         }
     }
 }
@@ -79,6 +69,7 @@ public class CreateTenantPlanCommandValidator : AbstractValidator<CreateTenantPl
     public CreateTenantPlanCommandValidator()
     {
         RuleFor(c => c.PlanId).NotNull().GreaterThan(0);
-
+        RuleFor(c => c.TenantId).NotNull().GreaterThan(0);
+        RuleFor(c => c.ValidFrom).LessThan(c => c.ValidTo);
     }
 }

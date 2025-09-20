@@ -9,17 +9,17 @@ public static class Example7CreateTenantVersions
 {
     public static readonly MultiTenantVersionData TenantSetupData = new()
     {
-        TenantRolesForEachVersion = new Dictionary<string, List<string>>()
+        TenantRolesForEachVersion = new Dictionary<string, List<int>>()
         {
             { "Free", null },
-            { "Pro", new List<string> { "Tenant Admin" } },
-            { "Enterprise", new List<string> { "Tenant Admin" } },
+            { "Pro", new List<int> { 1} },
+            { "Enterprise", new List<int> { 1 } },
         },
-        TenantAdminRoles = new Dictionary<string, List<string>>()
+        TenantAdminRoles = new Dictionary<string, List<int>>()
         {
-            { "Free", new List<string> { "Invoice Reader", "Invoice Creator" } },
-            { "Pro", new List<string> { "Invoice Reader", "Invoice Creator", "Tenant Admin" } },
-            { "Enterprise", new List<string> { "Invoice Reader", "Invoice Creator", "Tenant Admin" } }
+            { "Free", new List<int> { 2,3 } },
+            { "Pro", new List<int> { 2,3 } },
+            { "Enterprise", new List<int> { 2, 3 } }
         },
         HasOwnDbForEachVersion = new Dictionary<string, bool?>()
         {

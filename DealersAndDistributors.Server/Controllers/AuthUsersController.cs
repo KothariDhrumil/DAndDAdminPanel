@@ -77,7 +77,7 @@ public class AuthUsersController : VersionNeutralApiController
     public async Task<ActionResult> UpdateAsync(SetupManualUserChange change)
     {
         StatusGeneric.IStatusGeneric status = await _authUsersAdmin.UpdateUserAsync(
-            change.UserId, change.Email, change.UserName, change.RoleNames, change.TenantName);
+            change.UserId, change.Email, change.UserName, change.RoleIds, change.TenantName);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
@@ -91,7 +91,7 @@ public class AuthUsersController : VersionNeutralApiController
     public async Task<ActionResult> UpdateRolesAsync(SetupManualUserChange change)
     {
         StatusGeneric.IStatusGeneric status = await _authUsersAdmin.UpdateUserAsync(
-            change.UserId, roleNames: change.RoleNames);
+            change.UserId, roleIds: change.RoleIds);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())

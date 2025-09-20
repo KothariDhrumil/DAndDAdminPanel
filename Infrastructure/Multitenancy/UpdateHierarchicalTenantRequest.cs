@@ -15,7 +15,7 @@ public class UpdateHierarchicalTenantRequest
 public class UpdateHierarchicalTenantRoleRequest
 {
     [Required(AllowEmptyStrings = false)]
-    public List<string> TenantRoles { get; set; } = default!;
+    public List<int> TenantRoles { get; set; } = default!;
 
     public int TenantId { get; set; }
 }

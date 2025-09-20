@@ -56,7 +56,6 @@ public sealed class AccountController : VersionNeutralApiController
             IsPersistent = false,
             FirstName = request.FirstName,
             LastName = request.LastName,
-            Roles = new List<string> { "Feature - Stock", "Feature - Sales" },
             PhoneNumber = request.PhoneNumber
         };
         var newTenantData = new AddNewTenantDto
