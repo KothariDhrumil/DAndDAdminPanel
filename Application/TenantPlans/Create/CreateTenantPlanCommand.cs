@@ -20,6 +20,8 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
     public DateTime ValidTo { get; set; }
     public string Remarks { get; set; } = string.Empty;
 
+    public List<int> Roles { get; set; } = new List<int>();
+
     internal sealed class CreateTenantPlanCommandHandler(
         AuthPermissionsDbContext context)
         : ICommandHandler<CreateTenantPlanCommand, int>
@@ -29,7 +31,8 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
 
             // TODO :first get the plan details from plan table 
             // and update the plan
-            var features = await context.Plans.Where(x => x.Id == command.PlanId).Select(x => x.Features).FirstOrDefaultAsync();
+            var planEntity = await context.Plans.Include(x => x.Roles)
+                .Where(x => x.Id == command.PlanId).FirstOrDefaultAsync();
 
             var TenantPlan = new TenantPlan()
             {
@@ -39,8 +42,17 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
                 ValidTo = command.ValidTo,
                 Remarks = command.Remarks,
                 PlanId = command.PlanId,
-                Permissions = features
             };
+            if (command.Roles != null && command.Roles.Any())
+            {
+                var roles = await context.RoleToPermissions
+                    .Where(x => command.Roles.Contains(x.RoleId))
+                    .ToListAsync(cancellationToken);
+                foreach (var role in roles)
+                {
+                    planEntity.Roles.Add(role);
+                }
+            }
 
             // TODO : generate Invoice once plan is assigned 
             //if (planRate > 0)

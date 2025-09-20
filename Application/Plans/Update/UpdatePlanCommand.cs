@@ -34,8 +34,26 @@ internal sealed class UpdatePlanCommandHandler(
         Plan.IsActive = command.IsActive;
         Plan.PlanRate = command.PlanRate;
         Plan.PlanValidityInDays = command.PlanValidityInDays;
-        Plan.Features = string.Join(",", command.RoleIds);
 
+        // update the roles
+        var roles = await context.RoleToPermissions
+            .Where(x => command.RoleIds.Contains(x.RoleId))
+            .ToListAsync(cancellationToken);
+        Plan.Roles = roles;
+        // if the plan is billable then it must be active
+        if (command.IsBillable && !command.IsActive)
+            throw new ApiException("A billable plan must be active.");
+        // if the plan is not billable then it can't be active
+        if (!command.IsBillable && command.IsActive)
+            throw new ApiException("A non-billable plan can't be active.");
+        // if the plan is not billable then it can't be applied to all users
+        if (!command.IsBillable && command.IsApplyToAllUsers)
+            throw new ApiException("A non-billable plan can't be applied to all users.");
+        // if the plan is billable and is not active then it can't be applied to all users
+        if (command.IsBillable && !command.IsActive && command.IsApplyToAllUsers)
+            throw new ApiException("A billable plan that is not active can't be applied to all users.");
+        
+        // if the plan is to be applied to all users, then update all active tenant plans that are using this plan
         if (command.IsApplyToAllUsers)
         {
             IQueryable<TenantPlan> companyPlans = context.TenantPlans.Where(x => x.PlanId == command.PlanId && 
@@ -46,6 +64,9 @@ internal sealed class UpdatePlanCommandHandler(
             foreach (var companyPlan in companyPlans)
             {
                 // TODO : Update to all users
+                //companyPlan.ValidTo = dateTimeProvider.Now.AddDays(command.PlanValidityInDays);
+                //context.TenantPlans.Update(companyPlan);
+
             }
         }
 

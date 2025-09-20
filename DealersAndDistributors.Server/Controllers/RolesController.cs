@@ -2,6 +2,7 @@
 using AuthPermissions.AdminCode;
 using AuthPermissions.AspNetCore;
 using AuthPermissions.BaseCode.CommonCode;
+using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
 using AuthPermissions.BaseCode.PermissionsCode;
 using ExamplesCommonCode.CommonAdmin;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,7 @@ public class RolesController : VersionNeutralApiController
     public async Task<IActionResult> GetListAsync()
     {
         string? userId = User.GetUserIdFromUser();
-        var data = await _authRolesAdmin.QueryRoleToPermissions(userId)
+        var data = await _authRolesAdmin.QueryRoleToPermissions(null, currentUserId: userId)
                                         .OrderBy(x => x.RoleType)
                                         .ToListAsync();
         return Ok(PagedResult<List<RoleWithPermissionNamesDto>>.Success(data));
@@ -40,9 +41,22 @@ public class RolesController : VersionNeutralApiController
     public IActionResult ListPermissions()
     {
         var tenantId = User.GetTenantIdFromUser();
-
         return Ok(PagedResult<List<PermissionDisplay>>.Success(_authRolesAdmin.GetPermissionDisplay(false, tenantId: tenantId)));
 
+    }
+
+    // add get call for getting list of roles by role type 
+    [HttpGet("get-roles-by-type")]
+    [HasPermission(Permissions.RoleRead)]
+
+    [OpenApiOperation("Get a list of all roles by role type", "")]
+    public async Task<IActionResult> GetListByRoleTypeAsync([FromQuery] RoleTypes roleTypes)
+    {
+        string? userId = User.GetUserIdFromUser();
+        var data = await _authRolesAdmin.QueryRoleToPermissions(roleTypes, userId)
+                                        .OrderBy(x => x.RoleType)
+                                        .ToListAsync();
+        return Ok(PagedResult<List<RoleWithPermissionNamesDto>>.Success(data));
     }
 
     [HttpPut("{id:int}")]
@@ -79,7 +93,7 @@ public class RolesController : VersionNeutralApiController
     {
         var userId = User.GetUserIdFromUser();
         var role = await
-            _authRolesAdmin.QueryRoleToPermissions(userId).SingleOrDefaultAsync(x => x.RoleId == id);
+            _authRolesAdmin.QueryRoleToPermissions(null, userId).SingleOrDefaultAsync(x => x.RoleId == id);
         var permissionsDisplay = _authRolesAdmin.GetPermissionDisplay(false);
 
         return Ok(Result.Success(role == null ? null : RoleCreateUpdateDto.SetupForCreateUpdate(role.RoleName, role.Description,

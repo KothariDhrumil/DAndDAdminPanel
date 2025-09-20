@@ -2,6 +2,7 @@
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Plans.Create;
@@ -13,9 +14,9 @@ public sealed class CreatePlanCommand : ICommand<int>
     public int PlanValidityInDays { get; set; }
     public int PlanRate { get; set; }
     public bool IsActive { get; set; }
-     
+
     public List<int> RoleIds { get; set; }
-        
+
     internal sealed class CreatePlanCommandHandler(
         AuthPermissionsDbContext context)
         : ICommandHandler<CreatePlanCommand, int>
@@ -23,8 +24,6 @@ public sealed class CreatePlanCommand : ICommand<int>
         public async Task<Result<int>> Handle(CreatePlanCommand command, CancellationToken cancellationToken)
         {
             // TODO : Check for unique / Duplicate name
-
-
             var plan = new Plan()
             {
                 Name = command.Name,
@@ -32,8 +31,19 @@ public sealed class CreatePlanCommand : ICommand<int>
                 PlanRate = command.PlanRate,
                 PlanValidityInDays = command.PlanValidityInDays,
                 Description = command.Description,
-                Features = string.Join(",", command.RoleIds)
             };
+
+            if (command.RoleIds != null && command.RoleIds.Any())
+            {
+                var roles = await context.RoleToPermissions
+                    .Where(x => command.RoleIds.Contains(x.RoleId))
+                    .ToListAsync(cancellationToken);
+                foreach (var role in roles)
+                {
+                    plan.Roles.Add(role);
+                }
+            }
+
             context.Plans.Add(plan);
 
             await context.SaveChangesAsync(cancellationToken);
