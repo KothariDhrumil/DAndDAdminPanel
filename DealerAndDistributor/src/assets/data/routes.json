@@ -60,6 +60,38 @@
           "submenu": []
         }
       ]
+    },
+    {
+      "path": "/superadmin/plans",
+      "title": "MENUITEMS.Plans.Text",
+      "iconType": "feather",
+      "icon": "monitor",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [
+        "PlanManagement",
+        "AccessAll"
+      ],
+      "submenu": [
+        {
+          "path": "/superadmin/plans/add",
+          "title": "Add Plan",
+          "iconType": "feather",
+          "icon": "plus",
+          "class": "",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "PlanManagement",
+            "AccessAll"
+          ],
+          "submenu": []
+        }       
+      
+      ]
     }
   ]
 }

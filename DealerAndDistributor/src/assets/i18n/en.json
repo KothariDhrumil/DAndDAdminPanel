@@ -37,6 +37,13 @@
         "List": "Roles & Permissions List",
         "Create": "Roles & Permissions Create"
       }
+    },
+    "Plans": {
+      "Text": "Plans",
+      "List": {
+        "List": "Plans List",
+        "Create": "Plans Create"
+      }
     }
   }
 }

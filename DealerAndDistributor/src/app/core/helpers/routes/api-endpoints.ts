@@ -25,11 +25,12 @@ export const USER_PERMISSIONS_API = baseUrl + apiVersionNeutral + userRoute + '/
 export const TENANTS_API = baseUrl + apiVersionNeutral + '/tenants';
 export const API_SHARDING = baseUrl + apiVersionNeutral + '/sharding';
 export const API_GET_DB_DETAILS = API_SHARDING + '/get-db-details';
+export const API_PLANS = baseUrl + apiVersionNeutral + '/plan';
+export const API_ROLES = baseUrl + apiVersionNeutral + '/roles';
+export const API_ROLES_BY_TYPE = API_ROLES + '/get-roles-by-type';
 
 /*/ Admin Routes */
 
 export const AUTH_ROLES_API = '/api/admin/auth-roles';
-// Shared roles endpoint for roles-and-permissions component
-export const API_ROLES = baseUrl + apiVersionNeutral +'/roles';
 export const LIST_ALL_AUTH_USERS_API = '/api/admin/auth-users';
 export const SYNC_AUTH_USER_WITH_CHANGE_LIST_API = '/api/admin/sync-auth-user-with-change-list';

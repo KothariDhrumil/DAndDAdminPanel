@@ -37,8 +37,7 @@ import { CdkNoDataRow } from "@angular/cdk/table";
     NgClass,
     FeatherModule,
     TranslateModule,
-    NgxPermissionsModule,
-    CdkNoDataRow
+    NgxPermissionsModule,   
 ],
   host: {
     '(window:resize)': 'windowResizecall()',

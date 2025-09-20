@@ -18,5 +18,22 @@ export const SUPERADMIN_ROUTES: Routes = [
     path: 'roles-and-permissions',
     loadChildren: () => import('../roles-and-permission/roles-and-permission.routes').then(m => m.rolesAndPermissionRoutes)
   },
+  {
+    path: 'plans',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./plans/components/plans-list/plans-list.component').then(m => m.PlansListComponent)
+      },
+      {
+        path: 'add',
+        loadComponent: () => import('./plans/components/plans-upsert/plans-upsert.component').then(m => m.PlansUpsertComponent)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./plans/components/plans-upsert/plans-upsert.component').then(m => m.PlansUpsertComponent)
+      }
+    ]
+  },
 
 ];

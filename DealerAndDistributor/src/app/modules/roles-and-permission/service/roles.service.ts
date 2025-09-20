@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse, ApiResponseBase, PaginatedApiResponse } from '../../../core/models/interface/ApiResponse';
-import { API_ROLES } from '../../../core/helpers/routes/api-endpoints';
+import { API_ROLES, API_ROLES_BY_TYPE } from '../../../core/helpers/routes/api-endpoints';
 import { ApiRequest } from '../../../core/models/interface/ApiRequest';
 import { toApiRequestParams } from '../../../core/helpers/http/to-api-request-params';
 import { Role } from '../models/role.model';
@@ -38,5 +38,10 @@ export class RolesService {
   }
    deleteRole(roleId: string) {
       return this.http.delete<ApiResponseBase>(`${API_ROLES}/${roleId}`);
+  }
+
+  getRolesByType(roleTypes: number[]): Observable<ApiResponse<Role[]>> {
+    const params = new HttpParams().set('roleTypes', roleTypes.join(','));
+    return this.http.get<ApiResponse<Role[]>>(API_ROLES_BY_TYPE, { params });
   }
 }
