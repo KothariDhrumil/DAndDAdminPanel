@@ -7,6 +7,8 @@ import { Tenant } from '../../models/tenant.model';
 import { TenantsService } from '../../service/tenants.service';
 import { GenericTableComponent } from '../../../../../core/shared/components/generic-table/generic-table.component';
 import { BreadcrumbComponent } from '../../../../../core/shared/components/breadcrumb/breadcrumb.component';
+import { Router } from '@angular/router';
+import { SUPERADMIN_TENANT_DETAIL_ROUTE } from '../../../../../core/helpers/routes/app-routes';
 
 
 @Component({
@@ -19,6 +21,7 @@ import { BreadcrumbComponent } from '../../../../../core/shared/components/bread
 })
 export class TenantsComponent {
   private tenantsService = inject(TenantsService);
+  private router = inject(Router);
   private _tenants = signal<Tenant[]>([]);
   private _totalRecords = signal<number>(0);
 
@@ -96,13 +99,15 @@ export class TenantsComponent {
         // event.data contains selected rows
         break;
       case 'row':
-        // event.data contains clicked row
+        // Navigate to detail on row click
+        this.navigateToDetail(event.data);
         break;
       case 'add':
         // Open add tenant dialog or route
         break;
       case 'edit':
-        // event.data contains row to edit
+        // Navigate to detail for edit action
+        this.navigateToDetail(event.data);
         break;
       case 'delete':
         // event.data contains row to delete
@@ -112,6 +117,16 @@ export class TenantsComponent {
         break;
       default:
         break;
+    }
+  }
+
+  private navigateToDetail(tenant: Tenant | undefined) {
+    if (!tenant) return;
+    const id = (tenant as any).tenantId ?? (tenant as any).id;
+    if (id !== undefined && id !== null) {
+      this.router.navigate([`${SUPERADMIN_TENANT_DETAIL_ROUTE}/${id}`]);
+    } else {
+      this.router.navigate([SUPERADMIN_TENANT_DETAIL_ROUTE]);
     }
   }
 }

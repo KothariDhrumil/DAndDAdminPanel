@@ -8,7 +8,20 @@ export const SUPERADMIN_ROUTES: Routes = [
   },
   {
     path: 'tenants',
-    loadComponent: () => import('./tenants/components/list/tenants.component').then(m => m.TenantsComponent)
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./tenants/components/list/tenants.component').then(m => m.TenantsComponent)
+      },
+      {
+        path: 'detail',
+        loadComponent: () => import('./tenants/components/detail/tenant-detail.component').then(m => m.TenantDetailComponent)
+      },
+      {
+        path: 'detail/:id',
+        loadComponent: () => import('./tenants/components/detail/tenant-detail.component').then(m => m.TenantDetailComponent)
+      }
+    ]
   },
   {
     path: 'sharding',

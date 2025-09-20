@@ -13,8 +13,8 @@ export class PlansService {
     return this.http.get<ApiResponse<Plan[]>>(API_PLANS);
   }
 
-  getById(id: number): Observable<ApiResponse<Plan & { roleIds: number[] }>> {
-    return this.http.get<ApiResponse<Plan & { roleIds: number[] }>>(`${API_PLANS}/${id}`);
+  getById(id: number): Observable<ApiResponse<Plan>> {
+    return this.http.get<ApiResponse<Plan>>(`${API_PLANS}/${id}`);
   }
 
   create(payload: PlanRequest): Observable<ApiResponseBase> {

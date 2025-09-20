@@ -5,6 +5,7 @@ export interface Plan {
   planValidityInDays: number;
   planRate: number;
   isActive: boolean;
+  roleIds: number[];
 }
 
 export interface PlanRequest {

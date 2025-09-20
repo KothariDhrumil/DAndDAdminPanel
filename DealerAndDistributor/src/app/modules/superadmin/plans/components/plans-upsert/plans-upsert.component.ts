@@ -82,8 +82,8 @@ export class PlansUpsertComponent implements OnInit {
 
   private loadPlan(id: number) {
     this.plansService.getById(id).subscribe({
-      next: (res: ApiResponse<Plan & { roleIds: number[] }>) => {
-        const p = res.data as Plan & { roleIds: number[] };
+      next: (res: ApiResponse<Plan>) => {
+        const p = res.data as Plan;
         this.form.patchValue({
           name: p.name,
           description: p.description ?? null,

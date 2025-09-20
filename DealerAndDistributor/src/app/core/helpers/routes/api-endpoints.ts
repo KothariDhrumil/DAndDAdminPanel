@@ -23,6 +23,8 @@ export const USER_PERMISSIONS_API = baseUrl + apiVersionNeutral + userRoute + '/
 
 /*/ Superadmin Routes */
 export const TENANTS_API = baseUrl + apiVersionNeutral + '/tenants';
+export const TENANT_PLAN_API = baseUrl + apiVersionNeutral + '/tenantplan';
+export const TENANT_PLAN_ACTIVE_API = TENANT_PLAN_API + '/active';
 export const API_SHARDING = baseUrl + apiVersionNeutral + '/sharding';
 export const API_GET_DB_DETAILS = API_SHARDING + '/get-db-details';
 export const API_PLANS = baseUrl + apiVersionNeutral + '/plan';
