@@ -1,6 +1,6 @@
 ﻿namespace Application.TenantPlans.Get;
 
-public class TenantPlanResponse
+public class TenantPlanInfo
 {
     public int Id { get; set; }
     public int PlanId { get; set; }

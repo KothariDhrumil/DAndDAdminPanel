@@ -6,19 +6,19 @@ using SharedKernel;
 
 namespace Application.TenantPlans.GetActivePlan;
 
-public sealed record GetActiveTenantPlanByIdQuery(int TenantId) : IQuery<TenantPlanResponse>;
+public sealed record GetActiveTenantPlanByIdQuery(int TenantId) : IQuery<ActiveTenentPlanResponse>;
 
 internal sealed class GetTenantPlanByIdQueryHandler(AuthPermissionsDbContext context)
-    : IQueryHandler<GetActiveTenantPlanByIdQuery, TenantPlanResponse>
+    : IQueryHandler<GetActiveTenantPlanByIdQuery, ActiveTenentPlanResponse>
 {
-    public async Task<Result<TenantPlanResponse>> Handle(GetActiveTenantPlanByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<ActiveTenentPlanResponse>> Handle(GetActiveTenantPlanByIdQuery query, CancellationToken cancellationToken)
     {
-        TenantPlanResponse? TenantPlan = await context
+        ActiveTenentPlanResponse? TenantPlan = await context
             .TenantPlans
             .AsNoTracking()
-            .Where(TenantPlanItem => TenantPlanItem.TenentId == query.TenantId && 
+            .Where(TenantPlanItem => TenantPlanItem.TenentId == query.TenantId &&
                                      TenantPlanItem.IsActive)
-            .Select(TenantPlanItem => new TenantPlanResponse
+            .Select(TenantPlanItem => new ActiveTenentPlanResponse
             {
                 Id = TenantPlanItem.Id,
                 IsActive = TenantPlanItem.IsActive,
@@ -27,6 +27,11 @@ internal sealed class GetTenantPlanByIdQueryHandler(AuthPermissionsDbContext con
                 ValidFrom = TenantPlanItem.ValidFrom,
                 ValidTo = TenantPlanItem.ValidTo,
                 PlanName = TenantPlanItem.Plan.Name,
+                Roles = TenantPlanItem.Plan.Roles.Select(x => new AuthPermissions.AdminCode.RoleWithPermissionNamesDto()
+                {
+
+                }).ToList()
+
 
             })
             .SingleOrDefaultAsync(cancellationToken);

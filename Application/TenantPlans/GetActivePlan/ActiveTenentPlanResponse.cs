@@ -1,6 +1,8 @@
-﻿namespace Application.TenantPlans.GetActivePlan;
+﻿using AuthPermissions.AdminCode;
 
-public sealed class TenantPlanResponse
+namespace Application.TenantPlans.GetActivePlan;
+
+public sealed class ActiveTenentPlanResponse
 {
     public int Id { get; set; }
     public int TenantPlanId { get; set; }
@@ -17,5 +19,7 @@ public sealed class TenantPlanResponse
     public int PlanRate { get; set; }
 
     public DateTime CreatedOn { get; set; }
+
+    public List<RoleWithPermissionNamesDto> Roles { get; set; }
     
 }

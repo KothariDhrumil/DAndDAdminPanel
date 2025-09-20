@@ -6,20 +6,20 @@ using SharedKernel;
 namespace Application.TenantPlans.Get;
 
 
-public sealed record GetTenantPlanQuery() : IQuery<List<TenantPlanResponse>>;
+public sealed record GetTenantPlanQuery() : IQuery<List<TenantPlanInfo>>;
 
 internal sealed class GetTenantPlanQueryHandler(AuthPermissionsDbContext context)
-    : IQueryHandler<GetTenantPlanQuery, List<TenantPlanResponse>>
+    : IQueryHandler<GetTenantPlanQuery, List<TenantPlanInfo>>
 {
-    public async Task<Result<List<TenantPlanResponse>>> Handle(GetTenantPlanQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<TenantPlanInfo>>> Handle(GetTenantPlanQuery query, CancellationToken cancellationToken)
     {
-        List<TenantPlanResponse> TenantPlan = await context
+        List<TenantPlanInfo> TenantPlan = await context
             .TenantPlans
             .AsNoTracking()
             .Include(x => x.Plan)
             .Include(x => x.Tenant)
             .Where(x => x.IsActive)
-            .Select(TenantPlanItem => new TenantPlanResponse()
+            .Select(TenantPlanItem => new TenantPlanInfo()
             {
                 Id = TenantPlanItem.Id,
                 PlanId = TenantPlanItem.PlanId,
