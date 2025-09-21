@@ -33,6 +33,10 @@ export const API_PLANS = baseUrl + apiVersionNeutral + '/plan';
 export const API_ROLES = baseUrl + apiVersionNeutral + '/roles';
 export const API_ROLES_BY_TYPE = API_ROLES + '/get-roles-by-type';
 
+/*/ Auth Users Routes */
+export const AUTHUSERS_API = baseUrl + apiVersionNeutral + '/authusers';
+export const AUTHUSERS_LIST_API = AUTHUSERS_API + '/listusers';
+
 /*/ Admin Routes */
 
 export const AUTH_ROLES_API = '/api/admin/auth-roles';

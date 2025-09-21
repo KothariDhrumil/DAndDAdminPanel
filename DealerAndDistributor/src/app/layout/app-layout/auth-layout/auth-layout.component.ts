@@ -1,10 +1,10 @@
 import { Direction, BidiModule } from '@angular/cdk/bidi';
 import { Component, inject, Renderer2, Inject, DOCUMENT } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { InConfiguration, DirectionService } from '../../../core';
-import { ConfigService } from '../../../core/config';
-import { UnsubscribeOnDestroyAdapter } from '../../../core/shared';
-import { LocalStorageService } from '../../../core/shared/services/storage.service';
+import { ConfigService } from '@core/config';
+import { DirectionService, InConfiguration } from '@core/index';
+import { UnsubscribeOnDestroyAdapter } from '@core/shared';
+import { LocalStorageService } from '@core/shared/services/storage.service';
 
 @Component({
   selector: 'app-auth-layout',
@@ -17,7 +17,7 @@ export class AuthLayoutComponent extends UnsubscribeOnDestroyAdapter {
   public config!: InConfiguration;
 
   private document = inject(DOCUMENT);
-  private directoryService = inject(DirectionService);
+  private directionService = inject(DirectionService);
   private configService = inject(ConfigService);
   private renderer = inject(Renderer2);
   private localStorage = inject(LocalStorageService);
@@ -25,7 +25,7 @@ export class AuthLayoutComponent extends UnsubscribeOnDestroyAdapter {
   constructor() {
     super();
     this.config = this.configService.configData;
-    this.subs.sink = this.directoryService.currentData.subscribe(
+    this.subs.sink = this.directionService.currentData.subscribe(
       (currentData) => {
         if (currentData) {
           this.direction = currentData === 'ltr' ? 'ltr' : 'rtl';

@@ -11,7 +11,7 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, SortInfo, PageInfo } from './generic-table.model';
+import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, SortInfo, PageInfo, RowAction } from './generic-table.model';
 import { MatDivider } from '@angular/material/divider';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -95,6 +95,8 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   formDialogComponent = input<any>(); // Pass form dialog component (add/edit)
   deleteDialogComponent = input<any>(); // Pass delete dialog component
+  // Optional row actions rendered in the actionBtn column
+  rowActions = input<RowAction[]>([]);
 
   openDialog(action: 'add' | 'edit', data?: any) {
     if (!this.formDialogComponent()) return;
@@ -259,6 +261,11 @@ export class GenericTableComponent implements OnInit, OnChanges {
     } else {
       this.tableEvent.emit({ type: 'delete', data: row });
     }
+  }
+
+  triggerCustom(action: string, row: any, $event?: MouseEvent) {
+    if ($event) { $event.stopPropagation(); }
+    this.tableEvent.emit({ type: 'custom', action, data: row });
   }
 
   export() {

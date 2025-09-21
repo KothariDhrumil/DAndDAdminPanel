@@ -10,10 +10,15 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
     children: [
-      {
+       {
         path: 'user',
         loadChildren: () =>
           import('./modules/user/user.routes').then(m => m.USER_ROUTES),
+      },
+      {
+        path: 'users',
+        loadChildren: () =>
+          import('./modules/users/users.routes').then(m => m.USERS_ROUTES),
       },
       {
         path: 'superadmin',

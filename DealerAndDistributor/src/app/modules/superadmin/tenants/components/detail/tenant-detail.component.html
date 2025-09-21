@@ -196,6 +196,31 @@
 
                         <mat-tab>
                             <ng-template mat-tab-label>
+                                <mat-icon class="example-tab-icon msr-2">people</mat-icon>
+                                Users
+                            </ng-template>
+                            <div class="p-3">
+                                <div *ngIf="loadingUsers(); else usersContent" class="d-flex align-items-center gap-2">
+                                    <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+                                    <span>Loading users…</span>
+                                </div>
+                                <ng-template #usersContent>
+                                    <p class="text-danger" *ngIf="errorUsers()">{{ errorUsers() }}</p>
+                                    <app-generic-table
+                                        *ngIf="tenantUsers().length"
+                                        [data]="tenantUsers()"
+                                        [columns]="userColumns()"
+                                        [rowActions]="userRowActions()"
+                                        [config]="userTableConfig"
+                                        (tableEvent)="onUsersTableEvent($event)">
+                                    </app-generic-table>
+                                    <p class="text-muted" *ngIf="!tenantUsers().length && !errorUsers()">No users to display.</p>
+                                </ng-template>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab>
+                            <ng-template mat-tab-label>
                                 <mat-icon class="example-tab-icon msr-2">settings</mat-icon>
                                 Settings
                             </ng-template>

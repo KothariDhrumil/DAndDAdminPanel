@@ -32,6 +32,15 @@ export const SUPERADMIN_ROUTES: Routes = [
     loadChildren: () => import('../roles-and-permission/roles-and-permission.routes').then(m => m.rolesAndPermissionRoutes)
   },
   {
+    path: 'users',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('../users/components/list/users-list.component').then(m => m.UsersListComponent)
+      }
+    ]
+  },
+  {
     path: 'plans',
     children: [
       {

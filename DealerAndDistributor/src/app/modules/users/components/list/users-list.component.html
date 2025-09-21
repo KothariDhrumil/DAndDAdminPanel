@@ -1,0 +1,18 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Users'" [items]="['Superadmin']" [active_item]="'Users'"></app-breadcrumb>
+    </div>
+    <div class="row clearfix">
+      <div class="col-12">
+        <app-generic-table
+          [data]="users()"
+          [columns]="columns()"
+          [rowActions]="rowActions()"
+          [config]="tableConfig"
+          (tableEvent)="onTableEvent($event)">
+        </app-generic-table>
+      </div>
+    </div>
+  </div>
+</section>

@@ -31,7 +31,7 @@
       "submenu": []
     },
     {
-      "path": "/superadmin/roles-and-permissions",
+      "path": "/roles-and-permissions",
       "title": "MENUITEMS.RolesAndPermissions.Text",
       "iconType": "feather",
       "icon": "monitor",
@@ -39,10 +39,7 @@
       "groupTitle": false,
       "badge": "",
       "badgeClass": "",
-      "role": [
-        "RoleManagement",
-        "AccessAll"
-      ],
+      "role": [],
       "submenu": [
         {
           "path": "/superadmin/roles-and-permissions/add",
@@ -61,6 +58,7 @@
         }
       ]
     },
+
     {
       "path": "/superadmin/plans",
       "title": "MENUITEMS.Plans.Text",
@@ -92,6 +90,18 @@
         }       
       
       ]
+    },
+    {
+      "path": "/users",
+      "title": "MENUITEMS.Users.Text",
+      "iconType": "feather",
+      "icon": "users",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [],
+      "submenu": []
     }
   ]
 }

@@ -115,6 +115,13 @@
                     <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                   </button>
                   }
+                  <!-- Custom row action buttons -->
+                  @for (act of rowActions(); track act.name) {
+                  <button mat-icon-button (click)="triggerCustom(act.name, row, $event)"
+                    class="tbl-action-btn" [matTooltip]="act.tooltip || act.name" [color]="act.color || 'primary'">
+                    <app-feather-icons [icon]="act.icon" [class]="'tbl-fav-edit'"></app-feather-icons>
+                  </button>
+                  }
                   @if (config().enableDelete) {
                   <button mat-icon-button color="accent" (click)="delete(row); $event.stopPropagation()"
                     matTooltip="Delete" class="tbl-action-btn">

@@ -44,6 +44,13 @@
         "List": "Plans List",
         "Create": "Plans Create"
       }
+    },
+    "Users": {
+      "Text": "Users",
+      "List": {
+        "List": "Users List",
+        "Create": "Users Create"
+      }
     }
   }
 }

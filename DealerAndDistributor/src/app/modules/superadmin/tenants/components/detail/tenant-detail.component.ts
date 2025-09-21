@@ -19,12 +19,17 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AddTenantPlanDialogComponent } from './add-tenant-plan-dialog/add-tenant-plan-dialog.component';
 import { GenericTableComponent } from '../../../../../core/shared/components/generic-table/generic-table.component';
-import { ColumnDefinition, TableConfig } from '../../../../../core/shared/components/generic-table/generic-table.model';
+import { ColumnDefinition, TableConfig, TableEventArgs, RowAction } from '../../../../../core/shared/components/generic-table/generic-table.model';
 import { TenantsService } from '../../service/tenants.service';
 import { AddChildTenantDialogComponent } from './add-child-tenant-dialog/add-child-tenant-dialog.component';
 import { RenameTenantDialogComponent } from './rename-tenant-dialog/rename-tenant-dialog.component';
 import { Router } from '@angular/router';
 import { SUPERADMIN_TENANT_DETAIL_ROUTE } from '../../../../../core/helpers/routes/app-routes';
+import { AuthUsersService } from '../../../../users/service/auth-users.service';
+import { AddUserDialogComponent } from '../../../../users/components/add-user-dialog/add-user-dialog.component';
+import { UpdateUserRolesDialogComponent } from '../../../../users/components/update-user-roles-dialog/update-user-roles-dialog.component';
+import { UpdateUserTenantDialogComponent } from '../../../../users/components/update-user-tenant-dialog/update-user-tenant-dialog.component';
+import { AuthUserItem } from '../../../../users/models/auth-user.model';
 
 @Component({
     selector: 'app-tenant-detail',
@@ -96,12 +101,45 @@ export class TenantDetailComponent implements OnInit {
         title: 'Child Tenants'
     };
 
+    // Tenant users
+    readonly tenantUsers = signal<AuthUserItem[]>([]);
+    readonly loadingUsers = signal(false);
+    readonly errorUsers = signal<string | null>(null);
+    readonly userColumns = signal<ColumnDefinition[]>([
+        { def: 'userName', label: 'User Name', type: 'text', sortable: true },
+        { def: 'email', label: 'Email', type: 'email', sortable: true },
+        { def: 'hasTenant', label: 'Has Tenant', type: 'check' },
+        { def: 'tenantName', label: 'Tenant', type: 'text' },
+        { def: 'roleNames', label: 'Roles', type: 'text' },
+        { def: 'actions', label: 'Actions', type: 'actionBtn' },
+    ]);
+    readonly userTableConfig: TableConfig = {
+        enableSelection: true,
+        enableSearch: true,
+        enableExport: false,
+        enableRefresh: true,
+        enableColumnHide: true,
+        enableAdd: true,
+        enableEdit: true,
+        enableDelete: false,
+        enableContextMenu: false,
+        pageSize: 10,
+        pageSizeOptions: [5, 10, 25, 50, 100],
+        title: 'Users'
+    };
+
+    readonly userRowActions = signal<RowAction[]>([
+        { name: 'profile', icon: 'user', tooltip: 'Edit Profile', color: 'primary' },
+        { name: 'tenant', icon: 'home', tooltip: 'Change Tenant', color: 'accent' },
+    ]);
+
     constructor(
         private readonly route: ActivatedRoute,
         private readonly service: TenantDetailService,
         private readonly dialog: MatDialog,
         private readonly tenantsService: TenantsService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly authUsersService: AuthUsersService
     ) { }
 
     ngOnInit(): void {
@@ -149,6 +187,7 @@ export class TenantDetailComponent implements OnInit {
 
             this.loadPlanHistory(tenantId);
             this.loadChildTenants(tenantId);
+            this.loadTenantUsers(tenantId);
         });
     }
 
@@ -251,6 +290,108 @@ export class TenantDetailComponent implements OnInit {
 
     private routeToTenant(tenantId: number) {
         this.router.navigate([`${SUPERADMIN_TENANT_DETAIL_ROUTE}/${tenantId}`]);
+    }
+
+    // Users
+    private loadTenantUsers(tenantId: number) {
+        this.loadingUsers.set(true);
+        this.errorUsers.set(null);
+        this.authUsersService.listUsersByTenant(tenantId).subscribe({
+            next: (res) => {
+                if (res?.isSuccess && Array.isArray(res.data)) this.tenantUsers.set(res.data);
+                else { this.tenantUsers.set([]); this.errorUsers.set('No users found'); }
+                this.loadingUsers.set(false);
+            },
+            error: _ => { this.errorUsers.set('Failed to load users'); this.loadingUsers.set(false); }
+        });
+    }
+
+    onUsersTableEvent(event: TableEventArgs) {
+        const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
+        if (!tenantId) return;
+        switch (event.type) {
+            case 'refresh':
+                this.loadTenantUsers(tenantId);
+                break;
+            case 'add':
+                this.openAddUserDialog(tenantId);
+                break;
+            case 'custom':
+                if (event.data && event.action) {
+                    if (event.action === 'profile') this.openUpdateUserProfileDialog(event.data as AuthUserItem);
+                    if (event.action === 'tenant') this.openUpdateUserTenantDialog(event.data as AuthUserItem);
+                }
+                break;
+            case 'edit':
+                if (event.data?.userId) {
+                    this.openUpdateUserRolesDialog(event.data);
+                }
+                break;
+        }
+    }
+
+    private openAddUserDialog(tenantId: number) {
+        const ref = this.dialog.open(AddUserDialogComponent, { data: { tenantId }, width: '640px' });
+        ref.afterClosed().subscribe(payload => {
+            if (payload) {
+                // Use update upsert with minimal fields + assign tenantId
+                const updatePayload = { ...payload, tenantId } as any;
+                this.authUsersService.updateUser(updatePayload).subscribe({
+                    next: (res) => { if (res?.isSuccess) this.loadTenantUsers(tenantId); },
+                    error: _ => { /* optionally toast */ }
+                });
+            }
+        });
+    }
+
+    private openUpdateUserRolesDialog(user: AuthUserItem) {
+        const ref = this.dialog.open(UpdateUserRolesDialogComponent, {
+            width: '520px',
+            data: { userId: user.userId, selectedRoleIds: [] } // TODO: map current roles to ids if available
+        });
+        const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
+        ref.afterClosed().subscribe(result => {
+            if (result?.userId && Array.isArray(result.roleIds)) {
+                this.authUsersService.updateUser({ userId: result.userId, roleIds: result.roleIds }).subscribe({
+                    next: res => { if (res?.isSuccess && tenantId) this.loadTenantUsers(tenantId); },
+                    error: _ => { /* optionally toast */ }
+                });
+            }
+        });
+    }
+
+    private openUpdateUserProfileDialog(user: AuthUserItem) {
+        const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
+        const ref = this.dialog.open(AddUserDialogComponent, { data: { userId: user.userId }, width: '640px' });
+        ref.afterClosed().subscribe(payload => {
+            if (payload?.userId) {
+                this.authUsersService.updateUser({
+                    userId: payload.userId,
+                    firstName: payload.firstName,
+                    lastName: payload.lastName,
+                    phoneNumber: payload.phoneNumber
+                } as any).subscribe({
+                    next: (res) => { if (res?.isSuccess && tenantId) this.loadTenantUsers(tenantId); },
+                    error: _ => { /* optionally toast */ }
+                });
+            }
+        });
+    }
+
+    private openUpdateUserTenantDialog(user: AuthUserItem) {
+        const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
+        const ref = this.dialog.open(UpdateUserTenantDialogComponent, {
+            width: '500px',
+            data: { userId: user.userId, userName: user.userName, currentTenantName: user.tenantName }
+        });
+        ref.afterClosed().subscribe(result => {
+            if (result?.userId && result?.tenantId) {
+                this.authUsersService.updateUser({ userId: result.userId, tenantId: result.tenantId } as any).subscribe({
+                    next: (res) => { if (res?.isSuccess && tenantId) this.loadTenantUsers(tenantId); },
+                    error: _ => { /* optionally toast */ }
+                });
+            }
+        });
     }
 
     // Rename tenant
