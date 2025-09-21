@@ -14,6 +14,8 @@ import { StartupService } from '../../../core/service/startup.service';
 import { DASHBOARD_ROUTE, SUPERADMIN_DASHBOARD_ROUTE, USER_DASHBOARD_ROUTE } from '../../../core/helpers/routes/app-routes';
 import { catchError, take, tap } from 'rxjs';
 import { SigninRequest } from '../../../core/models/interface/SigninRequest';
+import { ApiResponse } from '@core/models/interface/ApiResponse';
+import { Token } from '@core/models/interface/Token';
 
 
 @Component({
@@ -123,23 +125,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       this.authService.signin(request).pipe(
         tap((response) => {
           this.loading.set(false);
-          if (response.isSuccess && response.data) {
-            this.startupService.load()
-              .then(() => {
-                if (this.authService.isSuperAdmin) {
-                  return this.router.navigateByUrl(SUPERADMIN_DASHBOARD_ROUTE);
-                }
-                return this.router.navigateByUrl(this.returnUrl);
-              })
-              .catch((error) => {
-                console.error('Failed to load user permissions:', error);
-                this.error.set('Failed to load user permissions. Please try again.');
-                // Optionally clear the auth token if permissions failed to load
-                this.authService.logout();
-              });
-          } else {
-            this.error.set(response.error?.description || 'Login failed');
-          }
+          this.handleLoginSuccess(response);
         }),
         catchError((err) => {
           this.loading.set(false);
@@ -186,12 +172,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
         const code = this.otpForm.controls.otp.value;
         this.authService.confirmOTP(phoneNumber, code).pipe(
           tap((response) => {
-            this.loading.set(false);
-            if (response.isSuccess && response.data) {
-              this.router.navigateByUrl(this.returnUrl);
-            } else {
-              this.error.set(response.error?.description || 'OTP confirmation failed');
-            }
+            this.handleLoginSuccess(response);
           }),
           catchError(() => {
             this.loading.set(false);
@@ -204,6 +185,25 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     }
   }
 
+  handleLoginSuccess(response: ApiResponse<Token>) {
+    if (response.isSuccess && response.data) {
+      this.startupService.load()
+        .then(() => {
+          if (this.authService.isSuperAdmin) {
+            return this.router.navigateByUrl(SUPERADMIN_DASHBOARD_ROUTE);
+          }
+          return this.router.navigateByUrl(this.returnUrl);
+        })
+        .catch((error) => {
+          console.error('OTP confirmation failed:', error);
+          this.error.set('OTP confirmation failed. Please try again.');
+          // Optionally clear the auth token if permissions failed to load
+          this.authService.logout();
+        });
+    } else {
+      this.error.set(response.error?.description || 'Login failed');
+    }
+  }
 
   // Utility: check if input is email
   isEmail(value: string): boolean {
