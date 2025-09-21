@@ -24,7 +24,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpGet]
-    [HasPermission(Permissions.RoleRead)]
+    //[HasPermission(Permissions.RoleRead)]
     [OpenApiOperation("Get a list of all roles.", "")]
     public async Task<IActionResult> GetListAsync()
     {
@@ -36,7 +36,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpGet("permissions")]
-    [HasPermission(Permissions.PermissionRead)]
+    //[HasPermission(Permissions.PermissionRead)]
     [OpenApiOperation("Get permissions. This should not be used by a user that has a tenant.", "")]
     public IActionResult ListPermissions()
     {
@@ -47,7 +47,7 @@ public class RolesController : VersionNeutralApiController
 
     // add get call for getting list of roles by role type 
     [HttpGet("get-roles-by-type")]
-    [HasPermission(Permissions.RoleRead)]
+    //[HasPermission(Permissions.RoleRead)]
 
     [OpenApiOperation("Get a list of all roles by role type", "")]
     public async Task<IActionResult> GetListByRoleTypeAsync([FromQuery] RoleTypes roleTypes)
@@ -60,7 +60,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpPut("{id:int}")]
-    [HasPermission(Permissions.RoleChange)]
+    //[HasPermission(Permissions.RoleChange)]
     [OpenApiOperation("Update a role's permission names and optionally it's description. This should not be used by a user that has a tenant.", "")]
     public async Task<IActionResult> Edit(int id, RoleCreateUpdateDto input)
     {
@@ -73,7 +73,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpPost]
-    [HasPermission(Permissions.RoleChange)]
+    //[HasPermission(Permissions.RoleChange)]
     [OpenApiOperation("Create a role. This should not be used by a user that has a tenant.", "")]
     public async Task<ActionResult> RegisterRoleAsync(RoleCreateUpdateDto input)
     {
@@ -88,7 +88,7 @@ public class RolesController : VersionNeutralApiController
     }
 
     [HttpGet("{id:int}")]
-    [HasPermission(Permissions.RoleChange)]
+    //[HasPermission(Permissions.RoleChange)]
     public async Task<IActionResult> Edit(int id)
     {
         var userId = User.GetUserIdFromUser();
@@ -103,7 +103,7 @@ public class RolesController : VersionNeutralApiController
 
 
     [HttpDelete("{id:int}")]
-    [HasPermission(Permissions.RoleChange)]
+    //[HasPermission(Permissions.RoleChange)]
     [OpenApiOperation("Delete a role. This should not be used by a user that has a tenant.", "")]
     public async Task<ActionResult> DeleteAsync(int id)
     {
