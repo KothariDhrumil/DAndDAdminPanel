@@ -31,6 +31,6 @@ internal sealed class GetTodoByIdQueryHandler(IRetailDbContext context, IUserCon
             return Result.Failure<TodoResponse>(TodoItemErrors.NotFound(query.TodoItemId));
         }
 
-        return todo;
+        return Result.Success(todo);
     }
 }

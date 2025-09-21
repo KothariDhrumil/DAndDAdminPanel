@@ -24,6 +24,6 @@ internal sealed class GetTodosQueryHandler(IRetailDbContext context)
             })
             .ToListAsync(cancellationToken);
 
-        return todos;
+        return Result.Success(todos);
     }
 }

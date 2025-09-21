@@ -31,6 +31,6 @@ internal sealed class CreateTodoCommandHandler(
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return todoItem.Id;
+        return Result.Success(todoItem.Id);
     }
 }
