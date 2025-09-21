@@ -1,0 +1,13 @@
+<section class="content">
+    <div class="content-block">
+        <div class="block-header">
+            <!-- breadcrumb -->
+            <app-breadcrumb [title]="'Todos'" [items]="['Todos']" [active_item]="'All Todos'">
+            </app-breadcrumb>
+        </div>
+        <app-generic-table [data]="rows()" [columns]="columns" [rowActions]="rowActions" [config]="config"
+            (tableEvent)="onTableEvent($event)">
+        </app-generic-table>
+
+    </div>
+</section>

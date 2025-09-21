@@ -51,6 +51,13 @@
         "List": "Users List",
         "Create": "Users Create"
       }
+    },
+    "Todos": {
+      "Text": "Todos",
+      "List": {
+        "List": "Todos List",
+        "Create": "Todos Create"
+      }
     }
   }
 }

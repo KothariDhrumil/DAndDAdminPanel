@@ -7,6 +7,10 @@ export const USER_ROUTES: Routes = [
     component: UserDashboardComponent,
   },
   {
+    path: 'todos',
+    loadComponent: () => import('./todos/components/list/todo-list/todo-list').then(m => m.TodoList)
+  },
+  {
     path: 'roles-and-permissions',
     loadComponent: () => import('../roles-and-permission/component/list/roles-and-permissions.component')
       .then(m => m.RolesAndPermissionsComponent)

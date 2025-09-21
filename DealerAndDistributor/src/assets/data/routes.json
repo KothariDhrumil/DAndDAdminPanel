@@ -102,6 +102,18 @@
       "badgeClass": "",
       "role": [],
       "submenu": []
+    },
+    {
+      "path": "/user/todos",
+      "title": "MENUITEMS.Todos.Text",
+      "iconType": "feather",
+      "icon": "check-square",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [],
+      "submenu": []
     }
   ]
 }

@@ -48,10 +48,10 @@ import { AuthUserItem } from '../../../../users/models/auth-user.model';
         BreadcrumbComponent,
         MatCheckbox,
         MatInputModule,
-        MatFormFieldModule
-        , MatProgressSpinnerModule
-        , MatDialogModule
-        , GenericTableComponent
+        MatFormFieldModule,
+        MatProgressSpinnerModule,
+        MatDialogModule,
+        GenericTableComponent,        
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {

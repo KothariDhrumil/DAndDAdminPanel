@@ -3,6 +3,7 @@ import { environment } from "../../../../environments/environment";
 // API endpoint constants
 const baseUrl = environment.apiUrl;
 const apiVersionNeutral = '/api';
+const apiVersionV1 = '/api/v1';
 
  /*/ Authentication Routes */
 const authRoute = '/account';
@@ -36,6 +37,9 @@ export const API_ROLES_BY_TYPE = API_ROLES + '/get-roles-by-type';
 /*/ Auth Users Routes */
 export const AUTHUSERS_API = baseUrl + apiVersionNeutral + '/authusers';
 export const AUTHUSERS_LIST_API = AUTHUSERS_API + '/listusers';
+
+/*/ Todos Routes */
+export const TODOS_API = baseUrl + apiVersionV1 + '/todos';
 
 /*/ Admin Routes */
 
