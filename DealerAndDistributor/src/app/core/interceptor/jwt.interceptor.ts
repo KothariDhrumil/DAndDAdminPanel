@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from "@angular/common/http";
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpStatusCode } from "@angular/common/http";
 import { catchError, Observable, throwError } from "rxjs";
 import { AuthService } from "../service/auth.service";
 
@@ -15,12 +15,15 @@ export class JwtInterceptor implements HttpInterceptor {
    request = this.addToken(request);
     return next.handle(request).pipe(
       catchError((error) => {
-        if (error.status === 401 || error.status === 403) {
-          return this.authService.tryRefreshingToken(request, next).pipe(catchError(() => {  // Error handling for token refresh failure
-            this.authService.logout();
-            return next.handle(request);
-
-          }));
+        if (error.status === HttpStatusCode.Unauthorized || error.status === HttpStatusCode.Forbidden) {
+          return this.authService
+            .tryRefreshingToken(request, next)
+            .pipe(
+              catchError((refreshError) => {
+                this.authService.logout();
+                return throwError(() => refreshError);
+              })
+            );
         }
         return throwError(() => error);
       })

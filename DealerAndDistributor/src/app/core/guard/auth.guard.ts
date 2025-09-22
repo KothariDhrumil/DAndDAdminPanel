@@ -8,7 +8,7 @@ import {
 import { LocalStorageService } from '../shared/services';
 import { NgxRolesService } from 'ngx-permissions';
 import { LOGIN_ROUTE } from '../helpers/routes/app-routes';
-import { AuthService } from '../service/auth.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 
 @Injectable({
@@ -18,11 +18,13 @@ export class AuthGuard {
   private router = inject(Router);
   private store = inject(LocalStorageService);
   private rolesService = inject(NgxRolesService);
-  private authService = inject(AuthService);
+  private jwt = new JwtHelperService();
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    // Enforce authentication
-    if (!this.authService.isAuthenticated) {
+    // Enforce authentication without injecting AuthService (avoids circular DI)
+    const token = this.store.getAuthItem<string>('token');
+    const isAuthed = typeof token === 'string' && !!token.trim() && token.trim().split('.').length === 3 && !this.jwt.isTokenExpired(token);
+    if (!isAuthed) {
       this.router.navigateByUrl(LOGIN_ROUTE);
       return false;
     }

@@ -21,6 +21,11 @@ export const routes: Routes = [
           import('./modules/users/users.routes').then(m => m.USERS_ROUTES),
       },
       {
+        path: 'roles-and-permission',
+        loadChildren: () =>
+          import('./modules/roles-and-permission/roles-and-permission.routes').then(m => m.rolesAndPermissionsRoutes),
+      },
+      {
         path: 'superadmin',
         loadChildren: () =>
           import('./modules/superadmin/superadmin.routes').then(m => m.SUPERADMIN_ROUTES),

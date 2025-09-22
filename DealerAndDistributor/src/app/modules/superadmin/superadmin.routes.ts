@@ -28,8 +28,8 @@ export const SUPERADMIN_ROUTES: Routes = [
     loadComponent: () => import('./sharding/components/sharding-list/sharding-list.component').then(m => m.ShardingListComponent)
   },
   {
-    path: 'roles-and-permissions',
-    loadChildren: () => import('../roles-and-permission/roles-and-permission.routes').then(m => m.rolesAndPermissionRoutes)
+    path: 'roles-and-permission',
+    loadChildren: () => import('../roles-and-permission/roles-and-permission.routes').then(m => m.rolesAndPermissionsRoutes)
   },
   {
     path: 'users',

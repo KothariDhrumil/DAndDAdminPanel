@@ -1,4 +1,1 @@
-import { Tenant } from './tenant.model';
-import { ApiResponse } from '../../../../core/models/interface/ApiResponse';
-
-export type TenantsResponse = ApiResponse<Tenant[]>;
+// Deprecated: TenantsResponse no longer used. Service returns PaginatedApiResponse<Tenant[]> directly.

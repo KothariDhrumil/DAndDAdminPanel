@@ -31,7 +31,7 @@ export class StartupService {
       }
 
       // If we have no auth token, return early
-      const token = this.storageService.get('token');
+      const token = this.storageService.getAuthItem<string>('token');
       if (!token) {
         return;
       }

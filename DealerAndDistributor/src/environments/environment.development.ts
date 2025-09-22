@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:44373/api/',
+  tokenAutoRefreshEnabled: true,
+  tokenRefreshAheadSeconds: 30,
 };
 
 /*

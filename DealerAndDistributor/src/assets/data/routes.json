@@ -31,7 +31,7 @@
       "submenu": []
     },
     {
-      "path": "/roles-and-permissions",
+      "path": "/roles-and-permission",
       "title": "MENUITEMS.RolesAndPermissions.Text",
       "iconType": "feather",
       "icon": "monitor",
@@ -42,7 +42,7 @@
       "role": [],
       "submenu": [
         {
-          "path": "/superadmin/roles-and-permissions/add",
+          "path": "/roles-and-permission/add",
           "title": "Add Role",
           "iconType": "feather",
           "icon": "plus",

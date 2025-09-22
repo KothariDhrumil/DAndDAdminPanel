@@ -49,6 +49,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   passwordForm!: FormGroup<{
     emailOrPhone: FormControl<string>;
     password: FormControl<string>;
+    rememberMe: FormControl<boolean>;
   }>;
 
   // OTP login form (phone input)
@@ -82,6 +83,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
         validators: [Validators.required, Validators.minLength(6)],
         nonNullable: true,
       }),
+      rememberMe: this.formBuilder.control(false, { nonNullable: true }),
     });
 
     this.otpForm = this.formBuilder.group({
@@ -116,13 +118,14 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       }
       const emailOrPhone = this.passwordForm.controls.emailOrPhone.value;
       const password = this.passwordForm.controls.password.value;
+      const rememberMe = this.passwordForm.controls.rememberMe.value;
       const request: SigninRequest = {
         phoneNumber: this.isPhone(emailOrPhone) ? emailOrPhone : '',
         email: this.isEmail(emailOrPhone) ? emailOrPhone : '',
         password,
         otpEnabled: false,
       };
-      this.authService.signin(request).pipe(
+      this.authService.signin(request, rememberMe).pipe(
         tap((response) => {
           this.loading.set(false);
           this.handleLoginSuccess(response);

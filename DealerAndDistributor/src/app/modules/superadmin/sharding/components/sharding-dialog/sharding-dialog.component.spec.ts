@@ -37,8 +37,8 @@ describe('ShardingDialogComponent', () => {
   });
 
   it('should close dialog on cancel', () => {
-    const spy = spyOn(component.dialogRef, 'close');
+    const dialogRef = TestBed.inject(MatDialogRef) as unknown as { close: jasmine.Spy };
     component.cancel();
-    expect(spy).toHaveBeenCalled();
+    expect(dialogRef.close).toHaveBeenCalled();
   });
 });

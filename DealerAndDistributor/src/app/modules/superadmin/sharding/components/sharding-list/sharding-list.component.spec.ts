@@ -3,6 +3,7 @@ import { ShardingListComponent } from './sharding-list.component';
 import { ShardingService } from '../../service/sharding.service';
 import { of } from 'rxjs';
 import { Sharding } from '../../models/sharding.model';
+import { ApiResponse } from '../../../../../core/models/interface/ApiResponse';
 
 describe('ShardingListComponent', () => {
   let component: ShardingListComponent;
@@ -29,7 +30,13 @@ describe('ShardingListComponent', () => {
     const mockData: Sharding[] = [
       { name: 'Default Database', databaseName: null, connectionName: 'DefaultConnection', databaseType: 'SqlServer' }
     ];
-    shardingServiceSpy.getAll.and.returnValue(of({ data: mockData, isSuccess: true, isFailure: false, error: null }));
+    const response: ApiResponse<Sharding[]> = {
+      data: mockData,
+      isSuccess: true,
+      isFailure: false,
+      error: { code: '', description: '', type: 0 },
+    };
+    shardingServiceSpy.getAll.and.returnValue(of(response));
     component.ngOnInit();
     expect(component.shardings()).toEqual(mockData);
   });

@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { RolesAndPermissionsComponent } from './component/list/roles-and-permissions.component';
 import { AddRoleComponent } from './component/add-role/add-role.component';
 
-export const rolesAndPermissionRoutes: Routes = [
+export const rolesAndPermissionsRoutes: Routes = [
   {
     path: '',
     children: [
