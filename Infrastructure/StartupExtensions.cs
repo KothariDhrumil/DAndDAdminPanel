@@ -98,7 +98,7 @@ public static class StartupExtensions
     {
         services
             .AddHealthChecks()
-            .AddSqlServer(configuration.GetConnectionString("ShardingConnection")!);
+            .AddSqlServer(configuration.GetConnectionString("DefaultConnection")!);
 
         return services;
     }

@@ -53,7 +53,7 @@ public class AuthUsersController : VersionNeutralApiController
 
         return Ok(PagedResult<List<AuthUserDisplay>>.Success(users));
     }
-    
+
     [HttpGet("listusers/{tenantId:int}")]
     //[HasPermission(Permissions.UserRead)]
     [OpenApiOperation("List users filtered by authUser tenant.", "")]
@@ -96,10 +96,16 @@ public class AuthUsersController : VersionNeutralApiController
     [OpenApiOperation("Add User in Tenant")]
     public async Task<ActionResult> CreateAsync(AddNewUserDto newUser)
     {
-        var tenantId= User.GetTenantIdFromUser();
+        var tenantId = User.GetTenantIdFromUser();
         if (newUser.TenantId == null)
         {
             newUser.TenantId = tenantId;
+        }
+        // TODO : email id patching, remove it later on
+        if (string.IsNullOrEmpty(newUser.Email))
+        {
+            newUser.Email = $"{newUser.PhoneNumber}@dand.com";
+            newUser.Password = $"{newUser.PhoneNumber}@DandD";
         }
 
         var status = await _addNewUserManager.SetUserInfoAsync(newUser);
@@ -108,9 +114,7 @@ public class AuthUsersController : VersionNeutralApiController
             ? throw new Exception(status.GetAllErrors())
             : Ok(Result.Success(status.Message));
     }
-
-
-
+    
     [HttpPut]
     //[HasPermission(Permissions.UserChange)]
     [OpenApiOperation("Update an authUser.", "")]

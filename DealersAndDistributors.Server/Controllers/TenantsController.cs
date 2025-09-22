@@ -60,6 +60,12 @@ public class TenantsController : VersionNeutralApiController
     [OpenApiOperation("Create a new tenant.", "")]
     public async Task<ActionResult> CreateAsync(CreateHierarchicalTenantRequest request)
     {
+        // TODO : later update has own db as per convenience
+        
+        if (request.HasOwnDb == null)
+        {
+            request.HasOwnDb = false;
+        }
         var status = await _authTenantAdmin.AddHierarchicalTenantAsync(
             request.TenantName,
             request.ParentId,

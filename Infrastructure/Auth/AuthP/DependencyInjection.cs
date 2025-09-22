@@ -63,9 +63,8 @@ public static class DependencyInjection
         .RegisterAddClaimToUser<AddGlobalChangeTimeClaim>()
         .RegisterAddClaimToUser<AddTenantNameClaim>()
         .RegisterTenantChangeService<RetailTenantChangeService>()
-        .AddAuthUsersIfEmpty(Example7AppAuthSetupData.UsersRolesDefinition)
-        .AddRolesPermissionsIfEmpty(Example7AppAuthSetupData.RolesDefinition)
-        .AddTenantsIfEmpty(Example7AppAuthSetupData.TenantDefinition)        
+        .AddAuthUsersIfEmpty(AppAuthSetupData.UsersRolesDefinition)
+        .AddRolesPermissionsIfEmpty(AppAuthSetupData.RolesDefinition)     
         .RegisterFindUserInfoService<IndividualAccountUserLookup>()
         .RegisterAuthenticationProviderReader<SyncIndividualAccountUsers>()
         .AddSuperUserToIndividualAccounts<ApplicationUser>()
@@ -74,8 +73,7 @@ public static class DependencyInjection
             //Migrate individual account database
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<AppIdentityDbContext>>();
 
-            //Add demo users to the database
-            options.RegisterServiceToRunInJob<StartupServicesIndividualAccountsAddDemoUsers>();
+            
 
             //Migrate the application part of the database
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<RetailDbContext>>();

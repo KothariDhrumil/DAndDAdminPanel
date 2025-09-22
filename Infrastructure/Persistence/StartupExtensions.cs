@@ -30,7 +30,7 @@ public static class StartupExtensions
     {
         services.AddDbContext<RetailDbContext>(options =>
              options.UseSqlServer(
-                 configuration.GetConnectionString("ShardingConnection"), dbOptions =>
+                 configuration.GetConnectionString("DefaultConnection"), dbOptions =>
              dbOptions.MigrationsHistoryTable(ProductDbContextHistoryName)));
 
         services.AddScoped<IRetailDbContext>(sp => sp.GetRequiredService<RetailDbContext>());

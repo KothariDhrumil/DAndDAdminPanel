@@ -50,10 +50,23 @@ public class RolesController : VersionNeutralApiController
     //[HasPermission(Permissions.RoleRead)]
 
     [OpenApiOperation("Get a list of all roles by role type", "")]
-    public async Task<IActionResult> GetListByRoleTypeAsync([FromQuery] RoleTypes roleTypes)
+    public async Task<IActionResult> GetListByRoleTypeAsync([FromQuery] string roleTypes)
     {
+        // make an array of comma separated role types;
+        var roleArray = roleTypes.Split(",");
+
+        List<RoleTypes> roles = [];
+        // convert roles to roleType Array using Enum.Parse
+        foreach (var role in roleArray)
+        {
+            if (Enum.TryParse<RoleTypes>(role, out var parsedRole))
+            {
+                roles.Add(parsedRole);
+            }
+        }
+
         string? userId = User.GetUserIdFromUser();
-        var data = await _authRolesAdmin.QueryRoleToPermissions(roleTypes, userId)
+        var data = await _authRolesAdmin.QueryRoleToPermissions(roles, userId)
                                         .OrderBy(x => x.RoleType)
                                         .ToListAsync();
         return Ok(PagedResult<List<RoleWithPermissionNamesDto>>.Success(data));

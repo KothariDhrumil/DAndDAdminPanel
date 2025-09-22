@@ -5,6 +5,7 @@ using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
+using System.Linq;
 
 namespace Application.TenantPlans.Update;
 
@@ -24,9 +25,12 @@ public sealed class UpdateTenantPlanCommand : ICommand
 
     internal sealed class UpdateTenantPlanCommandHandler(
     AuthPermissionsDbContext context,
-    IAuthTenantAdminService authTenantAdmin)
+    IAuthTenantAdminService authTenantAdmin,
+    IAuthUsersAdminService authUsersAdminService)
     : ICommandHandler<UpdateTenantPlanCommand>
     {
+
+
         public async Task<Result> Handle(UpdateTenantPlanCommand command, CancellationToken cancellationToken)
         {
             var tenantPlan = await context.TenantPlans
@@ -86,6 +90,34 @@ public sealed class UpdateTenantPlanCommand : ICommand
                 var status = await authTenantAdmin.UpdateTenantRolesAsync(command.TenantId, effectiveRoleIds);
                 if (status.HasErrors)
                     throw new ApiException(status.GetAllErrors());
+
+
+                // If any roles were removed from the tenant plan, remove those roles from all users in this tenant
+                if (toRemove.Count > 0)
+                {
+                    // Find users in this tenant who currently have any of the removed roles
+                    var usersToUpdate = await authUsersAdminService
+                        .QueryAuthUsers(command.TenantId).Include(x=>x.UserRoles)
+                        .Where(u => u.UserRoles.Any(ur => toRemove.Contains(ur.RoleId)))
+                        .ToListAsync(cancellationToken);
+
+                    foreach (var user in usersToUpdate)
+                    {
+                        // New user role set = existing minus removed roles
+                        var newUserRoleIds = user.UserRoles
+                            .Select(ur => ur.RoleId)
+                            .Where(roleId => !toRemove.Contains(roleId))
+                            .Distinct()
+                            .ToList();
+
+                        var userUpdateStatus = await authUsersAdminService.UpdateUserAsync(
+                            user.UserId,
+                            roleIds: newUserRoleIds);
+
+                        if (userUpdateStatus.HasErrors)
+                            throw new ApiException(userUpdateStatus.GetAllErrors());
+                    }
+                }
             }
 
             await context.SaveChangesAsync(cancellationToken);
