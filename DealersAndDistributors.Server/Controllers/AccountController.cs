@@ -52,7 +52,7 @@ public sealed class AccountController : VersionNeutralApiController
         {
             Email = $"{request.PhoneNumber}@dealers.com",
             UserName = request.PhoneNumber,
-            Password = request.Password,
+            Password = $"{request.PhoneNumber}@DandD",
             IsPersistent = false,
             FirstName = request.FirstName,
             LastName = request.LastName,
@@ -61,7 +61,8 @@ public sealed class AccountController : VersionNeutralApiController
         var newTenantData = new AddNewTenantDto
         {
             TenantName = request.TenantName,
-            HasOwnDb = false,
+            HasOwnDb = request.HasOwnDb,
+            ShardingName = request.ShardingName
 
         };
         var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);

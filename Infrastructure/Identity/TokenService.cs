@@ -36,7 +36,7 @@ internal class TokenService(
             //if (request.OtpEnabled)
             //{
             //    string code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
-            //    if (code != null)
+            //    if (code != null) 
             //    {
             //        //var code = await _userManager.GenerateTwoFactorTokenAsync(account, _userManager.Options.Tokens.PasswordResetTokenProvider);
             //        await sMSService.SendOTPAsync(new SMSRequestDTO() { To = request.PhoneNumber, Body = $"{code}", Template = "DELUX_OTP" });

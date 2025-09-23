@@ -1,6 +1,8 @@
 {
   "Cache": {
-    "ShardingEntry-Default Database": "{\r\n  \"Name\": \"Default Database\",\r\n  \"DatabaseName\": null,\r\n  \"ConnectionName\": \"DefaultConnection\",\r\n  \"DatabaseType\": \"SqlServer\"\r\n}"
+    "ShardingEntry-Default Database": "{\r\n  \"Name\": \"Default Database\",\r\n  \"DatabaseName\": null,\r\n  \"ConnectionName\": \"DefaultConnection\",\r\n  \"DatabaseType\": \"SqlServer\"\r\n}",
+    "ShardingEntry-IndianDB": "{\r\n  \"Name\": \"IndianDB\",\r\n  \"DatabaseName\": \"DAndD_Product2.0\",\r\n  \"ConnectionName\": \"IndiaServerDBConnection\",\r\n  \"DatabaseType\": \"SqlServer\"\r\n}",
+    "ShardingEntry-DC-20250923172933": "{\r\n  \"Name\": \"DC-20250923172933\",\r\n  \"DatabaseName\": \"20250923172933-545\",\r\n  \"ConnectionName\": \"DefaultConnection\",\r\n  \"DatabaseType\": \"SqlServer\"\r\n}"
   },
   "TimeOuts": {}
 }

@@ -10,5 +10,9 @@ public class CreateUserRequest
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public int? DesignationId { get; set; }
+    public string? ShardingName { get; set; }
+
+    public bool HasOwnDb { get; set; } = false;
 }
+
 
