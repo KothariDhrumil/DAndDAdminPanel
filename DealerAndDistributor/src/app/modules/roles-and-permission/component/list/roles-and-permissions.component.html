@@ -5,8 +5,7 @@
       <app-breadcrumb [title]="'Roles'" [items]="['Management']" [active_item]="'Roles'">
       </app-breadcrumb>
     </div>
-    
-    <ng-container *ngIf="!loading(); else loadingTpl">
+    @if (!loading()) {
       <app-generic-table
         [data]="roles()"
         [columns]="columns()"
@@ -14,11 +13,10 @@
         [totalRecords]="totalRecords()"
         (tableEvent)="onTableEvent($event)">
       </app-generic-table>
-    </ng-container>
-    <ng-template #loadingTpl>
+    } @else {
       <div class="d-flex justify-content-center my-4">
         <mat-spinner diameter="40"></mat-spinner>
       </div>
-    </ng-template>
+    }
   </div>
 </section>

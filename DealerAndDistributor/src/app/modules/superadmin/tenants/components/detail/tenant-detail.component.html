@@ -22,18 +22,24 @@
                             </div>
                             <img src="assets/images/user/usrbig3.jpg" class="user-img" alt="">
                             <p class="text-center">
-                                <mat-chip-set *ngIf="activePlan() as ap">
-                                    <mat-chip color="primary" selected>{{ ap.planName }}</mat-chip>
-                                </mat-chip-set>
+                                @if (activePlan(); as ap) {
+                                    <mat-chip-set>
+                                        <mat-chip color="primary" selected>{{ ap.planName }}</mat-chip>
+                                    </mat-chip-set>
+                                }
                             </p>
                             <div>
                                 <span class="phone">
                                     <i class="material-icons">database</i>{{ tenant()?.databaseInfoName }}</span>
                             </div>
-                            <div class="p-2" *ngIf="loadingTenant()">
-                                <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
-                            </div>
-                            <p class="text-danger text-center" *ngIf="errorTenant()">{{ errorTenant() }}</p>
+                            @if (loadingTenant()) {
+                                <div class="p-2">
+                                    <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+                                </div>
+                            }
+                            @if (errorTenant()) {
+                                <p class="text-danger text-center">{{ errorTenant() }}</p>
+                            }
                         </div>
                     </div>
                 </div>
@@ -108,7 +114,8 @@
                                         </div>
                                     </div>
                                     <div class="body">
-                                        <div class="row" *ngIf="activePlan() as ap; else noPlan">
+                                        @if (activePlan(); as ap) {
+                                            <div class="row">
                                             <div class="col-md-3 col-6 b-r">
                                                 <strong>Plan</strong>
                                                 <br>
@@ -129,17 +136,21 @@
                                                 <br>
                                                 <p class="text-muted">{{ ap.validTo | date:'yyyy-MM-dd' }}</p>
                                             </div>
-                                        </div>
-                                        <ng-template #noPlan>
-                                            <div class="d-flex align-items-center gap-2" *ngIf="loadingActivePlan(); else noPlanMsg">
-                                                <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
-                                                <span>Loading active plan…</span>
                                             </div>
-                                            <ng-template #noPlanMsg>
-                                                <p class="m-t-30 text-muted" *ngIf="!errorActivePlan()">No active plan.</p>
-                                                <p class="m-t-30 text-danger" *ngIf="errorActivePlan()">{{ errorActivePlan() }}</p>
-                                            </ng-template>
-                                        </ng-template>
+                                        } @else {
+                                            @if (loadingActivePlan()) {
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+                                                    <span>Loading active plan…</span>
+                                                </div>
+                                            } @else {
+                                                @if (!errorActivePlan()) {
+                                                    <p class="m-t-30 text-muted">No active plan.</p>
+                                                } @else {
+                                                    <p class="m-t-30 text-danger">{{ errorActivePlan() }}</p>
+                                                }
+                                            }
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -149,23 +160,28 @@
                         <mat-tab label="Plan History">
                             <div class="p-3">
                                 <mat-list>
-                                    <ng-container *ngIf="planHistory().length; else noHistory">
-                                        <mat-list-item *ngFor="let ph of planHistory()">
-                                            <mat-icon matListItemIcon>history</mat-icon>
-                                            <div matListItemTitle>{{ ph.planName }}</div>
-                                            <div matListItemLine>{{ ph.validFrom | date:'yyyy-MM-dd' }} - {{ ph.validTo | date:'yyyy-MM-dd' }} • {{ ph.planRate | currency }}</div>
-                                        </mat-list-item>
-                                    </ng-container>
-                                    <ng-template #noHistory>
-                                        <div class="d-flex align-items-center gap-2" *ngIf="loadingHistory(); else noHistoryMsg">
-                                            <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
-                                            <span>Loading history…</span>
-                                        </div>
-                                        <ng-template #noHistoryMsg>
-                                            <p class="text-muted m-0" *ngIf="!errorHistory()">No plan history.</p>
-                                            <p class="text-danger m-0" *ngIf="errorHistory()">{{ errorHistory() }}</p>
-                                        </ng-template>
-                                    </ng-template>
+                                    @if (planHistory().length) {
+                                        @for (ph of planHistory(); track $index) {
+                                            <mat-list-item>
+                                                <mat-icon matListItemIcon>history</mat-icon>
+                                                <div matListItemTitle>{{ ph.planName }}</div>
+                                                <div matListItemLine>{{ ph.validFrom | date:'yyyy-MM-dd' }} - {{ ph.validTo | date:'yyyy-MM-dd' }} • {{ ph.planRate | currency }}</div>
+                                            </mat-list-item>
+                                        }
+                                    } @else {
+                                        @if (loadingHistory()) {
+                                            <div class="d-flex align-items-center gap-2">
+                                                <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+                                                <span>Loading history…</span>
+                                            </div>
+                                        } @else {
+                                            @if (!errorHistory()) {
+                                                <p class="text-muted m-0">No plan history.</p>
+                                            } @else {
+                                                <p class="text-danger m-0">{{ errorHistory() }}</p>
+                                            }
+                                        }
+                                    }
                                 </mat-list>
                             </div>
                         </mat-tab>
@@ -176,20 +192,25 @@
                                 Child Tenants
                             </ng-template>
                             <div class="p-3">
-                                <div *ngIf="loadingChildren(); else childrenContent" class="d-flex align-items-center gap-2">
-                                    <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
-                                    <span>Loading child tenants…</span>
-                                </div>
-                                <ng-template #childrenContent>
-                                    <p class="text-danger" *ngIf="errorChildren()">{{ errorChildren() }}</p>
+                                @if (loadingChildren()) {
+                                    <div class="d-flex align-items-center gap-2">
+                                        <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+                                        <span>Loading child tenants…</span>
+                                    </div>
+                                } @else {
+                                    @if (errorChildren()) {
+                                        <p class="text-danger">{{ errorChildren() }}</p>
+                                    }
                                     <app-generic-table
                                         [data]="childTenants()"
                                         [columns]="childColumns()"
                                         [config]="childTableConfig"
                                         (tableEvent)="onChildTableEvent($event)">
                                     </app-generic-table>
-                                    <p class="text-muted" *ngIf="!childTenants().length && !errorChildren()">No child tenants to display.</p>
-                                </ng-template>
+                                    @if (!childTenants().length && !errorChildren()) {
+                                        <p class="text-muted">No child tenants to display.</p>
+                                    }
+                                }
                             </div>
                         </mat-tab>
 
@@ -199,12 +220,15 @@
                                 Users
                             </ng-template>
                             <div class="p-3">
-                                <div *ngIf="loadingUsers(); else usersContent" class="d-flex align-items-center gap-2">
-                                    <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
-                                    <span>Loading users…</span>
-                                </div>
-                                <ng-template #usersContent>
-                                    <p class="text-danger" *ngIf="errorUsers()">{{ errorUsers() }}</p>
+                                @if (loadingUsers()) {
+                                    <div class="d-flex align-items-center gap-2">
+                                        <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+                                        <span>Loading users…</span>
+                                    </div>
+                                } @else {
+                                    @if (errorUsers()) {
+                                        <p class="text-danger">{{ errorUsers() }}</p>
+                                    }
                                     <app-generic-table
                                         [data]="tenantUsers()"
                                         [columns]="userColumns()"
@@ -212,8 +236,10 @@
                                         [config]="userTableConfig"
                                         (tableEvent)="onUsersTableEvent($event)">
                                     </app-generic-table>
-                                    <p class="text-muted" *ngIf="!tenantUsers().length && !errorUsers()">No users to display.</p>
-                                </ng-template>
+                                    @if (!tenantUsers().length && !errorUsers()) {
+                                        <p class="text-muted">No users to display.</p>
+                                    }
+                                }
                             </div>
                         </mat-tab>                      
 

@@ -7,18 +7,24 @@
       <mat-label>Select Tenant</mat-label>
       <mat-select formControlName="tenantId" [disabled]="loading()">
         <mat-option [value]="null">No Tenant</mat-option>
-        <mat-option *ngFor="let tenant of tenants()" [value]="tenant.tenantId">
-          {{ tenant.tenantName }} ({{ tenant.tenantFullName }})
-        </mat-option>
+        @for (tenant of tenants(); track tenant.tenantId) {
+          <mat-option [value]="tenant.tenantId">
+            {{ tenant.tenantName }} ({{ tenant.tenantFullName }})
+          </mat-option>
+        }
       </mat-select>
-      <mat-hint *ngIf="data.currentTenantName">Current: {{ data.currentTenantName }}</mat-hint>
+      @if (data.currentTenantName) {
+        <mat-hint>Current: {{ data.currentTenantName }}</mat-hint>
+      }
     </mat-form-field>
   </form>
   
-  <div *ngIf="loading()" class="text-center">
+  @if (loading()) {
+  <div class="text-center">
     <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
     <p>Loading tenants...</p>
   </div>
+  }
 </div>
 
 <div mat-dialog-actions align="end">

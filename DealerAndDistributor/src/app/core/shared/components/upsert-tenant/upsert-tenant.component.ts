@@ -53,7 +53,7 @@ export class UpsertTenantComponent implements OnInit {
             lastName: this.fb.control(this.initialValue?.lastName ?? '', { validators: [Validators.required], nonNullable: true }),
             phoneNumber: this.fb.control(this.initialValue?.phoneNumber ?? '', { validators: [Validators.required, Validators.pattern(/^\+?[0-9]{10,15}$/)], nonNullable: true }),
             password: this.fb.control(this.initialValue?.password ?? '', { validators: this.showPassword ? [Validators.required, Validators.minLength(8)] : [], nonNullable: true }),
-            designationId: this.fb.control(this.initialValue?.designationId ?? 0, { validators: [], nonNullable: true}),
+            designationId: this.fb.control(this.initialValue?.designationId ?? 0, { validators: [], nonNullable: true }),
         });
     }
 
