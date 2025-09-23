@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -75,25 +75,35 @@ export class AddTenantPlanDialogComponent implements OnInit {
         private readonly dialogRef: MatDialogRef<AddTenantPlanDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: AddTenantPlanDialogData,
         private readonly plansService: PlansService,
-        private readonly service: TenantDetailService
+        private readonly service: TenantDetailService,
+        private readonly cdr: ChangeDetectorRef
     ) {
         this.isEditModeFlag = !!(data && (data.tenantPlanId || data.activePlan));
     }
 
     ngOnInit(): void {
         this.loadPlans();
-        this.form.controls['validFrom'].valueChanges.subscribe((date: Date | null) => this.updateValidToFrom(date));
+        this.form.controls['validFrom'].valueChanges.subscribe((date: Date | null) => {
+            this.updateValidToFrom(date);
+            this.cdr.markForCheck();
+        });
         this.form.controls['planId'].valueChanges.subscribe((pid: number | null) => {
             this.selectedPlanId.set(pid);
             this.onPlanSelected(pid);
+            this.cdr.markForCheck();
+        });
+        this.form.controls['roles'].valueChanges.subscribe(() => {
+            // Ensure form validity recalculates and UI updates under OnPush
+            this.form.updateValueAndValidity();
+            this.cdr.markForCheck();
         });
 
         // If in edit mode, prefill form with existing active plan values
         const ap = this.data.activePlan;
         if (ap) {
-            // Convert dates from string (yyyy-MM-dd or ISO) to Date
-            const from = ap.validFrom ? new Date(ap.validFrom) : new Date();
-            const to = ap.validTo ? new Date(ap.validTo) : this.addDays(from, 0);
+            // Convert dates from string/number to Date safely
+            const from = this.coerceDate(ap.validFrom) ?? new Date();
+            const to = this.coerceDate(ap.validTo) ?? this.addDays(from, 0);
             // We'll set planId after plans load to ensure it exists in options
             this.form.patchValue({
                 isActive: ap.isActive,
@@ -103,6 +113,7 @@ export class AddTenantPlanDialogComponent implements OnInit {
             }, { emitEvent: false });
             // Mark that the next plan selection is from edit prefill
             this.editingPrefill = true;
+            this.cdr.markForCheck();
         }
     }
 
@@ -209,8 +220,20 @@ export class AddTenantPlanDialogComponent implements OnInit {
         this.dialogRef.close(false);
     }
 
-    private toYmd(d: Date): string {
+    private toYmd(d: Date | string | number): string {
         const pad = (n: number) => n.toString().padStart(2, '0');
-        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        const dt = d instanceof Date ? d : new Date(d as any);
+        if (isNaN(dt.getTime())) {
+            // Fallback to today if invalid; alternatively, throw or set submitError
+            const today = new Date();
+            return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+        }
+        return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+    }
+
+    private coerceDate(value: Date | string | number | null | undefined): Date | null {
+        if (value == null) return null;
+        const dt = value instanceof Date ? value : new Date(value as any);
+        return isNaN(dt.getTime()) ? null : dt;
     }
 }

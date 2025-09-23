@@ -71,16 +71,17 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(FeatherModule.pick(allIcons)),
     importProvidersFrom(NgxPermissionsModule.forRoot()),
     provideCharts(withDefaultRegisterables()),
+    // Register DI-based interceptors once
     provideHttpClient(withInterceptorsFromDi()),
-    provideHttpClient(withInterceptorsFromDi()),
+    // Order matters: JwtInterceptor should run before ErrorInterceptor
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
+      useClass: JwtInterceptor,
       multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: JwtInterceptor,
+      useClass: ErrorInterceptor,
       multi: true,
     },
     provideAnimationsAsync(),

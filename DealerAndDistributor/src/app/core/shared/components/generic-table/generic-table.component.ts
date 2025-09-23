@@ -162,6 +162,20 @@ export class GenericTableComponent implements OnInit, OnChanges {
     });
   }
 
+  clearFilter() {
+    this.filterValue.set('');
+    // Reset the data source filter as well if using built-in filtering
+    if (this.dataSource) {
+      this.dataSource.filter = '';
+    }
+    this.tableEvent.emit({
+      type: 'filter',
+      filter: '',
+      sort: this.currentSort(),
+      page: this.currentPage()
+    });
+  }
+
   onSort(event: Sort) {
     const sortInfo: SortInfo = {
       active: event.active,

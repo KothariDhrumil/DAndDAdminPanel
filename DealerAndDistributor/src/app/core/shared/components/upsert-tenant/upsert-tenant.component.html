@@ -1,0 +1,100 @@
+<div class="upsert-tenant">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        <div class="row">
+            <div class="col-12 mb-2">
+                <mat-form-field class="example-full-width" appearance="outline">
+                    <mat-label>Company Name</mat-label>
+                    <input matInput formControlName="tenantName" required>
+                    @if (form.controls.tenantName.hasError('required')) {
+                    <mat-error>Company name is required</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mb-2">
+                <mat-form-field class="example-full-width" appearance="outline">
+                    <mat-label>First Name</mat-label>
+                    <input matInput formControlName="firstName" required>
+                    @if (form.controls.firstName.hasError('required')) {
+                    <mat-error>First name is required</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-2">
+                <mat-form-field class="example-full-width" appearance="outline">
+                    <mat-label>Last Name</mat-label>
+                    <input matInput formControlName="lastName" required>
+                    @if (form.controls.lastName.hasError('required')) {
+                    <mat-error>Last name is required</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-2">
+                <mat-form-field class="example-full-width" appearance="outline">
+                    <mat-label>Phone Number</mat-label>
+                    <input matInput formControlName="phoneNumber" required maxlength="15">
+                    @if (form.controls.phoneNumber.hasError('required')) {
+                    <mat-error>Phone number is required</mat-error>
+                    }
+                    @if (form.controls.phoneNumber.hasError('pattern')) {
+                    <mat-error>Enter a valid phone number</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+        </div>
+        
+
+        @if (designations.length) {
+            <div class="row">
+                <div class="col-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label>Designation</mat-label>
+                        <mat-select formControlName="designationId">
+                            @for (d of designations; track d.id) {
+                                <mat-option [value]="d.id">{{ d.name }}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        }
+
+
+        @if (showPassword) {
+            <div class="row">
+                <div class="col-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label>Password</mat-label>
+                        <input matInput formControlName="password" [type]="hide() ? 'password' : 'text'" required>
+                        <button mat-icon-button matSuffix type="button" (click)="hide.set(!hide())"
+                            aria-label="Toggle password">
+                            <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        @if (form.controls.password.hasError('required')) {
+                        <mat-error>Password is required</mat-error>
+                        }
+                        @if (form.controls.password.hasError('minlength')) {
+                        <mat-error>Password must be at least 8 characters</mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+            </div>
+        }
+
+
+        <div class="container-auth-form-btn">
+            <div style="text-align:center">
+                <button mat-flat-button color="accent" class="auth-form-btn" [disabled]="!form.valid" type="submit">{{
+                    submitText }}</button>
+            </div>
+        </div>
+    </form>
+</div>

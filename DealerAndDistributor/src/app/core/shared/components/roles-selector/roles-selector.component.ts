@@ -24,7 +24,7 @@ import { RoleOption } from './models/role-option.model';
 })
 export class RolesSelectorComponent implements ControlValueAccessor, OnInit {
     @Input() label = 'Roles';
-    @Input() roleTypes: number = 80;
+    @Input() roleTypes: number[] = [80];
     @Input() disabled = false;
 
     readonly options = signal<RoleOption[]>([]);

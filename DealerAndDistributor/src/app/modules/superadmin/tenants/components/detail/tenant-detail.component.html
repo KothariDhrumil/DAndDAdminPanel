@@ -183,7 +183,6 @@
                                 <ng-template #childrenContent>
                                     <p class="text-danger" *ngIf="errorChildren()">{{ errorChildren() }}</p>
                                     <app-generic-table
-                                        *ngIf="childTenants().length"
                                         [data]="childTenants()"
                                         [columns]="childColumns()"
                                         [config]="childTableConfig"
@@ -207,7 +206,6 @@
                                 <ng-template #usersContent>
                                     <p class="text-danger" *ngIf="errorUsers()">{{ errorUsers() }}</p>
                                     <app-generic-table
-                                        *ngIf="tenantUsers().length"
                                         [data]="tenantUsers()"
                                         [columns]="userColumns()"
                                         [rowActions]="userRowActions()"

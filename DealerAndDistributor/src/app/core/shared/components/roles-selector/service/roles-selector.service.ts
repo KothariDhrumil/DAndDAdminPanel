@@ -15,8 +15,9 @@ interface RoleApiItem {
 export class RolesSelectorService {
   private readonly http = inject(HttpClient);
 
-  getRolesByType(roleTypes: number): Observable<RoleOption[]> {
-    const params = new HttpParams().set('roleTypes', roleTypes.toString());
+  getRolesByType(roleTypes: number[]): Observable<RoleOption[]> {
+    
+    const params = new HttpParams().set('roleTypes', roleTypes.join(','));
     return this.http.get<ApiResponse<RoleApiItem[]>>(API_ROLES_BY_TYPE, { params }).pipe(
       map(res => (res.data || []).map(r => ({ id: Number(r.roleId), name: r.roleName, description: r.description })))
     );

@@ -336,7 +336,7 @@ export class TenantDetailComponent implements OnInit {
             if (payload) {
                 // Use update upsert with minimal fields + assign tenantId
                 const updatePayload = { ...payload, tenantId } as any;
-                this.authUsersService.updateUser(updatePayload).subscribe({
+                this.authUsersService.createUser(updatePayload).subscribe({
                     next: (res) => { if (res?.isSuccess) this.loadTenantUsers(tenantId); },
                     error: _ => { /* optionally toast */ }
                 });

@@ -2,11 +2,11 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="'All Employee'" [items]="['Employees']" [active_item]="'All Employee'">
+      <app-breadcrumb [title]="'All Tenants'" [items]="['Tenants']" [active_item]="'All Tenants'">
       </app-breadcrumb>
     </div>
 
     <app-generic-table [data]="tenants()" [columns]="columns() || []" [totalRecords]="totalRecords()"
-      [config]="tableConfig" (tableEvent)="onTableEvent($event)" />
+      [config]="tableConfig" [formDialogComponent]="TenantDialogComponent" (tableEvent)="onTableEvent($event)" />
   </div>
 </section>

@@ -139,13 +139,18 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
 
-            <!-- No results row -->
+            <!-- Empty and no-results row with helpful actions -->
             <tr class="mat-row" *matNoDataRow>
               <td class="mat-cell" [attr.colspan]="displayedColumns().length">
                 @if (filterValue()) {
-                No results matching "{{ filterValue() }}"
+                  <div class="d-flex align-items-center gap-2">
+                    <span>No results matching "{{ filterValue() }}"</span>
+                    <button mat-stroked-button color="primary" (click)="clearFilter()">Clear search</button>
+                  </div>
                 } @else {
-                No data available
+                  <div class="d-flex align-items-center gap-2">
+                    <span>No data available</span>
+                  </div>
                 }
               </td>
             </tr>

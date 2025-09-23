@@ -25,6 +25,11 @@ export class TenantsService {
     return this.http.post<ApiResponseBase>(TENANTS_CREATE_API, payload);
   }
 
+  createTenant(tenantName: string): Observable<ApiResponseBase> {
+    const payload = { tenantName };
+    return this.http.post<ApiResponseBase>(TENANTS_CREATE_API, payload);
+  }
+
   renameTenant(tenantId: number, tenantName: string): Observable<ApiResponseBase> {
     const payload = { tenantId, tenantName };
     return this.http.put<ApiResponseBase>(TENANTS_API, payload);

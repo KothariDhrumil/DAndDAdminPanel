@@ -15,8 +15,9 @@ import { RoleDetail, PermissionsWithSelect } from '../../models/role-detail.mode
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { BreadcrumbComponent } from "../../../../core/shared/components/breadcrumb/breadcrumb.component";
 import { MatListModule } from "@angular/material/list";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Role } from '../../../../core';
+import { ROLES_PERMISSION_ROUTE } from '@core/helpers/routes/app-routes';
 
 @Component({
   selector: 'app-add-role',
@@ -90,7 +91,8 @@ export class AddRoleComponent implements OnInit {
     private fb: FormBuilder,
     private permissionService: PermissionService,
     private rolesService: RolesService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.form = this.fb.group({
       roleName: ['', [Validators.required, Validators.maxLength(50)]],
@@ -161,7 +163,8 @@ export class AddRoleComponent implements OnInit {
     if (this.isEditMode && this.roleIdToEdit) {
       this.rolesService.updateRole(Number(this.roleIdToEdit), payload).subscribe({
         next: () => {
-          // Show success message or navigate back
+          // Navigate back to roles list after update
+          this.router.navigateByUrl(ROLES_PERMISSION_ROUTE);
         },
         error: () => {
           // Show error message
@@ -170,7 +173,8 @@ export class AddRoleComponent implements OnInit {
     } else {
       this.rolesService.createRole(payload).subscribe({
         next: () => {
-          // Show success message or reset form
+          // Navigate back to roles list after create
+          this.router.navigateByUrl(ROLES_PERMISSION_ROUTE);
         },
         error: () => {
           // Show error message

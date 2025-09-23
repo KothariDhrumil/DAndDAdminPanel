@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
-export interface AddUserDialogData { userId?: string }
+export interface AddUserDialogData { userId?: string | null }
 
 @Component({
   selector: 'app-add-user-dialog',
@@ -17,8 +17,13 @@ export interface AddUserDialogData { userId?: string }
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddUserDialogComponent {
-  form = new FormGroup({
-    userId: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+  form: FormGroup<{
+    userId: FormControl<string | null>;
+    firstName: FormControl<string>;
+    lastName: FormControl<string>;
+    phoneNumber: FormControl<string>;
+  }> = new FormGroup({
+    userId: new FormControl<string | null>({ value: null, disabled: true }, { nonNullable: false }),
     firstName: new FormControl<string>('', { nonNullable: true }),
     lastName: new FormControl<string>('', { nonNullable: true }),
     phoneNumber: new FormControl<string>('', { nonNullable: true }),
@@ -28,7 +33,9 @@ export class AddUserDialogComponent {
     private dialogRef: MatDialogRef<AddUserDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: AddUserDialogData
   ) {
-    if (data?.userId) this.form.patchValue({ userId: data.userId });
+    if (data?.userId) {
+      this.form.patchValue({ userId: data.userId });
+    }
   }
 
   save() {

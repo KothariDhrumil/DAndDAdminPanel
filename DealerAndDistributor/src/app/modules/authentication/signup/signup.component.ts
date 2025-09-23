@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
+import { UpsertTenantComponent, UpsertTenantFormValue } from '../../../core/shared/components/upsert-tenant/upsert-tenant.component';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -23,7 +24,8 @@ import { CommonModule } from '@angular/common';
     RouterLink,
     MatButtonModule,
     MatOptionModule,
-    MatSelectModule
+    MatSelectModule,
+    UpsertTenantComponent
   ]
 })
 export class SignupComponent implements OnInit {
@@ -80,6 +82,30 @@ export class SignupComponent implements OnInit {
       },
       error: () => {
         // handle error, e.g. show message
+      }
+    });
+  }
+
+  // Handler for the shared upsert-tenant form submission
+  onSharedSubmit(val: UpsertTenantFormValue) {
+    const request = {
+      phoneNumber: val.phoneNumber,
+      password: val.password ?? '',
+      tenantName: val.tenantName,
+      firstName: val.firstName,
+      lastName: val.lastName,
+      designationId: val.designationId ?? 0,
+    };
+    this.authService.register(request).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.router.navigate(['/admin/dashboard/main']);
+        } else {
+          // TODO: show error toast/message
+        }
+      },
+      error: () => {
+        // TODO: show error toast/message
       }
     });
   }

@@ -8,6 +8,7 @@ import { TenantsService } from '../../service/tenants.service';
 import { GenericTableComponent } from '../../../../../core/shared/components/generic-table/generic-table.component';
 import { BreadcrumbComponent } from '../../../../../core/shared/components/breadcrumb/breadcrumb.component';
 import { Router } from '@angular/router';
+import { TenantDialogComponent } from '../tenant-dialog/tenant-dialog.component';
 import { SUPERADMIN_TENANT_DETAIL_ROUTE } from '../../../../../core/helpers/routes/app-routes';
 
 
@@ -20,6 +21,7 @@ import { SUPERADMIN_TENANT_DETAIL_ROUTE } from '../../../../../core/helpers/rout
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TenantsComponent {
+  public TenantDialogComponent = TenantDialogComponent;
   private tenantsService = inject(TenantsService);
   private router = inject(Router);
   private _tenants = signal<Tenant[]>([]);
@@ -103,7 +105,7 @@ export class TenantsComponent {
         this.navigateToDetail(event.data);
         break;
       case 'add':
-        // Open add tenant dialog or route
+        // Dialog handles creation; GenericTable triggers a refresh after close
         break;
       case 'edit':
         // Navigate to detail for edit action

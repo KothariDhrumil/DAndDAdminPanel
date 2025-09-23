@@ -9,102 +9,13 @@
         <div class="auth-wrapper">
           <h4 class="welcome-msg"> Sign Up </h4>
           <p class="auth-signup-text text-muted">Enter details to create your account</p>
-          <form class="validate-form" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-            <div class="row">
-              <div class="col-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>First Name</mat-label>
-                  <input matInput formControlName="firstName" required>
-                  <mat-icon matSuffix class="material-icons-outlined color-icon p-3">person</mat-icon>
-                  @if (signupForm.controls.firstName.hasError('required')) {
-                  <mat-error>First name is required</mat-error>
-                  }
-                </mat-form-field>
-              </div>
+          <app-upsert-tenant [title]="'Sign Up'" [submitText]="'Register'" [showPassword]="true"
+            [designations]="designations" (submitted)="onSharedSubmit($event)"></app-upsert-tenant>
+          <div class="flex-sb-m w-full p-b-20 text-center">
+            <div>
+              <span>Already Registered? <a routerLink="/authentication/signin">Login</a></span>
             </div>
-            <div class="row">
-              <div class="col-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>Last Name</mat-label>
-                  <input matInput formControlName="lastName" required>
-                  <mat-icon matSuffix class="material-icons-outlined color-icon p-3">person_outline</mat-icon>
-                  @if (signupForm.controls.lastName.hasError('required')) {
-                  <mat-error>Last name is required</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>Phone Number</mat-label>
-                  <input matInput formControlName="phoneNumber" required maxlength="15">
-                  <mat-icon matSuffix class="material-icons-outlined color-icon p-3">phone</mat-icon>
-                  @if (signupForm.controls.phoneNumber.hasError('required')) {
-                  <mat-error>Phone number is required</mat-error>
-                  }
-                  @if (signupForm.controls.phoneNumber.hasError('pattern')) {
-                  <mat-error>Enter a valid phone number</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>Designation</mat-label>
-                  <mat-select formControlName="designationId" required>
-                    <mat-option *ngFor="let d of designations" [value]="d.id">{{d.name}}</mat-option>
-                  </mat-select>
-                  @if (signupForm.controls.designationId.hasError('required')) {
-                  <mat-error>Designation is required</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>Password</mat-label>
-                  <input matInput formControlName="password" [type]="hide ? 'password' : 'text'" required>
-                  <mat-icon matSuffix class="material-icons-outlined pwd-toggle p-3" (click)="hide = !hide">
-                    {{hide ? 'visibility_off' : 'visibility'}}
-                  </mat-icon>
-                  @if (signupForm.controls.password.hasError('required')) {
-                  <mat-error>Password is required</mat-error>
-                  }
-                  @if (signupForm.controls.password.hasError('minlength')) {
-                  <mat-error>Password must be at least 8 characters</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>Company Name</mat-label>
-                  <input matInput formControlName="tenantName" required>
-                  <mat-icon matSuffix class="material-icons-outlined color-icon p-3">business</mat-icon>
-                  @if (signupForm.controls.tenantName.hasError('required')) {
-                  <mat-error>Company name is required</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </div>
-
-            <div class="flex-sb-m w-full p-b-20">
-              <div>
-                <span>Already Registered? <a routerLink="/authentication/signin">Login</a></span>
-              </div>
-            </div>
-            <div class="container-auth-form-btn">
-              <div style="text-align:center">
-                <button mat-flat-button color="accent" class="auth-form-btn" [disabled]="!signupForm.valid"
-                  type="submit">Register</button>
-              </div>
-            </div>
-          </form>
+          </div>
           <h6 class="social-login-title">OR</h6>
           <ul class="list-unstyled social-icon mb-0 mt-3">
             <li class="list-inline-item"><a href="javascript:void(0)" class="rounded">

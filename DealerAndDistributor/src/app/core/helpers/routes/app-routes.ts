@@ -9,3 +9,5 @@ export const SUPERADMIN_DASHBOARD_ROUTE = '/superadmin/dashboard';
 export const SUPERADMIN_TENANTS_ROUTE = '/superadmin/tenants';
 export const SUPERADMIN_TENANT_DETAIL_ROUTE = '/superadmin/tenants/detail';
 export const SUPERADMIN_PLANS_ROUTE = '/superadmin/plans';
+export const ROLES_PERMISSION_ROUTE = '/roles-and-permission';
+

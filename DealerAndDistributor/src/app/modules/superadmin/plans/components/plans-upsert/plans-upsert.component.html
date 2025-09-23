@@ -43,7 +43,7 @@
                 </mat-select>
               </mat-form-field>
 
-              <app-roles-selector formControlName="roleIds"  label="Roles"></app-roles-selector>
+              <app-roles-selector formControlName="roleIds" [roleTypes]="[0,50,60,70,80]"  label="Roles"></app-roles-selector>
 
               <div class="actions">
                 <button mat-stroked-button color="primary" type="button" (click)="cancel()">Cancel</button>
