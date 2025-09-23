@@ -10,10 +10,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { CreateTodoRequest, Priority, TodoItemDto, UpdateTodoRequest } from '../../model/todo.model';
+import { TodosService } from '../../services/todos.service';
 
 export interface TodoDialogData {
   mode: 'create' | 'update';
   item?: TodoItemDto;
+  tenantId?: number; // context for create when required
 }
 
 @Component({
@@ -38,7 +40,8 @@ export class TodoDialogComponent {
 
   constructor(
     private dialogRef: MatDialogRef<TodoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: TodoDialogData
+    @Inject(MAT_DIALOG_DATA) public data: TodoDialogData,
+    private todosService: TodosService
   ) {
     if (data?.item) {
       const { description, dueDate, labels, priority } = data.item;
@@ -75,7 +78,10 @@ export class TodoDialogComponent {
         labels: raw.labels,
         priority: raw.priority
       };
-      this.dialogRef.close(payload);
+      this.todosService.update(payload).subscribe({
+        next: (res) => this.dialogRef.close(!!res?.isSuccess),
+        error: () => this.dialogRef.close(false)
+      });
     } else {
       const payload: CreateTodoRequest = {
         description: raw.description,
@@ -83,7 +89,10 @@ export class TodoDialogComponent {
         labels: raw.labels,
         priority: raw.priority
       };
-      this.dialogRef.close(payload);
+      this.todosService.create(payload, this.data?.tenantId).subscribe({
+        next: (res) => this.dialogRef.close(!!res?.isSuccess),
+        error: () => this.dialogRef.close(false)
+      });
     }
   }
   close() { this.dialogRef.close(); }

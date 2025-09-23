@@ -278,14 +278,7 @@ export class TenantDetailComponent implements OnInit {
         const parentId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
         if (!parentId) return;
         const ref = this.dialog.open(AddChildTenantDialogComponent, { data: { parentTenantId: parentId } });
-        ref.afterClosed().subscribe(result => {
-            if (result?.tenantName) {
-                this.tenantsService.createChildTenant(parentId, result.tenantName).subscribe({
-                    next: (res) => { if (res?.isSuccess) this.loadChildTenants(parentId); },
-                    error: _ => { /* optionally show a toast */ }
-                });
-            }
-        });
+        ref.afterClosed().subscribe(ok => { if (ok) this.loadChildTenants(parentId); });
     }
 
     private routeToTenant(tenantId: number) {
@@ -332,16 +325,7 @@ export class TenantDetailComponent implements OnInit {
 
     private openAddUserDialog(tenantId: number) {
         const ref = this.dialog.open(AddUserDialogComponent, { data: { tenantId }, width: '640px' });
-        ref.afterClosed().subscribe(payload => {
-            if (payload) {
-                // Use update upsert with minimal fields + assign tenantId
-                const updatePayload = { ...payload, tenantId } as any;
-                this.authUsersService.createUser(updatePayload).subscribe({
-                    next: (res) => { if (res?.isSuccess) this.loadTenantUsers(tenantId); },
-                    error: _ => { /* optionally toast */ }
-                });
-            }
-        });
+        ref.afterClosed().subscribe(ok => { if (ok) this.loadTenantUsers(tenantId); });
     }
 
     private openUpdateUserRolesDialog(user: AuthUserItem) {
@@ -350,32 +334,13 @@ export class TenantDetailComponent implements OnInit {
             data: { userId: user.userId, selectedRoleIds: [] } // TODO: map current roles to ids if available
         });
         const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
-        ref.afterClosed().subscribe(result => {
-            if (result?.userId && Array.isArray(result.roleIds)) {
-                this.authUsersService.updateUser({ userId: result.userId, roleIds: result.roleIds }).subscribe({
-                    next: res => { if (res?.isSuccess && tenantId) this.loadTenantUsers(tenantId); },
-                    error: _ => { /* optionally toast */ }
-                });
-            }
-        });
+        ref.afterClosed().subscribe(ok => { if (ok && tenantId) this.loadTenantUsers(tenantId); });
     }
 
     private openUpdateUserProfileDialog(user: AuthUserItem) {
         const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
         const ref = this.dialog.open(AddUserDialogComponent, { data: { userId: user.userId }, width: '640px' });
-        ref.afterClosed().subscribe(payload => {
-            if (payload?.userId) {
-                this.authUsersService.updateUser({
-                    userId: payload.userId,
-                    firstName: payload.firstName,
-                    lastName: payload.lastName,
-                    phoneNumber: payload.phoneNumber
-                } as any).subscribe({
-                    next: (res) => { if (res?.isSuccess && tenantId) this.loadTenantUsers(tenantId); },
-                    error: _ => { /* optionally toast */ }
-                });
-            }
-        });
+        ref.afterClosed().subscribe(ok => { if (ok && tenantId) this.loadTenantUsers(tenantId); });
     }
 
     private openUpdateUserTenantDialog(user: AuthUserItem) {
@@ -384,14 +349,7 @@ export class TenantDetailComponent implements OnInit {
             width: '500px',
             data: { userId: user.userId, userName: user.userName, currentTenantName: user.tenantName }
         });
-        ref.afterClosed().subscribe(result => {
-            if (result?.userId && result?.tenantId) {
-                this.authUsersService.updateUser({ userId: result.userId, tenantId: result.tenantId } as any).subscribe({
-                    next: (res) => { if (res?.isSuccess && tenantId) this.loadTenantUsers(tenantId); },
-                    error: _ => { /* optionally toast */ }
-                });
-            }
-        });
+        ref.afterClosed().subscribe(ok => { if (ok && tenantId) this.loadTenantUsers(tenantId); });
     }
 
     // Rename tenant

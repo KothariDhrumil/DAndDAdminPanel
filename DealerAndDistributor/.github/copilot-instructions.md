@@ -114,3 +114,7 @@ For questions or unclear conventions, ask for clarification or review the refere
 10. Do not use `form.get('name')` or similar string-based access for form controls. Always use strongly typed form controls for type safety and maintainability.
 11. If `generic-table` is used, always implement all its events in the parent component.
 12. If dialog-based edit/update/delete is required, follow the implementation and design pattern of the sharding and sharding-dialog components. Match the UI for header, footer, and overall design; only change the body fields as needed, but follow the same structure and approach.
+13. Dialog service-call rule: For any Angular Material dialog, perform all API/service calls inside the dialog component itself. The parent component must not call services in `afterClosed()` to perform create/update/delete. Parents should:
+    - Pass required context via `MAT_DIALOG_DATA` (e.g., IDs like `tenantId`).
+    - Open the dialog and, after it closes, only refresh/reload data if the dialog indicates a change.
+    - Follow consolidated handling patterns like `modules/roles-and-permission/component/add-role/add-role.component.ts` and ensure dialogs like `modules/user/todos/components/todo-dialog/todo-dialog.component.ts` own their service calls.

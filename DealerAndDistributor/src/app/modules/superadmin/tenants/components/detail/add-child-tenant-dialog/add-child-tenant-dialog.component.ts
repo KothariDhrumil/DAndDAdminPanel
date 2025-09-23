@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { TenantsService } from '../../../service/tenants.service';
 
 export interface AddChildTenantDialogData {
   parentTenantId: number;
@@ -38,12 +39,17 @@ export class AddChildTenantDialogComponent {
 
   constructor(
     private dialogRef: MatDialogRef<AddChildTenantDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AddChildTenantDialogData
+    @Inject(MAT_DIALOG_DATA) public data: AddChildTenantDialogData,
+    private tenantsService: TenantsService
   ) {}
 
   save() {
     if (this.form.invalid) return;
-    this.dialogRef.close({ tenantName: this.form.value.tenantName });
+    const name = this.form.value.tenantName ?? '';
+    this.tenantsService.createChildTenant(this.data.parentTenantId, name).subscribe({
+      next: (res) => this.dialogRef.close(!!res?.isSuccess),
+      error: () => this.dialogRef.close(false)
+    });
   }
 
   close() {

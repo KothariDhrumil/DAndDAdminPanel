@@ -99,14 +99,7 @@ export class UsersListComponent {
 
   private openAddUser() {
     const ref = this.dialog.open(AddUserDialogComponent, { width: '640px' });
-    ref.afterClosed().subscribe((payload: CreateUserRequest | undefined) => {
-      if (payload) {
-        this.svc.createUser(payload).subscribe({
-          next: (res) => { if (res?.isSuccess) this.loadUsers(); },
-          error: _ => { /* optionally show a toast */ }
-        });
-      }
-    });
+    ref.afterClosed().subscribe((changed: boolean) => { if (changed) this.loadUsers(); });
   }
 
   private openUpdateRoles(user: AuthUserItem) {
@@ -118,36 +111,12 @@ export class UsersListComponent {
         currentRoles: user.roleNames || []
       }
     });
-    ref.afterClosed().subscribe((result: { userId: string, roleIds: number[] } | undefined) => {
-      if (result) {
-        const payload: UpdateUserRequest = {
-          userId: result.userId,
-          roleIds: result.roleIds
-        };
-        this.svc.updateUser(payload).subscribe({
-          next: (res) => { if (res?.isSuccess) this.loadUsers(); },
-          error: _ => { /* optionally show a toast */ }
-        });
-      }
-    });
+    ref.afterClosed().subscribe((changed: boolean) => { if (changed) this.loadUsers(); });
   }
 
   private openUpdateProfile(user: AuthUserItem) {
     const ref = this.dialog.open(AddUserDialogComponent, { width: '640px', data: { userId: user.userId } });
-    ref.afterClosed().subscribe((payload: Partial<UpdateUserRequest> | undefined) => {
-      if (payload && payload.userId) {
-        const update: UpdateUserRequest = {
-          userId: payload.userId,
-          firstName: (payload as any).firstName,
-          lastName: (payload as any).lastName,
-          phoneNumber: (payload as any).phoneNumber
-        };
-        this.svc.updateUser(update).subscribe({
-          next: (res) => { if (res?.isSuccess) this.loadUsers(); },
-          error: _ => { }
-        });
-      }
-    });
+    ref.afterClosed().subscribe((changed: boolean) => { if (changed) this.loadUsers(); });
   }
 
   openUpdateTenant(user: AuthUserItem) {
@@ -159,17 +128,6 @@ export class UsersListComponent {
         currentTenantName: user.tenantName
       }
     });
-    ref.afterClosed().subscribe((result: { userId: string, tenantId: number } | undefined) => {
-      if (result) {
-        const payload: UpdateUserRequest = {
-          userId: result.userId,
-          tenantId: result.tenantId
-        };
-        this.svc.updateUser(payload).subscribe({
-          next: (res) => { if (res?.isSuccess) this.loadUsers(); },
-          error: _ => { /* optionally show a toast */ }
-        });
-      }
-    });
+    ref.afterClosed().subscribe((changed: boolean) => { if (changed) this.loadUsers(); });
   }
 }

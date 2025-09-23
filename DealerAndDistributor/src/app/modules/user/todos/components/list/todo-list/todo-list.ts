@@ -105,21 +105,13 @@ export class TodoList implements OnChanges {
   }
 
   openCreate() {
-    const ref = this.dialog.open(TodoDialogComponent, { width: '600px', data: { mode: 'create' } });
-    ref.afterClosed().subscribe((payload: CreateTodoRequest | undefined) => {
-      if (payload) {
-        this.svc.create(payload, this.tenantId).subscribe({ next: r => { if (r?.isSuccess) this.load(); } });
-      }
-    });
+    const ref = this.dialog.open(TodoDialogComponent, { width: '600px', data: { mode: 'create', tenantId: this.tenantId } });
+    ref.afterClosed().subscribe((changed: boolean) => { if (changed) this.load(); });
   }
 
   openUpdate(item: TodoItemDto) {
     const ref = this.dialog.open(TodoDialogComponent, { width: '600px', data: { mode: 'update', item } });
-    ref.afterClosed().subscribe((payload: UpdateTodoRequest | undefined) => {
-      if (payload) {
-        this.svc.update(payload).subscribe({ next: r => { if (r?.isSuccess) this.load(); } });
-      }
-    });
+    ref.afterClosed().subscribe((changed: boolean) => { if (changed) this.load(); });
   }
 
   delete(id: string) {

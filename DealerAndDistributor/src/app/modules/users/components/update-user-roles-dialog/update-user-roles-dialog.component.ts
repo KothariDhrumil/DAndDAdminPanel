@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { RolesSelectorComponent } from '../../../../core/shared/components/roles-selector/roles-selector.component';
+import { AuthUsersService, UpdateUserRequest } from '../../service/auth-users.service';
 
 export interface UpdateUserRolesData {
   userId: string;
@@ -35,7 +36,8 @@ export class UpdateUserRolesDialogComponent {
   });
   constructor(
     private dialogRef: MatDialogRef<UpdateUserRolesDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: UpdateUserRolesData
+    @Inject(MAT_DIALOG_DATA) public data: UpdateUserRolesData,
+    private usersService: AuthUsersService
   ) {
     const initial = data?.selectedRoleIds ?? [];
     this.roles.set(initial);
@@ -43,7 +45,11 @@ export class UpdateUserRolesDialogComponent {
   }
   save() {
     const roleIds = this.form.controls['roleIds'].value ?? [];
-    this.dialogRef.close({ userId: this.data.userId, roleIds });
+    const payload: UpdateUserRequest = { userId: this.data.userId, roleIds } as any;
+    this.usersService.updateUser(payload).subscribe({
+      next: r => this.dialogRef.close(!!r?.isSuccess),
+      error: () => this.dialogRef.close(false)
+    });
   }
   close() { this.dialogRef.close(); }
 }

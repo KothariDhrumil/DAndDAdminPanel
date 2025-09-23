@@ -5,8 +5,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { AuthUsersService, CreateUserRequest, UpdateUserRequest } from '../../service/auth-users.service';
 
-export interface AddUserDialogData { userId?: string | null }
+export interface AddUserDialogData { userId?: string | null; tenantId?: number }
 
 @Component({
   selector: 'app-add-user-dialog',
@@ -31,7 +32,8 @@ export class AddUserDialogComponent {
 
   constructor(
     private dialogRef: MatDialogRef<AddUserDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AddUserDialogData
+    @Inject(MAT_DIALOG_DATA) public data: AddUserDialogData,
+    private usersService: AuthUsersService
   ) {
     if (data?.userId) {
       this.form.patchValue({ userId: data.userId });
@@ -40,7 +42,30 @@ export class AddUserDialogComponent {
 
   save() {
     if (this.form.invalid) return;
-    this.dialogRef.close(this.form.getRawValue());
+    const raw = this.form.getRawValue();
+    if (raw.userId) {
+      const update: UpdateUserRequest = {
+        userId: raw.userId,
+        firstName: raw.firstName,
+        lastName: raw.lastName,
+        phoneNumber: raw.phoneNumber
+      } as any;
+      this.usersService.updateUser(update).subscribe({
+        next: r => this.dialogRef.close(!!r?.isSuccess),
+        error: () => this.dialogRef.close(false)
+      });
+    } else {
+      const create: CreateUserRequest = {
+        firstName: raw.firstName,
+        lastName: raw.lastName,
+        phoneNumber: raw.phoneNumber,
+        tenantId: this.data?.tenantId
+      } as any;
+      this.usersService.createUser(create).subscribe({
+        next: r => this.dialogRef.close(!!r?.isSuccess),
+        error: () => this.dialogRef.close(false)
+      });
+    }
   }
   close() { this.dialogRef.close(); }
 }
