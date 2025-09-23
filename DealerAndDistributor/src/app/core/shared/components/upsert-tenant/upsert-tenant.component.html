@@ -89,6 +89,32 @@
             </div>
         }
 
+        @if (showDbOptions) {
+            <div class="row">
+                <div class="col-12 mb-2">
+                    <mat-checkbox formControlName="hasOwnDb">Has own database</mat-checkbox>
+                </div>
+            </div>
+
+            @if (form.controls.hasOwnDb.value) {
+                <div class="row">
+                    <div class="col-12 mb-2">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label>Sharding connection</mat-label>
+                            <mat-select formControlName="shardingConnectionName" required>
+                                @for (s of shardingOptions; track s.connectionName) {
+                                    <mat-option [value]="s.connectionName">{{ s.name }}</mat-option>
+                                }
+                            </mat-select>
+                            @if (form.controls.shardingConnectionName.hasError('required')) {
+                                <mat-error>Please select a sharding connection</mat-error>
+                            }
+                        </mat-form-field>
+                    </div>
+                </div>
+            }
+        }
+
 
         <div class="container-auth-form-btn">
             <div style="text-align:center">

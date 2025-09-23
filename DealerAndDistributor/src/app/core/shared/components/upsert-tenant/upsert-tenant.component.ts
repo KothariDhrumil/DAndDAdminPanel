@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 export interface UpsertTenantFormValue {
     tenantName: string;
@@ -14,12 +15,15 @@ export interface UpsertTenantFormValue {
     phoneNumber: string;
     password: string; // optional for edit
     designationId: number;
+    // Optional DB sharding fields
+    hasOwnDb?: boolean;
+    shardingConnectionName?: string | null;
 }
 
 @Component({
     selector: 'app-upsert-tenant',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule],
+    imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatCheckboxModule],
     templateUrl: './upsert-tenant.component.html',
     styleUrls: ['./upsert-tenant.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +34,10 @@ export class UpsertTenantComponent implements OnInit {
     @Input() showPassword = true; // in signup true, in edit could be false
     @Input() designations: Array<{ id: number; name: string }> = [];
     @Input() initialValue?: Partial<UpsertTenantFormValue>;
+    // Show DB related controls only when opened from tenant-dialog (create top-level tenant)
+    @Input() showDbOptions = false;
+    // Options for sharding selection; provided by the dialog component
+    @Input() shardingOptions: Array<{ name: string; connectionName: string }> = [];
 
     @Output() submitted = new EventEmitter<UpsertTenantFormValue>();
 
@@ -40,10 +48,11 @@ export class UpsertTenantComponent implements OnInit {
         phoneNumber: FormControl<string>;
         password: FormControl<string>;
         designationId: FormControl<number>;
+        hasOwnDb: FormControl<boolean>;
+        shardingConnectionName: FormControl<string>;
     }>;
 
     hide = signal(true);
-
     constructor(private fb: FormBuilder) { }
 
     ngOnInit(): void {
@@ -54,6 +63,20 @@ export class UpsertTenantComponent implements OnInit {
             phoneNumber: this.fb.control(this.initialValue?.phoneNumber ?? '', { validators: [Validators.required, Validators.pattern(/^\+?[0-9]{10,15}$/)], nonNullable: true }),
             password: this.fb.control(this.initialValue?.password ?? '', { validators: this.showPassword ? [Validators.required, Validators.minLength(8)] : [], nonNullable: true }),
             designationId: this.fb.control(this.initialValue?.designationId ?? 0, { validators: [], nonNullable: true }),
+            hasOwnDb: this.fb.control(this.initialValue?.hasOwnDb ?? false, { nonNullable: true }),
+            shardingConnectionName: this.fb.control(this.initialValue?.shardingConnectionName ?? '', { nonNullable: true }),
+        });
+
+        // When hasOwnDb toggles, update validators for shardingConnectionName
+        this.form.controls.hasOwnDb.valueChanges.subscribe((has) => {
+            const ctrl = this.form.controls.shardingConnectionName;
+            if (has) {
+                ctrl.addValidators([Validators.required]);
+            } else {
+                ctrl.clearValidators();
+                ctrl.setValue('');
+            }
+            ctrl.updateValueAndValidity({ emitEvent: false });
         });
     }
 
@@ -67,7 +90,10 @@ export class UpsertTenantComponent implements OnInit {
             phoneNumber: raw.phoneNumber,
             designationId: raw.designationId,
             password: raw.password,
+            hasOwnDb: raw.hasOwnDb,
+            shardingConnectionName: raw.hasOwnDb ? raw.shardingConnectionName : null,
         };
         this.submitted.emit(payload);
     }
+
 }
