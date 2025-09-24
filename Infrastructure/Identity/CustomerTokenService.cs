@@ -1,123 +1,100 @@
 using Application.Abstractions.Authentication;
-using Application.Communication;
 using Application.Identity.Tokens;
-using AuthPermissions.BaseCode.DataLayer.EfCode;
+using Domain;
 using Infrastructure.Auth.Jwt;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Net.DistributedFileStoreCache;
 using SharedKernel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Infrastructure.Identity;
 
 internal sealed class CustomerTokenService : ICustomerTokenService
 {
-    private readonly AuthPermissionsDbContext _authDb;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly JwtSettings _jwtSettings;
-    private readonly IDistributedFileStoreCacheClass _fsCache;
-    private readonly ISMSService _smsService;
-
-    private const string OtpCachePrefix = "CustomerOtp-";
-    private const int OtpExpiryMinutes = 5;
 
     public CustomerTokenService(
-        AuthPermissionsDbContext authDb,
-        IOptions<JwtSettings> jwtSettings,
-        IDistributedFileStoreCacheClass fsCache,
-        ISMSService smsService)
+        UserManager<ApplicationUser> userManager,
+        IOptions<JwtSettings> jwtSettings)
     {
-        _authDb = authDb;
+        _userManager = userManager;
         _jwtSettings = jwtSettings.Value;
-        _fsCache = fsCache;
-        _smsService = smsService;
     }
 
-    public async Task<Result> SendOtpAsync(CustomerSendOtpRequest request, CancellationToken cancellationToken)
+    public async Task<Result> SendOtpAsync(CustomerSendOtpRequest request, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.PhoneNumber))
-            return Result.Failure(Error.Failure("PhoneEmpty", "Phone number is required."));
+            return Result.Failure(Error.Validation("PhoneEmpty", "Phone number is required."));
 
-        var customer = await _authDb.CustomerAccounts
-            .AsNoTracking()
-            .SingleOrDefaultAsync(c => c.PhoneNumber == request.PhoneNumber && c.IsActive, cancellationToken);
+        var user = await _userManager.Users
+            .SingleOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber, ct);
 
-        if (customer is null)
-            return Result.Failure(Error.Problem("CustomerNotFound", "Customer not found or inactive."));
-
-        string code = GenerateSixDigitCode();
-        var payload = new OtpPayload
+        // Auto-provision an identity entry on first OTP request (customer user)
+        if (user is null)
         {
-            Code = code,
-            ExpiresUtc = DateTime.UtcNow.AddMinutes(OtpExpiryMinutes),
-        };
-
-        _fsCache.SetClass(OtpCachePrefix + request.PhoneNumber, payload);
-
-        // Optionally send SMS (uncomment if you have SMS provider wired)
-        try
-        {
-            await _smsService.SendOTPAsync(new SMSRequestDTO
+            user = new ApplicationUser
             {
-                To = request.PhoneNumber,
-                Body = code,
-                Template = "CUSTOMER_LOGIN_OTP"
-            });
+                UserName = request.PhoneNumber,
+                PhoneNumber = request.PhoneNumber,
+                PhoneNumberConfirmed = false
+            };
+            var create = await _userManager.CreateAsync(user);
+            if (!create.Succeeded)
+                return Result.Failure(Error.Problem("UserCreateFailed",
+                    string.Join(",", create.Errors.Select(e => e.Description))));
         }
-        catch
-        {
-            // Swallow errors to avoid leaking SMS provider issues to callers.
-            // OTP is still stored and can be returned via an alternate channel if needed.
-        }
+
+        // Use Identity's phone provider token for OTP
+        var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
+
+        // TODO: send via SMS provider
+        // await _smsService.SendOTPAsync(new SMSRequestDTO { To = request.PhoneNumber, Body = code, Template = "CUSTOMER_LOGIN_OTP" });
 
         return Result.Success();
     }
 
-    public async Task<Result<TokenResponse>> AuthenticateAsync(CustomerTokenRequest request, CancellationToken cancellationToken)
+    public async Task<Result<TokenResponse>> AuthenticateAsync(CustomerTokenRequest request, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.PhoneNumber) || string.IsNullOrWhiteSpace(request.Otp))
-            return Result.Failure<TokenResponse>(Error.Failure("PhoneOrOtpEmpty", "Phone and OTP are required."));
+            return Result.Failure<TokenResponse>(Error.Validation("PhoneOrOtpEmpty", "Phone and OTP are required."));
 
-        var customer = await _authDb.CustomerAccounts
-            .AsNoTracking()
-            .SingleOrDefaultAsync(c => c.PhoneNumber == request.PhoneNumber && c.IsActive, cancellationToken);
+        var user = await _userManager.Users
+            .SingleOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber, ct);
 
-        if (customer is null)
-            return Result.Failure<TokenResponse>(Error.Problem("CustomerNotFound", "Customer not found or inactive."));
+        if (user is null)
+            return Result.Failure<TokenResponse>(Error.Problem("CustomerNotFound", "Customer not found."));
 
-        var cacheKey = OtpCachePrefix + request.PhoneNumber;
-        var payload = _fsCache.GetClass<OtpPayload>(cacheKey);
+        var ok = await _userManager.VerifyChangePhoneNumberTokenAsync(user, request.Otp, request.PhoneNumber);
+        if (!ok)
+            return Result.Failure<TokenResponse>(Error.Validation("OtpInvalid", "Invalid OTP."));
 
-        if (payload == null)
-            return Result.Failure<TokenResponse>(Error.Problem("OtpNotRequested", "OTP not requested or already used."));
-
-        if (payload.ExpiresUtc < DateTime.UtcNow)
+        if (!user.PhoneNumberConfirmed)
         {
-            _fsCache.Remove(cacheKey);
-            return Result.Failure<TokenResponse>(Error.Problem("OtpExpired", "OTP has expired. Please request a new OTP."));
+            user.PhoneNumberConfirmed = true;
+            var update = await _userManager.UpdateAsync(user);
+            if (!update.Succeeded)
+                return Result.Failure<TokenResponse>(Error.Problem("UserUpdateFailed",
+                    string.Join(",", update.Errors.Select(e => e.Description))));
         }
 
-        if (!string.Equals(payload.Code, request.Otp, StringComparison.Ordinal))
-            return Result.Failure<TokenResponse>(Error.Failure("OtpInvalid", "Invalid OTP."));
+        var cid = user.Id; // one user = one account
 
-        // Invalidate OTP after successful verification
-        _fsCache.Remove(cacheKey);
-
-        // Build JWT with ‘cid’ claim
         var claims = new List<Claim>
         {
-            new("cid", customer.Id.ToString()),
-            new(ClaimTypes.Name, customer.DisplayName ?? request.PhoneNumber),
-            new(ClaimTypes.NameIdentifier, customer.Id.ToString()),
+            new("cid", cid),
+            new(ClaimTypes.Name, user.UserName ?? user.PhoneNumber ?? cid),
+            new(ClaimTypes.NameIdentifier, user.Id),
             new("role", "Customer")
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
         var token = new JwtSecurityToken(
             issuer: _jwtSettings.CustomerKey,
             audience: _jwtSettings.CustomerKey,
@@ -127,23 +104,6 @@ internal sealed class CustomerTokenService : ICustomerTokenService
             signingCredentials: creds);
 
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-        // No refresh in this minimal flow
         return Result.Success(new TokenResponse(tokenString, string.Empty, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
-    }
-
-    private static string GenerateSixDigitCode()
-    {
-        // Cryptographically strong 6-digit code
-        Span<byte> bytes = stackalloc byte[4];
-        RandomNumberGenerator.Fill(bytes);
-        var value = BitConverter.ToUInt32(bytes);
-        return (value % 1_000_000).ToString("D6");
-    }
-
-    private sealed class OtpPayload
-    {
-        public string Code { get; set; } = default!;
-        public DateTime ExpiresUtc { get; set; }
     }
 }
