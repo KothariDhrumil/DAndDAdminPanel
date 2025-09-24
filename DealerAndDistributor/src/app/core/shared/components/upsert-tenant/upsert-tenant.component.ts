@@ -17,7 +17,7 @@ export interface UpsertTenantFormValue {
     designationId: number;
     // Optional DB sharding fields
     hasOwnDb?: boolean;
-    shardingConnectionName?: string | null;
+    shardingName?: string | null;
 }
 
 @Component({
@@ -49,7 +49,7 @@ export class UpsertTenantComponent implements OnInit {
         password: FormControl<string>;
         designationId: FormControl<number>;
         hasOwnDb: FormControl<boolean>;
-        shardingConnectionName: FormControl<string>;
+        shardingName: FormControl<string>;
     }>;
 
     hide = signal(true);
@@ -64,12 +64,12 @@ export class UpsertTenantComponent implements OnInit {
             password: this.fb.control(this.initialValue?.password ?? '', { validators: this.showPassword ? [Validators.required, Validators.minLength(8)] : [], nonNullable: true }),
             designationId: this.fb.control(this.initialValue?.designationId ?? 0, { validators: [], nonNullable: true }),
             hasOwnDb: this.fb.control(this.initialValue?.hasOwnDb ?? false, { nonNullable: true }),
-            shardingConnectionName: this.fb.control(this.initialValue?.shardingConnectionName ?? '', { nonNullable: true }),
+            shardingName: this.fb.control(this.initialValue?.shardingName ?? '', { nonNullable: true }),
         });
 
-        // When hasOwnDb toggles, update validators for shardingConnectionName
+        // When hasOwnDb toggles, update validators for shardingName
         this.form.controls.hasOwnDb.valueChanges.subscribe((has) => {
-            const ctrl = this.form.controls.shardingConnectionName;
+            const ctrl = this.form.controls.shardingName;
             if (has) {
                 ctrl.addValidators([Validators.required]);
             } else {
@@ -91,7 +91,7 @@ export class UpsertTenantComponent implements OnInit {
             designationId: raw.designationId,
             password: raw.password,
             hasOwnDb: raw.hasOwnDb,
-            shardingConnectionName: raw.hasOwnDb ? raw.shardingConnectionName : null,
+            shardingName: raw.hasOwnDb ? raw.shardingName : null,
         };
         this.submitted.emit(payload);
     }

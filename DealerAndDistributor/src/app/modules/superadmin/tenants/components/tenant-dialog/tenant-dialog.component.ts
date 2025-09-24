@@ -41,18 +41,7 @@ export class TenantDialogComponent {
             this.dialogRef.close();
             return;
         }
-        let registerRequest: RegisterRequest = {
-            tenantName: name,
-            phoneNumber: value.phoneNumber,
-            password: value.password,
-            designationId: value.designationId,
-            firstName: value.firstName,
-            lastName: value.lastName
-
-        }
-
-
-        this.authService.register(registerRequest).subscribe({
+        this.authService.register(value).subscribe({
             next: (res) => this.dialogRef.close(res),
             error: () => this.dialogRef.close()
         });

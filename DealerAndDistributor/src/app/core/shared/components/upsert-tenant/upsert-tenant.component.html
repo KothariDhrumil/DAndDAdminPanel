@@ -101,12 +101,12 @@
                     <div class="col-12 mb-2">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label>Sharding connection</mat-label>
-                            <mat-select formControlName="shardingConnectionName" required>
-                                @for (s of shardingOptions; track s.connectionName) {
-                                    <mat-option [value]="s.connectionName">{{ s.name }}</mat-option>
+                            <mat-select formControlName="shardingName" required>
+                                @for (s of shardingOptions; track s.name) {
+                                    <mat-option [value]="s.name">{{ s.name }}</mat-option>
                                 }
                             </mat-select>
-                            @if (form.controls.shardingConnectionName.hasError('required')) {
+                            @if (form.controls.shardingName.hasError('required')) {
                                 <mat-error>Please select a sharding connection</mat-error>
                             }
                         </mat-form-field>

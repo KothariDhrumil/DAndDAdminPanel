@@ -19,7 +19,7 @@ describe('UpsertTenantComponent', () => {
       tenantName: 'Acme',
       designationId: 1,
       hasOwnDb: false,
-      shardingConnectionName: '',
+      shardingName: '',
     });
 
     let emitted: any;

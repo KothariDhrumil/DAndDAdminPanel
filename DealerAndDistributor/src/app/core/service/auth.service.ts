@@ -15,6 +15,7 @@ import { LOGIN_ROUTE } from '../helpers/routes/app-routes';
 import { CONFIRM_OTP_API, GENERATE_OTP_API, LOGIN_API, REFRESH_TOKEN_API, REGISTER_API } from '../helpers/routes/api-endpoints';
 import { SigninRequest } from '../models/interface/SigninRequest';
 import { RegisterRequest } from '../models/interface/RegisterRequest';
+import { UpsertTenantFormValue } from '@core/shared/components/upsert-tenant/upsert-tenant.component';
 
 @Injectable({
   providedIn: 'root',
@@ -247,7 +248,7 @@ export class AuthService {
   /**
    * Register a new user
    */
-  register(request: RegisterRequest): Observable<ApiResponse<string>> {
+  register(request: RegisterRequest | UpsertTenantFormValue): Observable<ApiResponse<string>> {
     return this.http.post<ApiResponse<string>>(REGISTER_API, request);
   }
 }
