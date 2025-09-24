@@ -1,5 +1,6 @@
 using Application.Abstractions.Messaging;
 using Application.Customers.GetMyOrders;
+using AuthPermissions.BaseCode.CommonCode;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,9 +14,7 @@ public class CustomerOrdersController : VersionNeutralApiController
         IQueryHandler<GetMyOrdersQuery, List<MyOrderDto>> handler,
         CancellationToken ct)
     {
-        var cid = User.FindFirst("cid")?.Value;
-        if (!Guid.TryParse(cid, out var customerId))
-            return Results.Unauthorized();
+        var customerId = User.GetUserIdFromUser();
 
         var result = await handler.Handle(new GetMyOrdersQuery(customerId), ct);
         return Results.Ok(result);

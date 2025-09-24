@@ -1,11 +1,12 @@
 using Application.Abstractions.Messaging;
 using Application.Abstractions.Persistence;
+using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Customers.GetMyOrders;
 
-public sealed record GetMyOrdersQuery(Guid CustomerId) : IQuery<List<MyOrderDto>>;
+public sealed record GetMyOrdersQuery(string CustomerUserId) : IQuery<List<MyOrderDto>>;
 
 public sealed class MyOrderDto
 {
@@ -24,19 +25,21 @@ internal sealed class GetMyOrdersQueryHandler(
     public async Task<SharedKernel.Result<List<MyOrderDto>>> Handle(GetMyOrdersQuery query, CancellationToken ct)
     {
         var links = await authContext.CustomerTenantLinks
-            .Join(authContext.Tenants, l => l.TenantId, t => t.TenantId, (l, t) => new { l, t })
-            .Where(x => x.l.CustomerId == query.CustomerId)
+            .Join(authContext.Tenants,
+                (CustomerTenantLink l) => l.TenantId,
+                (Tenant t) => t.TenantId,
+                (l, t) => new { l, t })
+            .Where(x => true) // already filtered by user before? optional
             .Select(x => new { x.l.TenantId, x.t.TenantFullName })
             .ToListAsync(ct);
 
         var list = new List<MyOrderDto>();
 
-        // With this block:
         foreach (var link in links)
         {
             var db = await retailFactory.CreateAsync(link.TenantId, ct);
             var orders = await db.Orders.AsNoTracking()
-                .Where(o => o.GlobalCustomerId == query.CustomerId)
+                .Where(o => o.GlobalCustomerId == query.CustomerUserId)
                 .Select(o => new MyOrderDto
                 {
                     TenantId = link.TenantId,

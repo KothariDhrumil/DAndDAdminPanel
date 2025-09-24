@@ -5,6 +5,7 @@ using AuthPermissions.BaseCode.DataLayer.EfCode;
 using Domain;
 using Domain.Orders;
 using Domain.Todos;
+using Domain.Customers;
 using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -37,6 +38,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<RetailOutlet> RetailOutlets => Set<RetailOutlet>();
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<TenantCustomerProfile> TenantCustomerProfiles => Set<TenantCustomerProfile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,12 +76,25 @@ public class RetailDbContext : DbContext, IRetailDbContext
         }
 
         // Orders config
-        modelBuilder.Entity<Domain.Orders.Order>()
+        modelBuilder.Entity<Order>()
             .ToTable("Orders", "retail");
-        modelBuilder.Entity<Domain.Orders.Order>()
+        modelBuilder.Entity<Order>()
             .Property(x => x.Total).HasPrecision(9, 2);
-        modelBuilder.Entity<Domain.Orders.Order>()
+        modelBuilder.Entity<Order>()
             .HasIndex(x => new { x.GlobalCustomerId, x.DataKey });
+        modelBuilder.Entity<Order>()
+            .HasIndex(x => x.DataKey);
+        modelBuilder.Entity<Order>()
+            .HasIndex(x => x.OrderedAt);
+
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .ToTable("TenantCustomerProfiles", "retail");
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasIndex(x => x.DataKey);
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasIndex(x => new { x.GlobalCustomerId, x.DataKey });
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasIndex(x => x.TenantId);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

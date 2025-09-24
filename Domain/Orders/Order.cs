@@ -13,7 +13,7 @@ public class Order : IDataKeyFilterReadOnly
     public decimal Total { get; set; }
 
     // Cross-tenant customer correlation id
-    public Guid GlobalCustomerId { get; set; }
+    public string GlobalCustomerId { get; set; }
 
     // Required for multi-tenant filtering
     public string DataKey { get; private set; } = default!;
