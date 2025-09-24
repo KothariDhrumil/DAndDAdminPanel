@@ -44,6 +44,7 @@ internal class TokenService(
             //    }
             //}
             TokenAndRefreshToken result = await _tokenBuilder.GenerateTokenAndRefreshTokenAsync(user.Id);
+            // TODO: If this is a customer login flow, ensure the 'cid' claim (GlobalCustomerId) is added when building the token
             return Result.Success(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
         }
         throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);

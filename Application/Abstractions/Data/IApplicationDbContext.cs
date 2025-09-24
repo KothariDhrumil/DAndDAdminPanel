@@ -1,5 +1,6 @@
 ﻿using AuthPermissions.BaseCode.CommonCode;
 using Domain;
+using Domain.Orders;
 using Domain.Todos;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,8 @@ public interface IRetailDbContext : IDataKeyFilterReadOnly
     DbSet<RetailOutlet> RetailOutlets { get; }
 
     DbSet<TodoItem> TodoItems { get; }
+    DbSet<Order> Orders { get; }
+
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

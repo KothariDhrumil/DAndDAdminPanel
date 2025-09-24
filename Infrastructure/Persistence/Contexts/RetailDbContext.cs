@@ -3,6 +3,7 @@ using AuthPermissions.AspNetCore.GetDataKeyCode;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using Domain;
+using Domain.Orders;
 using Domain.Todos;
 using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
 
     public DbSet<RetailOutlet> RetailOutlets => Set<RetailOutlet>();
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
+    public DbSet<Order> Orders => Set<Order>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -70,6 +72,14 @@ public class RetailDbContext : DbContext, IRetailDbContext
                 }
             }
         }
+
+        // Orders config
+        modelBuilder.Entity<Domain.Orders.Order>()
+            .ToTable("Orders", "retail");
+        modelBuilder.Entity<Domain.Orders.Order>()
+            .Property(x => x.Total).HasPrecision(9, 2);
+        modelBuilder.Entity<Domain.Orders.Order>()
+            .HasIndex(x => new { x.GlobalCustomerId, x.DataKey });
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

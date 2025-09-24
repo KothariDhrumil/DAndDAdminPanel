@@ -1,16 +1,14 @@
-﻿
+﻿using Application.Abstractions.Authentication;
 using Application.Identity.Account;
 using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.Services;
 using AuthPermissions.BaseCode.CommonCode;
-using AuthPermissions.SupportCode.AddUsersServices;
 using DealersAndDistributors.Server.Infrastructure;
-using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SharedKernel;
-using StatusGeneric;
+
 namespace DealersAndDistributors.Server.Controllers;
 
 public sealed class AccountController : VersionNeutralApiController
@@ -72,7 +70,6 @@ public sealed class AccountController : VersionNeutralApiController
         }
         return Ok(SharedKernel.Result.Success<string>(status.Message));
     }
-
     [HttpGet("generate-otp")]
     [AllowAnonymous]
     public async Task<IActionResult> GenerateOTPAsync([FromQuery] GenerateOTPRequest request)
@@ -120,4 +117,28 @@ public sealed class AccountController : VersionNeutralApiController
             ? Request.Headers["X-Forwarded-For"]
             : HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "N/A";
     */
+
+    // CUSTOMER: request OTP
+    [HttpPost("customer/generate-otp")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CustomerGenerateOtpAsync(
+        [FromServices] ICustomerTokenService customerTokenService,
+        [FromBody] CustomerSendOtpRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await customerTokenService.SendOtpAsync(request, cancellationToken);
+        return Ok(response);
+    }
+
+    // CUSTOMER: verify OTP and get JWT
+    [HttpPost("customer/authenticate")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CustomerAuthenticateAsync(
+        [FromServices] ICustomerTokenService customerTokenService,
+        [FromBody] CustomerTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await customerTokenService.AuthenticateAsync(request, cancellationToken);
+        return Ok(response);
+    }
 }

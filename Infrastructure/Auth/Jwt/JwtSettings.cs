@@ -5,7 +5,9 @@ namespace Infrastructure.Auth.Jwt;
 public class JwtSettings : IValidatableObject
 {
     public string Key { get; set; } = string.Empty;
-
+    public string RetailKey { get; set; } = string.Empty;
+    public string CustomerKey { get; set; } = string.Empty;
+    
     public int TokenExpirationInMinutes { get; set; }
 
     public int RefreshTokenExpirationInDays { get; set; }
