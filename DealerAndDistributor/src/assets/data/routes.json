@@ -114,6 +114,21 @@
       "badgeClass": "",
       "role": [],
       "submenu": []
+    },
+    {
+      "path": "/customers",
+      "title": "MENUITEMS.Customers.Text",
+      "iconType": "feather",
+      "icon": "users",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [
+        "CustomerManagement",
+        "AccessAll"
+      ],
+      "submenu": []
     }
   ]
 }

@@ -30,6 +30,10 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./modules/superadmin/superadmin.routes').then(m => m.SUPERADMIN_ROUTES),
       },
+      {
+        path: 'customers',
+        loadChildren: () => import('./modules/customers/customers.routes').then(m => m.CUSTOMERS_ROUTES)
+      },
       // Example:
       // { path: 'dashboard', component: DashboardComponent },
     ],

@@ -41,6 +41,13 @@ export const AUTHUSERS_LIST_API = AUTHUSERS_API + '/listusers';
 /*/ Todos Routes */
 export const TODOS_API = baseUrl + apiVersionV1 + '/todos';
 
+/*/ Customer Routes */
+export const CUSTOMERS_API = baseUrl + apiVersionNeutral + '/customers';
+export const CUSTOMERS_WITH_TENANTS_API = `${CUSTOMERS_API}/with-tenants`;
+export const CUSTOMERS_BY_TENANT_API = (tenantId: number) => `${CUSTOMERS_API}/tenant/${tenantId}`;
+export const CUSTOMERS_SEARCH_BY_PHONE_API = (phone: string) => `${CUSTOMERS_API}/search/by-phone?phone=${encodeURIComponent(phone)}`;
+export const CUSTOMERS_LINK_API = `${CUSTOMERS_API}/link`;
+
 /*/ Admin Routes */
 
 export const AUTH_ROLES_API = '/api/admin/auth-roles';

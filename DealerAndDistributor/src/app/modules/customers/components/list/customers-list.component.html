@@ -1,0 +1,17 @@
+<section class="content">
+    <div class="content-block">
+        <div class="block-header">
+            <!-- breadcrumb -->
+            <app-breadcrumb [title]="'Customers'" [items]="['Management']" [active_item]="'Customers'">
+            </app-breadcrumb>
+        </div>
+        @if (!loading()) {
+        <app-generic-table [data]="customers()" [columns]="columns()" [totalRecords]="totalRecords()"
+            [config]="tableConfig" (tableEvent)="onTableEvent($event)"></app-generic-table>
+        } @else {
+        <div class="d-flex justify-content-center my-4">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+        }
+    </div>
+</section>

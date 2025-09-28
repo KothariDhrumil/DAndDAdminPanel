@@ -58,6 +58,13 @@
         "List": "Todos List",
         "Create": "Todos Create"
       }
+    },
+    "Customers": {
+      "Text": "Customers",
+      "List": {
+        "List": "Customers List",
+        "Create": "Customers Create"
+      }
     }
   }
 }
