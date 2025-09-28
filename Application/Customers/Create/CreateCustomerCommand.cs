@@ -55,7 +55,7 @@ public sealed class CreateCustomerCommand : ICommand<Guid>
             {
                 var account = new CustomerAccount
                 {
-                    GlobalCustomerId = Guid.NewGuid(),
+                    //GlobalCustomerId = Guid.NewGuid(),
                     GlobalUserId = user.Id,
                     FirstName = command.FirstName,
                     LastName = command.LastName,

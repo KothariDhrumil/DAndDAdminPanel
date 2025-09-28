@@ -5,6 +5,7 @@ using Application.Customers.Links;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using AuthPermissions.BaseCode.CommonCode;
 
 namespace DealersAndDistributors.Server.Controllers;
 
@@ -25,15 +26,12 @@ public class CustomersController : VersionNeutralApiController
         // If TenantId not provided explicitly, try to pick from current user’s tenant claim
         if (!command.TenantId.HasValue)
         {
-            var tenantIdClaim = User.FindFirst("TenantId")?.Value;
-            if (int.TryParse(tenantIdClaim, out var tenantId))
-                command.TenantId = tenantId;
+            var tenantId = User.GetTenantIdFromUser();
+            command.TenantId = tenantId;
         }
 
-        var result = await handler.Handle(command, ct);
-        return result.IsSuccess
-            ? Ok(new CommandResponseDto(true, null))
-            : BadRequest(new CommandResponseDto(false, result.Error.ToString()));
+        return Ok(await handler.Handle(command, ct));
+
     }
 
     [HttpPut]
@@ -45,9 +43,7 @@ public class CustomersController : VersionNeutralApiController
         CancellationToken ct)
     {
         var result = await handler.Handle(command, ct);
-        return result.IsSuccess
-            ? Ok(new CommandResponseDto(true, null))
-            : BadRequest(new CommandResponseDto(false, result.Error.ToString()));
+        return Ok(result);
     }
 
     [HttpPost("link")]
@@ -59,10 +55,8 @@ public class CustomersController : VersionNeutralApiController
         CancellationToken ct)
     {
         var result = await handler.Handle(command, ct);
-        return result.IsSuccess
-            ? Ok(new CommandResponseDto(true, null))
-            : BadRequest(new CommandResponseDto(false, result.Error.ToString()));
-    }   
+        return Ok(result);
+    }
 
     [HttpPost("unlink")]
     [Authorize]
@@ -73,8 +67,6 @@ public class CustomersController : VersionNeutralApiController
         CancellationToken ct)
     {
         var result = await handler.Handle(command, ct);
-        return result.IsSuccess
-            ? Ok(new CommandResponseDto(true, null))
-            : BadRequest(new CommandResponseDto(false, result.Error.ToString()));
+        return Ok(result);
     }
 }
