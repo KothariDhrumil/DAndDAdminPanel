@@ -32,11 +32,11 @@ export const SUPERADMIN_ROUTES: Routes = [
     loadChildren: () => import('../roles-and-permission/roles-and-permission.routes').then(m => m.rolesAndPermissionsRoutes)
   },
   {
-    path: 'users',
+    path: 'tenant-users',
     children: [
       {
         path: '',
-        loadComponent: () => import('../users/components/list/users-list.component').then(m => m.UsersListComponent)
+        loadComponent: () => import('../tenant-users/components/list/users-list.component').then(m => m.UsersListComponent)
       }
     ]
   },

@@ -45,11 +45,11 @@
         "Create": "Plans Create"
       }
     },
-    "Users": {
-      "Text": "Users",
+    "TenantUsers": {
+      "Text": "Tenant Users",
       "List": {
-        "List": "Users List",
-        "Create": "Users Create"
+        "List": "Tenant Users List",
+        "Create": "Tenant Users Create"
       }
     },
     "Todos": {

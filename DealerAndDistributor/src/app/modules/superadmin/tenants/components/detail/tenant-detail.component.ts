@@ -25,11 +25,12 @@ import { AddChildTenantDialogComponent } from './add-child-tenant-dialog/add-chi
 import { RenameTenantDialogComponent } from './rename-tenant-dialog/rename-tenant-dialog.component';
 import { Router } from '@angular/router';
 import { SUPERADMIN_TENANT_DETAIL_ROUTE } from '../../../../../core/helpers/routes/app-routes';
-import { AuthUsersService } from '../../../../users/service/auth-users.service';
-import { AddUserDialogComponent } from '../../../../users/components/add-user-dialog/add-user-dialog.component';
-import { UpdateUserRolesDialogComponent } from '../../../../users/components/update-user-roles-dialog/update-user-roles-dialog.component';
-import { UpdateUserTenantDialogComponent } from '../../../../users/components/update-user-tenant-dialog/update-user-tenant-dialog.component';
-import { AuthUserItem } from '../../../../users/models/auth-user.model';
+import { AddUserDialogComponent } from 'src/app/modules/tenant-users/components/add-user-dialog/add-user-dialog.component';
+import { UpdateUserRolesDialogComponent } from 'src/app/modules/tenant-users/components/update-user-roles-dialog/update-user-roles-dialog.component';
+import { UpdateUserTenantDialogComponent } from 'src/app/modules/tenant-users/components/update-user-tenant-dialog/update-user-tenant-dialog.component';
+import { AuthUserItem } from 'src/app/modules/tenant-users/models/tenant-user.model';
+import { TenantUsersService } from 'src/app/modules/tenant-users/service/tenant-users.service';
+
 
 @Component({
     selector: 'app-tenant-detail',
@@ -139,7 +140,7 @@ export class TenantDetailComponent implements OnInit {
         private readonly dialog: MatDialog,
         private readonly tenantsService: TenantsService,
         private readonly router: Router,
-        private readonly authUsersService: AuthUsersService
+        private readonly tenantUsersService: TenantUsersService
     ) { }
 
     ngOnInit(): void {
@@ -289,7 +290,7 @@ export class TenantDetailComponent implements OnInit {
     private loadTenantUsers(tenantId: number) {
         this.loadingUsers.set(true);
         this.errorUsers.set(null);
-        this.authUsersService.listUsersByTenant(tenantId).subscribe({
+        this.tenantUsersService.listUsersByTenant(tenantId).subscribe({
             next: (res) => {
                 if (res?.isSuccess && Array.isArray(res.data)) this.tenantUsers.set(res.data);
                 else { this.tenantUsers.set([]); this.errorUsers.set('No users found'); }

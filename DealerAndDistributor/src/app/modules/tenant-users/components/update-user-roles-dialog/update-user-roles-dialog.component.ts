@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { RolesSelectorComponent } from '../../../../core/shared/components/roles-selector/roles-selector.component';
-import { AuthUsersService, UpdateUserRequest } from '../../service/auth-users.service';
+import { TenantUsersService, UpdateUserRequest } from '../../service/tenant-users.service';
 
 export interface UpdateUserRolesData {
   userId: string;
@@ -37,7 +37,7 @@ export class UpdateUserRolesDialogComponent {
   constructor(
     private dialogRef: MatDialogRef<UpdateUserRolesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UpdateUserRolesData,
-    private usersService: AuthUsersService
+    private usersService: TenantUsersService
   ) {
     const initial = data?.selectedRoleIds ?? [];
     this.roles.set(initial);

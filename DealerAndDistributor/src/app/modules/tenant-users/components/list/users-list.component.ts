@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthUsersService, CreateUserRequest, UpdateUserRequest } from '../../service/auth-users.service';
-import { AuthUserItem } from '../../models/auth-user.model';
+import { TenantUsersService, CreateUserRequest, UpdateUserRequest } from '../../service/tenant-users.service';
+import { AuthUserItem } from '../../models/tenant-user.model';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUserDialogComponent } from '../../components/add-user-dialog/add-user-dialog.component';
 import { UpdateUserRolesDialogComponent } from '../update-user-roles-dialog/update-user-roles-dialog.component';
@@ -19,7 +19,7 @@ import { ColumnDefinition, TableConfig, TableEventArgs, RowAction } from '../../
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersListComponent {
-  private svc = inject(AuthUsersService);
+  private svc = inject(TenantUsersService);
   private dialog = inject(MatDialog);
 
   private _users = signal<AuthUserItem[]>([]);

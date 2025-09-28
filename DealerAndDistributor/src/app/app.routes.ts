@@ -13,12 +13,12 @@ export const routes: Routes = [
        {
         path: 'user',
         loadChildren: () =>
-          import('./modules/user/user.routes').then(m => m.USER_ROUTES),
+          import('./modules/domain/domain.routes').then(m => m.DOMAIN_ROUTES),
       },
       {
-        path: 'users',
+        path: 'tenant-users',
         loadChildren: () =>
-          import('./modules/users/users.routes').then(m => m.USERS_ROUTES),
+          import('./modules/tenant-users/tenant-users.routes').then(m => m.TENANT_USERS_ROUTES),
       },
       {
         path: 'roles-and-permission',

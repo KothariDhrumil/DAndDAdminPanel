@@ -92,8 +92,8 @@
       ]
     },
     {
-      "path": "/users",
-      "title": "MENUITEMS.Users.Text",
+      "path": "/tenant-users",
+      "title": "MENUITEMS.TenantUsers.Text",
       "iconType": "feather",
       "icon": "users",
       "class": "",

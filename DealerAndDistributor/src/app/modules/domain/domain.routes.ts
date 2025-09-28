@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { UserDashboardComponent } from './dashboard/dashboard.component';
 
-export const USER_ROUTES: Routes = [
+export const DOMAIN_ROUTES: Routes = [
   {
     path: 'dashboard',
     component: UserDashboardComponent,

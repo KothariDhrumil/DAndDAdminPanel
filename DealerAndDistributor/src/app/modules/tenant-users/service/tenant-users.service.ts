@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs'; 
-import { AuthUserItem } from '../models/auth-user.model';
+import { AuthUserItem } from '../models/tenant-user.model';
 import { ApiResponse, PaginatedApiResponse } from '@core/models/interface/ApiResponse';
 import { AUTHUSERS_LIST_API, AUTHUSERS_API } from '@core/helpers/routes/api-endpoints';
 
@@ -32,7 +32,7 @@ export interface UpdateUserRequest {
 }
 
 @Injectable({ providedIn: 'root' })
-export class AuthUsersService {
+export class TenantUsersService {
   private http = inject(HttpClient);
 
   listUsers(req: ListUsersRequest = { pageNumber: 1, pageSize: 10, orderBy: 'userName' }): Observable<PaginatedApiResponse<AuthUserItem[]>> {

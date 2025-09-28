@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 
 
-export const USERS_ROUTES: Routes = [
+export const TENANT_USERS_ROUTES: Routes = [
   {
     path: '',
     children: [
       {
         path: '',
-        loadComponent: () => import('../users/components/list/users-list.component').then(m => m.UsersListComponent)
+        loadComponent: () => import('./components/list/users-list.component').then(m => m.UsersListComponent)
       }
     ]
   },

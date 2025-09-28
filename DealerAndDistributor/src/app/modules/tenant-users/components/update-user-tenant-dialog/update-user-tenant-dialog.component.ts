@@ -6,7 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TenantsService } from '../../../superadmin/tenants/service/tenants.service';
-import { AuthUsersService, UpdateUserRequest } from '../../service/auth-users.service';
+import { TenantUsersService, UpdateUserRequest } from '../../service/tenant-users.service';
 import { Tenant } from '../../../superadmin/tenants/models/tenant.model';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
@@ -37,7 +37,7 @@ export class UpdateUserTenantDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<UpdateUserTenantDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UpdateUserTenantDialogData,
     private tenantsService: TenantsService,
-    private usersService: AuthUsersService
+    private usersService: TenantUsersService
   ) {}
 
   ngOnInit() {

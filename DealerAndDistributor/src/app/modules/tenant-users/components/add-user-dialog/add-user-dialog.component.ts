@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { AuthUsersService, CreateUserRequest, UpdateUserRequest } from '../../service/auth-users.service';
+import { TenantUsersService, CreateUserRequest, UpdateUserRequest } from '../../service/tenant-users.service';
 
 export interface AddUserDialogData { userId?: string | null; tenantId?: number }
 
@@ -33,7 +33,7 @@ export class AddUserDialogComponent {
   constructor(
     private dialogRef: MatDialogRef<AddUserDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: AddUserDialogData,
-    private usersService: AuthUsersService
+    private usersService: TenantUsersService
   ) {
     if (data?.userId) {
       this.form.patchValue({ userId: data.userId });
