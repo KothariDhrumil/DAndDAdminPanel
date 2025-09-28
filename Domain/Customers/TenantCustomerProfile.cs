@@ -9,7 +9,7 @@ namespace Domain.Customers;
 public class TenantCustomerProfile : IDataKeyFilterReadOnly
 {
     [Key]
-    public int TenantCustomerId { get; set; }
+    public int TenantCustomerId { get; private set; }
 
     /// <summary>
     /// Global customer identifier (CustomerAccount.GlobalCustomerId)
@@ -26,5 +26,5 @@ public class TenantCustomerProfile : IDataKeyFilterReadOnly
     /// <summary>
     /// Multi-tenant filter key populated automatically from the current user context
     /// </summary>
-    public string DataKey { get; private set; } = default!;
+    public string DataKey { get; set; } = default!;
 }

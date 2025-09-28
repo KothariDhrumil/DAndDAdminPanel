@@ -11,7 +11,7 @@ namespace Application.Customers.Links;
 
 public sealed class LinkCustomerToTenantCommand : ICommand
 {
-    public string PhoneNumber { get; set; } = string.Empty;
+    public required Guid GlobalCustomerId { get; set; }
     public int TenantId { get; set; }
 
     internal sealed class Handler(
@@ -21,10 +21,8 @@ public sealed class LinkCustomerToTenantCommand : ICommand
     {
         public async Task<Result> Handle(LinkCustomerToTenantCommand command, CancellationToken ct)
         {
-            var phone = command.PhoneNumber.Trim();
-
             var account = await authDb.CustomerAccounts.AsNoTracking()
-                .SingleOrDefaultAsync(c => c.PhoneNumber == phone, ct);
+                .SingleOrDefaultAsync(c => c.GlobalCustomerId == command.GlobalCustomerId, ct);
             if (account == null)
                 return Result.Failure(Error.NotFound("CustomerNotFound", "Customer not found."));
 
@@ -51,7 +49,8 @@ public sealed class LinkCustomerToTenantCommand : ICommand
                 {
                     GlobalCustomerId = account.GlobalCustomerId,
                     TenantId = command.TenantId,
-                    DisplayName = string.Join(' ', new[] { account.FirstName, account.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)))
+                    DisplayName = string.Join(' ', new[] { account.FirstName, account.LastName }.Where(s => !string.IsNullOrWhiteSpace(s))),
+                    DataKey = retailDb.DataKey
                 });
                 await retailDb.SaveChangesAsync(ct);
             }
@@ -65,7 +64,7 @@ public sealed class LinkCustomerToTenantCommandValidator : AbstractValidator<Lin
 {
     public LinkCustomerToTenantCommandValidator()
     {
-        RuleFor(x => x.PhoneNumber).NotEmpty().Length(10, 32);
+        RuleFor(x => x.GlobalCustomerId).NotEmpty();
         RuleFor(x => x.TenantId).GreaterThan(0);
     }
 }

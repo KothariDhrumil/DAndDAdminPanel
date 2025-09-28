@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using AuthPermissions.BaseCode.CommonCode;
 using Application.Abstractions.Data;
 using Application.Abstractions.Persistence;
+using AuthPermissions.AspNetCore.GetDataKeyCode;
 
 namespace Infrastructure.Persistence;
 
@@ -36,7 +37,7 @@ public sealed class TenantRetailDbContextFactory : ITenantRetailDbContextFactory
         return new RetailDbContext(_options, stub, _dispatcher);
     }
 
-    private sealed class StubGetShardingDataFromUser : AuthPermissions.AspNetCore.GetDataKeyCode.IGetShardingDataFromUser
+    private sealed class StubGetShardingDataFromUser : IGetShardingDataFromUser
     {
         public StubGetShardingDataFromUser(string connection, string dataKey)
         {

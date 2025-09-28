@@ -62,8 +62,5 @@ public class TodosController : VersionedApiController
     {
         return Ok(await handler.Handle(new CompleteTodoCommand(id), cancellationToken));
     }
-
-
-
 }
 

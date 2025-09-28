@@ -66,6 +66,7 @@ public sealed class CreateCustomerCommand : ICommand<Guid>
                     Status = "Active"
                 };
                 authDb.CustomerAccounts.Add(account);
+                await authDb.SaveChangesAsync(ct);
                 globalCustomerId = account.GlobalCustomerId;
             }
             else
@@ -76,6 +77,7 @@ public sealed class CreateCustomerCommand : ICommand<Guid>
                 existing.Email = email;
                 existing.UpdatedAt = DateTime.UtcNow;
                 authDb.CustomerAccounts.Update(existing);
+
                 globalCustomerId = existing.GlobalCustomerId;
             }
 
@@ -104,12 +106,12 @@ public sealed class CreateCustomerCommand : ICommand<Guid>
                     {
                         GlobalCustomerId = globalCustomerId,
                         TenantId = tenantId,
-                        DisplayName = string.Join(' ', new[] { command.FirstName, command.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)))
+                        DisplayName = string.Join(' ', new[] { command.FirstName, command.LastName }.Where(s => !string.IsNullOrWhiteSpace(s))),
+                        DataKey = retailDb.DataKey
                     });
                     await retailDb.SaveChangesAsync(ct);
                 }
             }
-
             await authDb.SaveChangesAsync(ct);
             return Result.Success(globalCustomerId);
         }
