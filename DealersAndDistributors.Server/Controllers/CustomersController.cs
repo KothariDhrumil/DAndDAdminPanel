@@ -10,9 +10,7 @@ using AuthPermissions.BaseCode.CommonCode;
 using SharedKernel;
 
 namespace DealersAndDistributors.Server.Controllers;
-
-public record CommandResponseDto(bool Success, string? Error);
-
+ 
 public class CustomersController : VersionNeutralApiController
 {
     // Tenant admin adds a customer and optionally maps to current tenant (if TenantId omitted, read from user claim)
@@ -84,7 +82,7 @@ public class CustomersController : VersionNeutralApiController
         return Ok(result);
     }
 
-    // NEW: list all customers with their tenant mappings
+    // List all customers with their tenant mappings (central)
     [HttpGet("with-tenants")]
     [Authorize]
     [OpenApiOperation("List customers including all tenant mappings.", "")]
@@ -98,7 +96,7 @@ public class CustomersController : VersionNeutralApiController
         return Ok(result);
     }
 
-    // NEW: list customers for a specific tenant
+    // List customers for a specific tenant (central link)
     [HttpGet("tenant/{tenantId:int}")]
     [Authorize]
     [OpenApiOperation("List customers mapped to a specific tenant.", "")]
@@ -113,6 +111,30 @@ public class CustomersController : VersionNeutralApiController
         return Ok(result);
     }
 
+    // NEW: List tenant-local customer profiles from RetailDbContext (per-tenant data)
+    [HttpGet("tenant-profiles")]
+    [Authorize]
+    [OpenApiOperation("List per-tenant customer profiles (from tenant Retail DB).", "")]
+    public async Task<ActionResult> ListTenantProfilesAsync(
+        [FromServices] IQueryHandler<ListTenantCustomerProfilesQuery, PagedResult<List<TenantCustomerProfileDto>>> handler,
+        int? tenantId = null,
+        int pageNumber = 1,
+        int pageSize = 20,
+        string? search = null,
+        CancellationToken ct = default)
+    {
+        var effectiveTenantId = tenantId ?? User.GetTenantIdFromUser();
+        if (effectiveTenantId == null)
+            return BadRequest(Result.Failure(Error.Validation("TenantIdMissing", "Tenant id not provided or claim missing.")));
+
+        var result = await handler.Handle(
+            new ListTenantCustomerProfilesQuery(effectiveTenantId.Value, pageNumber, pageSize, search),
+            ct);
+
+        return Ok(result);
+    }
+
+    // Search by phone (central)
     [HttpGet("search/by-phone")]
     [Authorize]
     [OpenApiOperation("Search a customer by phone number (no tenant details).", "")]
