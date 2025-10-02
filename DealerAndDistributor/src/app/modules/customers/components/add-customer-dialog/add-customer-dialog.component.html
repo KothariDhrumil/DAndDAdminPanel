@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>Add Customer</h2>
-<div mat-dialog-content>
+<div mat-dialog-content class="mt-4">
   <form [formGroup]="form" (ngSubmit)="submit()">
     <mat-form-field appearance="outline" class="w-100 mb-3">
       <mat-label>Phone Number</mat-label>
@@ -11,22 +11,25 @@
     <mat-form-field appearance="outline" class="w-100 mb-3">
       <mat-label>First Name</mat-label>
       <input matInput formControlName="firstName" />
-      @if (form.controls.firstName.hasError('required') && form.controls.firstName.enabled) {<mat-error>First name required</mat-error>}
+      @if (form.controls.firstName.hasError('required') && form.controls.firstName.enabled) {<mat-error>First name
+        required</mat-error>}
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100 mb-3">
       <mat-label>Last Name</mat-label>
       <input matInput formControlName="lastName" />
-      @if (form.controls.lastName.hasError('required') && form.controls.lastName.enabled) {<mat-error>Last name required</mat-error>}
+      @if (form.controls.lastName.hasError('required') && form.controls.lastName.enabled) {<mat-error>Last name
+        required</mat-error>}
     </mat-form-field>
 
     @if (searching()) {
-      <div class="small text-muted mb-2">Searching...</div>
+    <div class="small text-muted mb-2">Searching...</div>
     }
 
     <div mat-dialog-actions class="d-flex justify-content-end gap-2 mt-3">
-      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+
       <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Submit</button>
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
     </div>
   </form>
 </div>

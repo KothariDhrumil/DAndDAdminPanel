@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { CustomersService } from '../../../customers/service/customers.service';
 import { CustomerWithTenants } from '../../../customers/models/customer.model';
 import { GenericTableComponent } from '../../../../core/shared/components/generic-table/generic-table.component';
-import { ColumnDefinition, TableConfig } from '../../../../core/shared/components/generic-table/generic-table.model';
+import { ColumnDefinition, TableConfig, RowAction } from '../../../../core/shared/components/generic-table/generic-table.model';
 import { BreadcrumbComponent } from "@core/shared/components/breadcrumb/breadcrumb.component";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatDialog } from '@angular/material/dialog';
 import { AddCustomerDialogComponent } from '../add-customer-dialog/add-customer-dialog.component';
+import { AuthService } from '@core/index';
 
 @Component({
     selector: 'app-customers-list',
@@ -19,6 +20,7 @@ import { AddCustomerDialogComponent } from '../add-customer-dialog/add-customer-
 })
 export class CustomersListComponent {
     private service = inject(CustomersService);
+    private authService = inject(AuthService);
     private _items = signal<CustomerWithTenants[]>([]);
     private _total = signal<number>(0);
 
@@ -36,6 +38,7 @@ export class CustomersListComponent {
         { def: 'firstName', label: 'First Name', type: 'text', sortable: false },
         { def: 'lastName', label: 'Last Name', type: 'text', sortable: false },
         { def: 'tenantNames', label: 'Tenants', type: 'text', sortable: false },
+        { def: 'actions', label: 'Actions', type: 'actionBtn' }
     ]);
 
     tableConfig: TableConfig = {
@@ -44,7 +47,7 @@ export class CustomersListComponent {
         enableExport: false,
         enableRefresh: true,
         enableColumnHide: true,
-    enableAdd: true,
+        enableAdd: true,
         enableEdit: false,
         enableDelete: false,
         enableContextMenu: false,
@@ -52,6 +55,10 @@ export class CustomersListComponent {
         pageSizeOptions: [10, 20, 50],
         title: 'Customers',
     };
+
+    rowActions: RowAction[] = [
+        { name: 'addChild', icon: 'user-plus', tooltip: 'Add Child Customer', color: 'primary' }
+    ];
 
     private dialog = inject(MatDialog);
 
@@ -61,28 +68,51 @@ export class CustomersListComponent {
 
     private load() {
         this.loading.set(true);
-        this.service.getCustomersWithTenants(this.pageNumber, this.pageSize).subscribe({
-            next: (res) => {
-                // The sample shows outer ApiResponse with inner paginated object in res.data
-                // PaginatedApiResponse<T> shape: data: T, totalRecords, pageNumber, pageSize
-                const inner: any = (res as any).data; // fallback due to mixed sample shape
-                const records: CustomerWithTenants[] | undefined = inner?.data || (res as any).data?.data;
-                if (Array.isArray(records)) {
-                    this._items.set(records.map((c: CustomerWithTenants) => ({
-                        ...c,
-                        // Flatten tenant names for display
-                        tenantNames: c.tenants.map(t => t.tenantName).join(', ')
-                    }) as any));
-                    this._total.set(inner?.totalRecords || (res as any).totalRecords || records.length);
-                    this.loading.set(false);
-                }
-            },
-            error: () => this.loading.set(false)
-        });
+        if (this.authService.isSuperAdmin) {
+            this.service.getCustomersWithTenants(this.pageNumber, this.pageSize).subscribe({
+                next: (res) => {
+                    // The sample shows outer ApiResponse with inner paginated object in res.data
+                    // PaginatedApiResponse<T> shape: data: T, totalRecords, pageNumber, pageSize
+                    const inner: any = (res as any).data; // fallback due to mixed sample shape
+                    const records: CustomerWithTenants[] | undefined = inner?.data || (res as any).data?.data;
+                    if (Array.isArray(records)) {
+                        this._items.set(records.map((c: CustomerWithTenants) => ({
+                            ...c,
+                            // Flatten tenant names for display
+                            tenantNames: c.tenants.map(t => t.tenantName).join(', ')
+                        }) as any));
+                        this._total.set(inner?.totalRecords || (res as any).totalRecords || records.length);
+                        this.loading.set(false);
+                    }
+                },
+                error: () => this.loading.set(false)
+            });
+        } else {
+            this.service.getCustomersByTenant(this.pageNumber, this.pageSize).subscribe({
+                next: (res) => {
+                    const records: CustomerWithTenants[] | undefined = (res as any).data?.data;
+                    if (Array.isArray(records)) {
+                        this._items.set(records.map((c: CustomerWithTenants) => ({
+                            ...c,
+                            // Flatten tenant names for display
+                            tenantNames: null, // c.tenants.map(t => t.tenantName).join(', ')
+                        }) as any));
+                        this._total.set((res as any).data?.totalRecords || records.length);
+                        this.loading.set(false);
+                    }
+                },
+                error: () => this.loading.set(false)
+            });
+        }
     }
 
     onTableEvent(e: any) {
         switch (e.type) {
+            case 'custom':
+                if (e.action === 'addChild') {
+                    this.openAddDialog(e.data?.globalCustomerId);
+                }
+                break;
             case 'refresh':
                 this.load();
                 break;
@@ -97,11 +127,11 @@ export class CustomersListComponent {
         }
     }
 
-    private openAddDialog() {
+    private openAddDialog(parentGlobalCustomerId?: string) {
         const ref = this.dialog.open(AddCustomerDialogComponent, {
             width: '450px',
             disableClose: true,
-            data: {}
+            data: { parentGlobalCustomerId: parentGlobalCustomerId || null }
         });
         ref.afterClosed().subscribe(success => {
             if (success) {

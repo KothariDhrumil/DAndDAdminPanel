@@ -46,12 +46,15 @@ export class StartupService {
       if (!result.user || !result.permissions) {
         throw new Error('Invalid user data or permissions received');
       }
-      
+      this.setAuthUserDetails(result.user.authUser);
       this.setRolesAndPermissions(result.user, result.permissions);
     } catch (error) {
       // console.error('Startup service error:', error);
       //throw error instanceof Error ? error : new Error('Failed to load user permissions');
     }
+  }
+  setAuthUserDetails(user: authUser) {
+     // TODO : lets implement later on
   }
 
   private setRolesAndPermissions(user: userInfo, permissions: string[]) {

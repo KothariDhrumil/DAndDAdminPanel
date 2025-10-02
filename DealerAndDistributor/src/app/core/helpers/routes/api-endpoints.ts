@@ -44,9 +44,12 @@ export const TODOS_API = baseUrl + apiVersionV1 + '/todos';
 /*/ Customer Routes */
 export const CUSTOMERS_API = baseUrl + apiVersionNeutral + '/customers';
 export const CUSTOMERS_WITH_TENANTS_API = `${CUSTOMERS_API}/with-tenants`;
-export const CUSTOMERS_BY_TENANT_API = (tenantId: number) => `${CUSTOMERS_API}/tenant/${tenantId}`;
+export const CUSTOMERS_BY_TENANT_API = `${CUSTOMERS_API}/by-tenant`;
+export const CUSTOMERS_TENANT_PROFILE_API = `${CUSTOMERS_API}/tenant-profiles`;
 export const CUSTOMERS_SEARCH_BY_PHONE_API = (phone: string) => `${CUSTOMERS_API}/search/by-phone?phone=${encodeURIComponent(phone)}`;
 export const CUSTOMERS_LINK_API = `${CUSTOMERS_API}/link`;
+export const CUSTOMERS_CHILD_API = `${CUSTOMERS_API}/child`;
+export const CUSTOMERS_CHILD_LINK_API = `${CUSTOMERS_CHILD_API}/link`;
 
 /*/ Admin Routes */
 

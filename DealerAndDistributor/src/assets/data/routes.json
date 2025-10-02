@@ -124,10 +124,7 @@
       "groupTitle": false,
       "badge": "",
       "badgeClass": "",
-      "role": [
-        "CustomerManagement",
-        "AccessAll"
-      ],
+      "role": [],
       "submenu": []
     }
   ]
