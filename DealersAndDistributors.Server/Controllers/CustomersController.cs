@@ -3,6 +3,7 @@ using Application.Customers.Create;
 using Application.Customers.Update;
 using Application.Customers.Links;
 using Application.Customers.Queries;
+using Application.Customers.Hierarchy;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -10,10 +11,12 @@ using AuthPermissions.BaseCode.CommonCode;
 using SharedKernel;
 
 namespace DealersAndDistributors.Server.Controllers;
- 
+
+public record LinkExistingChildRequest(Guid ParentGlobalCustomerId, Guid ChildGlobalCustomerId, int? TenantId);
+
 public class CustomersController : VersionNeutralApiController
 {
-    // Tenant admin adds a customer and optionally maps to current tenant (if TenantId omitted, read from user claim)
+    // Tenant admin adds a customer and optionally maps to current tenant (if TenantId omitted, read from current user claim)
     [HttpPost]
     [Authorize]
     [OpenApiOperation("Create a customer (auto-provisions Identity user). Optionally map to a tenant.")]
@@ -97,17 +100,20 @@ public class CustomersController : VersionNeutralApiController
     }
 
     // List customers for a specific tenant (central link)
-    [HttpGet("tenant/{tenantId:int}")]
+    [HttpGet("by-tenant")]
     [Authorize]
     [OpenApiOperation("List customers mapped to a specific tenant.", "")]
     public async Task<ActionResult> ListByTenantAsync(
         [FromServices] IQueryHandler<ListCustomersByTenantQuery, PagedResult<List<TenantCustomerDto>>> handler,
-        int tenantId,
         int pageNumber = 1,
         int pageSize = 20,
         CancellationToken ct = default)
     {
-        var result = await handler.Handle(new ListCustomersByTenantQuery(tenantId, pageNumber, pageSize), ct);
+        var tenantId = User.GetTenantIdFromUser();
+        if (tenantId == null)
+            return BadRequest(Result.Failure(Error.Validation("TenantIdMissing", "Tenant id not provided or claim missing.")));
+
+        var result = await handler.Handle(new ListCustomersByTenantQuery(tenantId.Value, pageNumber, pageSize), ct);
         return Ok(result);
     }
 
@@ -144,6 +150,46 @@ public class CustomersController : VersionNeutralApiController
         CancellationToken ct = default)
     {
         var result = await handler.Handle(new SearchCustomerByPhoneQuery(phone), ct);
+        return Ok(result);
+    }
+
+    [HttpPost("child")]
+    [Authorize]
+    [OpenApiOperation("Create a child customer under a parent (hierarchical franchise).", "")]
+    public async Task<ActionResult> CreateChildAsync(
+        [FromServices] ICommandHandler<CreateChildCustomerCommand, Guid> handler,
+        [FromBody] CreateChildCustomerCommand command,
+        CancellationToken ct)
+    {
+        if (!command.TenantId.HasValue)
+        {
+            var tenantId = User.GetTenantIdFromUser();
+            command.TenantId = tenantId;
+        }
+
+        var result = await handler.Handle(command, ct);
+        return Ok(result);
+    }
+
+    [HttpPost("child/link")]
+    [Authorize]
+    [OpenApiOperation("Link existing customer as child under a parent (hierarchy).", "")]
+    public async Task<ActionResult> LinkExistingChildAsync(
+        [FromServices] ICommandHandler<SetFranchiseParentCommand> handler,
+        [FromBody] LinkExistingChildRequest request,
+        CancellationToken ct)
+    {
+        var tenantId = request.TenantId ?? User.GetTenantIdFromUser();
+        if (tenantId == null)
+            return BadRequest(Result.Failure(Error.Validation("TenantIdMissing", "Tenant id not provided or claim missing.")));
+
+        var cmd = new SetFranchiseParentCommand
+        {
+            TenantId = tenantId.Value,
+            GlobalCustomerId = request.ChildGlobalCustomerId,
+            NewParentGlobalCustomerId = request.ParentGlobalCustomerId
+        };
+        var result = await handler.Handle(cmd, ct);
         return Ok(result);
     }
 }

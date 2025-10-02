@@ -95,6 +95,12 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => new { x.GlobalCustomerId, x.DataKey });
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.TenantId);
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasIndex(x => x.ParentGlobalCustomerId);
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasIndex(x => x.HierarchyPath);
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasIndex(x => x.Depth);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

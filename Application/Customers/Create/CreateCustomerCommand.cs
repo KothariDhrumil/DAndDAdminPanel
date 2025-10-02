@@ -71,12 +71,14 @@ public sealed class CreateCustomerCommand : ICommand<Guid>
             }
             else
             {
-                existing.FirstName = command.FirstName;
-                existing.LastName = command.LastName;
-                existing.PhoneNumber = phone;
-                existing.Email = email;
-                existing.UpdatedAt = DateTime.UtcNow;
-                authDb.CustomerAccounts.Update(existing);
+                // TODO : lets not update the customer name here in central db.
+
+                //existing.FirstName = command.FirstName;
+                //existing.LastName = command.LastName;
+                //existing.PhoneNumber = phone;
+                //existing.Email = email;
+                //existing.UpdatedAt = DateTime.UtcNow;
+                //authDb.CustomerAccounts.Update(existing);
 
                 globalCustomerId = existing.GlobalCustomerId;
             }

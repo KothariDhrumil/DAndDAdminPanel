@@ -34,7 +34,24 @@ public sealed class TenantRetailDbContextFactory : ITenantRetailDbContextFactory
         var connectionString = _sharding.FormConnectionString(tenant.DatabaseInfoName);
         var dataKey = tenant.GetTenantDataKey();
         var stub = new StubGetShardingDataFromUser(connectionString, dataKey);
-        return new RetailDbContext(_options, stub, _dispatcher);
+        var context = new RetailDbContext(_options, stub, _dispatcher);
+
+        // Apply pending migrations (if any) for this tenant database
+        try
+        {
+            var pending = await context.Database.GetPendingMigrationsAsync(ct);
+            if (pending.Any())
+            {
+                await context.Database.MigrateAsync(ct);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Optional: log the migration failure; for now we rethrow to surface issues early
+            throw new InvalidOperationException($"Failed to apply migrations for tenant {tenantId}.", ex);
+        }
+
+        return context;
     }
 
     private sealed class StubGetShardingDataFromUser : IGetShardingDataFromUser
