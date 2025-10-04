@@ -6,6 +6,7 @@ using SharedKernel;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using Application.Abstractions.Persistence;
 using Domain.Customers;
+using Application.Customers.Services;
 
 namespace Application.Customers.Links;
 
@@ -16,7 +17,7 @@ public sealed class LinkCustomerToTenantCommand : ICommand
 
     internal sealed class Handler(
         AuthPermissionsDbContext authDb,
-        ITenantRetailDbContextFactory retailFactory)
+        ICustomerOnboardingService provisioning)
         : ICommandHandler<LinkCustomerToTenantCommand>
     {
         public async Task<Result> Handle(LinkCustomerToTenantCommand command, CancellationToken ct)
@@ -26,34 +27,8 @@ public sealed class LinkCustomerToTenantCommand : ICommand
             if (account == null)
                 return Result.Failure(Error.NotFound("CustomerNotFound", "Customer not found."));
 
-            // link in central db
-            var exists = await authDb.CustomerTenantLinks
-                .AnyAsync(l => l.GlobalCustomerId == account.GlobalCustomerId && l.TenantId == command.TenantId, ct);
-            if (!exists)
-            {
-                authDb.CustomerTenantLinks.Add(new CustomerTenantLink
-                {
-                    GlobalCustomerId = account.GlobalCustomerId,
-                    TenantId = command.TenantId
-                });
-                await authDb.SaveChangesAsync(ct);
-            }
-
-            // ensure tenant profile exists
-            var retailDb = await retailFactory.CreateAsync(command.TenantId, ct);
-            var hasProfile = await retailDb.TenantCustomerProfiles
-                .AnyAsync(p => p.GlobalCustomerId == account.GlobalCustomerId, ct);
-            if (!hasProfile)
-            {
-                retailDb.TenantCustomerProfiles.Add(new TenantCustomerProfile
-                {
-                    GlobalCustomerId = account.GlobalCustomerId,
-                    TenantId = command.TenantId,
-                    DisplayName = string.Join(' ', new[] { account.FirstName, account.LastName }.Where(s => !string.IsNullOrWhiteSpace(s))),
-                    DataKey = retailDb.DataKey
-                });
-                await retailDb.SaveChangesAsync(ct);
-            }
+            var display = string.Join(' ', new[] { account.FirstName, account.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)));
+            await provisioning.EnsureLinkedToTenantAsync(account.GlobalCustomerId, command.TenantId, display, ct);
 
             return Result.Success();
         }

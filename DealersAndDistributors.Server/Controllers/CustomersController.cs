@@ -34,7 +34,6 @@ public class CustomersController : VersionNeutralApiController
 
         var result = await handler.Handle(command, ct);
         return Ok(result);
-
     }
 
     [HttpPut]
