@@ -14,5 +14,7 @@ namespace Application.Identity.User
         public UserViewModel User { get; set; }
 
         public AuthUserDisplay AuthUser { get; set; }
+
+        public string UserRole { get; set; }
     }
 }

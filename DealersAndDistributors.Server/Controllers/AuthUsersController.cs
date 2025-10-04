@@ -96,7 +96,7 @@ public class AuthUsersController : VersionNeutralApiController
     [OpenApiOperation("Add User in Tenant")]
     public async Task<ActionResult> CreateAsync(AddNewUserDto newUser)
     {
-        var tenantId = User.GetTenantIdFromUser();
+        var tenantId = User.GetTenantId();
         if (newUser.TenantId == null)
         {
             newUser.TenantId = tenantId;

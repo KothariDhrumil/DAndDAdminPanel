@@ -19,7 +19,7 @@ public class CustomerOrdersController : VersionNeutralApiController
         int? tenantId = null;
         if (string.IsNullOrEmpty(globalCustomerId))
         {
-            var cidString = User.FindFirst("cid")?.Value;
+            var cidString = User.GetGlobalCustomerId();
             if (!Guid.TryParse(cidString, out var customerId))
                 return Results.Unauthorized();
             cid = customerId;
@@ -29,7 +29,7 @@ public class CustomerOrdersController : VersionNeutralApiController
             if (!Guid.TryParse(globalCustomerId, out var customerId))
                 return Results.Unauthorized();
             cid = customerId;
-            tenantId = User.GetTenantIdFromUser();
+            tenantId = User.GetTenantId();
         }
 
         var result = await handler.Handle(new GetMyOrdersQuery(cid,tenantId), ct);
@@ -43,16 +43,17 @@ public class CustomerOrdersController : VersionNeutralApiController
         [FromBody] CreateCustomerOrderCommand command,
         CancellationToken ct)
     {
+
         if (!command.TenantId.HasValue)
         {
-            var tenantIdClaim = User.GetTenantIdFromUser();
+            var tenantIdClaim = User.GetTenantId();
             if (tenantIdClaim.HasValue)
                 command.TenantId = tenantIdClaim.Value;
         }
 
         if (command.GlobalCustomerId == Guid.Empty)
         {
-            var cidString = User.FindFirst("cid")?.Value;
+            var cidString = User.GetGlobalCustomerId();
             if (Guid.TryParse(cidString, out var cid))
                 command.GlobalCustomerId = cid;
         }

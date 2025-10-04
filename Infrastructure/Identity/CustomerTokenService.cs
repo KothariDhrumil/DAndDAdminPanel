@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Identity.Tokens;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
+using AuthPermissions.BaseCode.PermissionsCode;
 using Domain;
 using Infrastructure.Auth.Jwt;
 using Microsoft.AspNetCore.Identity;
@@ -45,7 +46,8 @@ internal sealed class CustomerTokenService : ICustomerTokenService
             {
                 UserName = request.PhoneNumber,
                 PhoneNumber = request.PhoneNumber,
-                PhoneNumberConfirmed = false
+                PhoneNumberConfirmed = false,
+                
             };
             var create = await _userManager.CreateAsync(user);
             if (!create.Succeeded)
@@ -91,14 +93,14 @@ internal sealed class CustomerTokenService : ICustomerTokenService
             return Result.Failure<TokenResponse>(Error.Problem("CustomerNotFound", "Customer not found."));
 
 
-        string cid = customerAccount.GlobalCustomerId.ToString(); // one user = one account
+        string globalCustomerId = customerAccount.GlobalCustomerId.ToString(); // one user = one account
 
         var claims = new List<Claim>
         {
-            new("cid", cid),
-            new(ClaimTypes.Name, user.UserName ?? user.PhoneNumber ?? cid),
+            new(PermissionConstants.GlobalCustomerId, globalCustomerId),
+            new(ClaimTypes.Name, user.UserName ?? user.PhoneNumber ?? globalCustomerId),
             new(ClaimTypes.NameIdentifier, user.Id),
-            new("role", "Customer")
+            new(PermissionConstants.LoggedInUserRole,PermissionConstants.CustomerRole)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));

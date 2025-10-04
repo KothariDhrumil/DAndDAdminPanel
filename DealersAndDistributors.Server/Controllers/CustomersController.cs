@@ -28,7 +28,7 @@ public class CustomersController : VersionNeutralApiController
         // If TenantId not provided explicitly, try to pick from current user’s tenant claim
         if (!command.TenantId.HasValue)
         {
-            var tenantId = User.GetTenantIdFromUser();
+            var tenantId = User.GetTenantId();
             command.TenantId = tenantId;
         }
 
@@ -60,7 +60,7 @@ public class CustomersController : VersionNeutralApiController
         // If TenantId not provided explicitly, try to pick from current user’s tenant claim
         if (command.TenantId == 0)
         {
-            var tenantId = User.GetTenantIdFromUser();
+            var tenantId = User.GetTenantId();
             command.TenantId = (int)tenantId;
         }
         var result = await handler.Handle(command, ct);
@@ -78,7 +78,7 @@ public class CustomersController : VersionNeutralApiController
         // If TenantId not provided explicitly, try to pick from current user’s tenant claim
         if (command.TenantId == 0)
         {
-            var tenantId = User.GetTenantIdFromUser();
+            var tenantId = User.GetTenantId();
             command.TenantId = (int)tenantId;
         }
         var result = await handler.Handle(command, ct);
@@ -109,7 +109,7 @@ public class CustomersController : VersionNeutralApiController
         int pageSize = 20,
         CancellationToken ct = default)
     {
-        var tenantId = User.GetTenantIdFromUser();
+        var tenantId = User.GetTenantId();
         if (tenantId == null)
             return BadRequest(Result.Failure(Error.Validation("TenantIdMissing", "Tenant id not provided or claim missing.")));
 
@@ -129,7 +129,7 @@ public class CustomersController : VersionNeutralApiController
         string? search = null,
         CancellationToken ct = default)
     {
-        var effectiveTenantId = tenantId ?? User.GetTenantIdFromUser();
+        var effectiveTenantId = tenantId ?? User.GetTenantId();
         if (effectiveTenantId == null)
             return BadRequest(Result.Failure(Error.Validation("TenantIdMissing", "Tenant id not provided or claim missing.")));
 
@@ -163,7 +163,7 @@ public class CustomersController : VersionNeutralApiController
     {
         if (!command.TenantId.HasValue)
         {
-            var tenantId = User.GetTenantIdFromUser();
+            var tenantId = User.GetTenantId();
             command.TenantId = tenantId;
         }
 
@@ -179,7 +179,7 @@ public class CustomersController : VersionNeutralApiController
         [FromBody] LinkExistingChildRequest request,
         CancellationToken ct)
     {
-        var tenantId = request.TenantId ?? User.GetTenantIdFromUser();
+        var tenantId = request.TenantId ?? User.GetTenantId();
         if (tenantId == null)
             return BadRequest(Result.Failure(Error.Validation("TenantIdMissing", "Tenant id not provided or claim missing.")));
 
