@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Customers.GetMyOrders;
 
-public sealed record GetMyOrdersQuery(string CustomerUserId) : IQuery<List<MyOrderDto>>;
+public sealed record GetMyOrdersQuery(Guid GlobalCustomerId, int? tenantId) : IQuery<List<MyOrderDto>>;
 
 public sealed class MyOrderDto
 {
     public int TenantId { get; set; }
-    public string TenantName { get; set; }
+    public string TenantName { get; set; } = string.Empty;
     public int OrderId { get; set; }
     public DateTime OrderedAt { get; set; }
     public decimal Total { get; set; }
@@ -24,34 +24,67 @@ internal sealed class GetMyOrdersQueryHandler(
 {
     public async Task<SharedKernel.Result<List<MyOrderDto>>> Handle(GetMyOrdersQuery query, CancellationToken ct)
     {
-        var links = await authContext.CustomerTenantLinks
-            .Join(authContext.Tenants,
-                (CustomerTenantLink l) => l.TenantId,
-                (Tenant t) => t.TenantId,
-                (l, t) => new { l, t })
-            .Where(x => true) // already filtered by user before? optional
-            .Select(x => new { x.l.TenantId, x.t.TenantFullName })
-            .ToListAsync(ct);
-
-        var list = new List<MyOrderDto>();
-
-        foreach (var link in links)
+        if (!query.tenantId.HasValue)
         {
-            var db = await retailFactory.CreateAsync(link.TenantId, ct);
+            var links = await authContext.CustomerTenantLinks
+          .Join(authContext.Tenants,
+              (CustomerTenantLink l) => l.TenantId,
+              (Tenant t) => t.TenantId,
+              (l, t) => new { l, t })
+          .Where(x => x.l.GlobalCustomerId == query.GlobalCustomerId)
+          .Select(x => new { x.l.TenantId, x.t.TenantFullName, x.l.GlobalCustomerId })
+          .ToListAsync(ct);
+
+
+            var list = new List<MyOrderDto>();
+
+            foreach (var link in links)
+            {
+                var db = await retailFactory.CreateAsync(link.TenantId, ct);
+                var profileId = await db.TenantCustomerProfiles.AsNoTracking()
+                    .Where(p => p.GlobalCustomerId == link.GlobalCustomerId)
+                    .Select(p => p.TenantCustomerId)
+                    .SingleOrDefaultAsync(ct);
+                if (profileId == 0) continue;
+
+                var orders = await db.Orders.AsNoTracking()
+                    .Where(o => o.TenantCustomerId == profileId)
+                    .Select(o => new MyOrderDto
+                    {
+                        TenantId = link.TenantId,
+                        TenantName = link.TenantFullName,
+                        OrderId = o.Id,
+                        OrderedAt = o.OrderedAt,
+                        Total = o.Total
+                    })
+                    .ToListAsync(ct);
+                list.AddRange(orders);
+            }
+            list = list.OrderByDescending(x => x.OrderedAt).ToList();
+            return SharedKernel.Result.Success(list);
+        }
+        else
+        {
+            var db = await retailFactory.CreateAsync(query.tenantId.Value, ct);
+            var profileId = await db.TenantCustomerProfiles.AsNoTracking()
+                .Where(p => p.GlobalCustomerId == query.GlobalCustomerId)
+                .Select(p => p.TenantCustomerId)
+                .SingleOrDefaultAsync(ct);
+            if (profileId == 0)
+                return SharedKernel.Result.Failure<List<MyOrderDto>>(SharedKernel.Error.NotFound("ProfileNotFound", "Customer profile not found in tenant."));
+       
             var orders = await db.Orders.AsNoTracking()
-                .Where(o => o.GlobalCustomerId == query.CustomerUserId)
+                .Where(o => o.TenantCustomerId == profileId)
                 .Select(o => new MyOrderDto
                 {
-                    TenantId = link.TenantId,
-                    TenantName = link.TenantFullName,
+                    TenantId = query.tenantId.Value,
                     OrderId = o.Id,
                     OrderedAt = o.OrderedAt,
                     Total = o.Total
                 })
+                .OrderByDescending(o => o.OrderedAt)
                 .ToListAsync(ct);
-            list.AddRange(orders);
+            return SharedKernel.Result.Success(orders);
         }
-        list = list.OrderByDescending(x => x.OrderedAt).ToList();
-        return SharedKernel.Result.Success(list);
     }
 }

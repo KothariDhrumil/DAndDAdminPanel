@@ -1,5 +1,7 @@
 using AuthPermissions.BaseCode.CommonCode;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Customers;
 
 namespace Domain.Orders;
 
@@ -12,8 +14,11 @@ public class Order : IDataKeyFilterReadOnly
 
     public decimal Total { get; set; }
 
-    // Cross-tenant customer correlation id
-    public string GlobalCustomerId { get; set; }
+    // Local tenant profile reference (replaces previous GlobalCustomerId string)
+    public int TenantCustomerId { get; set; }
+
+    [ForeignKey(nameof(TenantCustomerId))]
+    public TenantCustomerProfile CustomerProfile { get; set; } = default!;
 
     // Required for multi-tenant filtering
     public string DataKey { get; private set; } = default!;

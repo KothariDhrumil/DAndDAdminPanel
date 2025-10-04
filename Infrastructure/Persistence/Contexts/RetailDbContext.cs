@@ -81,7 +81,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
         modelBuilder.Entity<Order>()
             .Property(x => x.Total).HasPrecision(9, 2);
         modelBuilder.Entity<Order>()
-            .HasIndex(x => new { x.GlobalCustomerId, x.DataKey });
+            .HasIndex(x => new { x.TenantCustomerId, x.DataKey });
         modelBuilder.Entity<Order>()
             .HasIndex(x => x.DataKey);
         modelBuilder.Entity<Order>()

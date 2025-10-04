@@ -39,7 +39,9 @@ public sealed class CreateCustomerCommand : ICommand<Guid>
                     UserName = phone,
                     PhoneNumber = phone,
                     Email = email,
-                    PhoneNumberConfirmed = true
+                    PhoneNumberConfirmed = true,
+                    FirstName = command.FirstName,
+                    LastName = command.LastName
                 };
                 var created = await userManager.CreateAsync(user, pwd);
                 if (!created.Succeeded)

@@ -9,21 +9,34 @@ namespace DealersAndDistributors.Server.Controllers;
 
 public class CustomerOrdersController : VersionNeutralApiController
 {
-    [HttpGet("me/orders")]
-    [Authorize(Policy = "CustomersOnly")]
-    public async Task<IResult> GetMyOrders(
+    [HttpGet]
+    //[Authorize(Policy = "CustomersOnly")]
+    public async Task<IResult> GetMyOrders([FromQuery] string? globalCustomerId, 
         IQueryHandler<GetMyOrdersQuery, List<MyOrderDto>> handler,
         CancellationToken ct)
     {
-        var cid = User.FindFirst("cid")?.Value;
-        if (string.IsNullOrEmpty(cid))
-            return Results.Unauthorized();
+        Guid cid = Guid.Empty;
+        int? tenantId = null;
+        if (string.IsNullOrEmpty(globalCustomerId))
+        {
+            var cidString = User.FindFirst("cid")?.Value;
+            if (!Guid.TryParse(cidString, out var customerId))
+                return Results.Unauthorized();
+            cid = customerId;
+        }
+        else
+        {
+            if (!Guid.TryParse(globalCustomerId, out var customerId))
+                return Results.Unauthorized();
+            cid = customerId;
+            tenantId = User.GetTenantIdFromUser();
+        }
 
-        var result = await handler.Handle(new GetMyOrdersQuery(cid), ct);
+        var result = await handler.Handle(new GetMyOrdersQuery(cid,tenantId), ct);
         return Results.Ok(result);
     }
 
-    [HttpPost("orders")]
+    [HttpPost]
     [Authorize]
     public async Task<IResult> CreateOrder(
         ICommandHandler<CreateCustomerOrderCommand, int> handler,
@@ -37,11 +50,10 @@ public class CustomerOrdersController : VersionNeutralApiController
                 command.TenantId = tenantIdClaim.Value;
         }
 
-        // fallback to customer id from claims if not provided
-        if (string.IsNullOrWhiteSpace(command.GlobalCustomerId))
+        if (command.GlobalCustomerId == Guid.Empty)
         {
-            var cid = User.FindFirst("cid")?.Value;
-            if (!string.IsNullOrWhiteSpace(cid))
+            var cidString = User.FindFirst("cid")?.Value;
+            if (Guid.TryParse(cidString, out var cid))
                 command.GlobalCustomerId = cid;
         }
 

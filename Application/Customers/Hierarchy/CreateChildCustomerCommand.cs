@@ -51,7 +51,7 @@ internal sealed class CreateChildCustomerCommandHandler(
         var email = $"{phone}@DandD.com";
         var pwd = $"{phone}@DandD";
 
-        
+
 
 
         // Identity user
@@ -63,7 +63,9 @@ internal sealed class CreateChildCustomerCommandHandler(
                 UserName = phone,
                 PhoneNumber = phone,
                 Email = email,
-                PhoneNumberConfirmed = true
+                PhoneNumberConfirmed = true,
+                LastName = command.LastName,
+                FirstName = command.FirstName
             };
             var createUser = await userManager.CreateAsync(user, pwd);
             if (!createUser.Succeeded)

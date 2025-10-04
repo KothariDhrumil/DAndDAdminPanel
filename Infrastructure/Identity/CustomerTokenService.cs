@@ -1,5 +1,6 @@
 using Application.Abstractions.Authentication;
 using Application.Identity.Tokens;
+using AuthPermissions.BaseCode.DataLayer.EfCode;
 using Domain;
 using Infrastructure.Auth.Jwt;
 using Microsoft.AspNetCore.Identity;
@@ -16,13 +17,16 @@ namespace Infrastructure.Identity;
 internal sealed class CustomerTokenService : ICustomerTokenService
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AuthPermissionsDbContext authContext;
     private readonly JwtSettings _jwtSettings;
 
     public CustomerTokenService(
         UserManager<ApplicationUser> userManager,
-        IOptions<JwtSettings> jwtSettings)
+        IOptions<JwtSettings> jwtSettings,
+        AuthPermissionsDbContext authContext)
     {
         _userManager = userManager;
+        this.authContext = authContext;
         _jwtSettings = jwtSettings.Value;
     }
 
@@ -55,7 +59,7 @@ internal sealed class CustomerTokenService : ICustomerTokenService
         // TODO: send via SMS provider
         // await _smsService.SendOTPAsync(new SMSRequestDTO { To = request.PhoneNumber, Body = code, Template = "CUSTOMER_LOGIN_OTP" });
 
-        return Result.Success();
+        return Result.Success(code);
     }
 
     public async Task<Result<TokenResponse>> AuthenticateAsync(CustomerTokenRequest request, CancellationToken ct)
@@ -82,7 +86,12 @@ internal sealed class CustomerTokenService : ICustomerTokenService
                     string.Join(",", update.Errors.Select(e => e.Description))));
         }
 
-        var cid = user.Id; // one user = one account
+        var customerAccount = await authContext.CustomerAccounts.FirstOrDefaultAsync(x => x.GlobalUserId == user.Id);
+        if (customerAccount is null)
+            return Result.Failure<TokenResponse>(Error.Problem("CustomerNotFound", "Customer not found."));
+
+
+        string cid = customerAccount.GlobalCustomerId.ToString(); // one user = one account
 
         var claims = new List<Claim>
         {
