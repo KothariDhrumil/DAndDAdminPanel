@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Place Order</h2>
+<div mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-label>Total</mat-label>
+      <input matInput type="number" formControlName="total" min="0" />
+      @if (form.controls.total.hasError('required')) {<mat-error>Total is required</mat-error>}
+      @if (form.controls.total.hasError('min')) {<mat-error>Total cannot be negative</mat-error>}
+    </mat-form-field>
+
+    <div mat-dialog-actions class="d-flex justify-content-end gap-2 mt-3">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Submit</button>
+    </div>
+  </form>
+</div>

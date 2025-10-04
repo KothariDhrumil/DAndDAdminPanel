@@ -11,6 +11,18 @@ export interface CustomerWithTenants {
   tenants: CustomerTenantRef[];
 }
 
+
+
+export interface TenantCustomerProfile {
+  globalCustomerId: string;
+  tenantCustomerId : number;
+  phoneNumber: string;
+  displayName: string;
+  tenantId: number;
+}
+
+
+
 export interface CustomerQuery {
   pageNumber?: number;
   pageSize?: number;

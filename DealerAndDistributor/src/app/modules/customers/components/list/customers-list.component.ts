@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomersService } from '../../../customers/service/customers.service';
-import { CustomerWithTenants } from '../../../customers/models/customer.model';
+import { CustomerWithTenants, TenantCustomerProfile } from '../../../customers/models/customer.model';
 import { GenericTableComponent } from '../../../../core/shared/components/generic-table/generic-table.component';
 import { ColumnDefinition, TableConfig, RowAction } from '../../../../core/shared/components/generic-table/generic-table.model';
 import { BreadcrumbComponent } from "@core/shared/components/breadcrumb/breadcrumb.component";
@@ -9,6 +9,9 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatDialog } from '@angular/material/dialog';
 import { AddCustomerDialogComponent } from '../add-customer-dialog/add-customer-dialog.component';
 import { AuthService } from '@core/index';
+import { PlaceOrderDialogComponent } from '../place-order-dialog/place-order-dialog.component';
+import { ViewOrdersDialogComponent } from '../view-orders-dialog/view-orders-dialog.component';
+import { first } from 'rxjs';
 
 @Component({
     selector: 'app-customers-list',
@@ -57,7 +60,9 @@ export class CustomersListComponent {
     };
 
     rowActions: RowAction[] = [
-        { name: 'addChild', icon: 'user-plus', tooltip: 'Add Child Customer', color: 'primary' }
+        { name: 'addChild', icon: 'user-plus', tooltip: 'Add Child Customer', color: 'primary' },
+        { name: 'viewOrders', icon: 'list', tooltip: 'View Orders', color: 'accent' },
+        { name: 'placeOrder', icon: 'shopping-cart', tooltip: 'Place Order', color: 'primary' },
     ];
 
     private dialog = inject(MatDialog);
@@ -90,12 +95,15 @@ export class CustomersListComponent {
         } else {
             this.service.getCustomersByTenant(this.pageNumber, this.pageSize).subscribe({
                 next: (res) => {
-                    const records: CustomerWithTenants[] | undefined = (res as any).data?.data;
+                    const records: TenantCustomerProfile[] | undefined = (res as any).data?.data;
                     if (Array.isArray(records)) {
-                        this._items.set(records.map((c: CustomerWithTenants) => ({
+                        this._items.set(records.map((c: TenantCustomerProfile) => ({
                             ...c,
+                            tenantNames: c.tenantId ? c.tenantId.toString() : null,
                             // Flatten tenant names for display
-                            tenantNames: null, // c.tenants.map(t => t.tenantName).join(', ')
+                            firstName: c.displayName || '',
+                            phoneNumber: c.phoneNumber || '',
+                            globalCustomerId: c.globalCustomerId
                         }) as any));
                         this._total.set((res as any).data?.totalRecords || records.length);
                         this.loading.set(false);
@@ -109,8 +117,16 @@ export class CustomersListComponent {
     onTableEvent(e: any) {
         switch (e.type) {
             case 'custom':
-                if (e.action === 'addChild') {
-                    this.openAddDialog(e.data?.globalCustomerId);
+                switch (e.action) {
+                    case 'addChild':
+                        this.openAddDialog(e.data?.globalCustomerId);
+                        break;
+                    case 'viewOrders':
+                        this.openViewOrdersDialog(e.data?.globalCustomerId);
+                        break;
+                    case 'placeOrder':
+                        this.openPlaceOrderDialog(e.data?.globalCustomerId);
+                        break;
                 }
                 break;
             case 'refresh':
@@ -137,6 +153,28 @@ export class CustomersListComponent {
             if (success) {
                 this.load();
             }
+        });
+    }
+
+    private openPlaceOrderDialog(globalCustomerId: string) {
+        if (!globalCustomerId) return;
+        const ref = this.dialog.open(PlaceOrderDialogComponent, {
+            width: '400px',
+            disableClose: true,
+            data: { globalCustomerId }
+        });
+        ref.afterClosed().subscribe(success => {
+            if (success) {
+                // optional: refresh orders count/summary if added later
+            }
+        });
+    }
+
+    private openViewOrdersDialog(globalCustomerId: string) {
+        if (!globalCustomerId) return;
+        this.dialog.open(ViewOrdersDialogComponent, {
+            width: '500px',
+            data: { globalCustomerId }
         });
     }
 }

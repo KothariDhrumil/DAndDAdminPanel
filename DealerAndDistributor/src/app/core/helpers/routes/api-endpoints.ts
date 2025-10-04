@@ -50,6 +50,7 @@ export const CUSTOMERS_SEARCH_BY_PHONE_API = (phone: string) => `${CUSTOMERS_API
 export const CUSTOMERS_LINK_API = `${CUSTOMERS_API}/link`;
 export const CUSTOMERS_CHILD_API = `${CUSTOMERS_API}/child`;
 export const CUSTOMERS_CHILD_LINK_API = `${CUSTOMERS_CHILD_API}/link`;
+export const CUSTOMER_ORDERS_API = baseUrl + apiVersionNeutral + '/customerorders';
 
 /*/ Admin Routes */
 
