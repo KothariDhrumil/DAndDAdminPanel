@@ -13,7 +13,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   private dialog = inject(MatDialog);
   private store = inject(LocalStorageService);
   private authService = inject(AuthService);
-  constructor() {}
+  constructor() { }
 
   intercept(
     request: HttpRequest<any>,
@@ -21,15 +21,12 @@ export class ErrorInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 401 || err.status === 403) {
+        const url = request?.url || '';
+        const isLogoutCall = url.includes('/logout');
+        if (!isLogoutCall && (err.status === 401 || err.status === 403)) {
           // auto logout if 401 or 403 response returned from api
           this.authService.logout();
-          // location.reload();
-          return of(); // or EMPTY  to terminate the stream
-
-
         }
-
         // Do not auto-logout on 401/403 here; let JwtInterceptor handle refresh/retry
         const errorMsg = (err?.error?.message) ?? (err?.message) ?? (err?.statusText) ?? 'Unknown error';
 
@@ -54,14 +51,16 @@ export class ErrorInterceptor implements HttpInterceptor {
         };
 
         // Open a lightweight dialog to let user submit a ticket
-        try {
-          this.dialog.open(ErrorTicketComponent, {
-            width: '560px',
-            // Pass full payload for backend submission; the dialog template only shows non-sensitive fields
-            data: { payload },
-          });
-        } catch {
-          // If dialog fails (e.g., in non-browser), ignore
+        if (!isLogoutCall) {
+          try {
+            this.dialog.open(ErrorTicketComponent, {
+              width: '560px',
+              // Pass full payload for backend submission; the dialog template only shows non-sensitive fields
+              data: { payload },
+            });
+          } catch {
+            // If dialog fails (e.g., in non-browser), ignore
+          }
         }
 
         return throwError(() => err ?? errorMsg);

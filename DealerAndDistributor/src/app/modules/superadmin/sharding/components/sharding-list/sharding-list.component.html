@@ -5,14 +5,12 @@
       <app-breadcrumb [title]="'Sharding'" [items]="['Superadmin']" [active_item]="'Sharding'">
       </app-breadcrumb>
     </div>
-
-    <app-generic-table
-      [data]="shardings()"
-      [columns]="columns() || []"
-      [config]="tableConfig"
-      [formDialogComponent]="ShardingDialogComponent"
-      [deleteDialogComponent]="DeleteConfirmDialogComponent"
-      (tableEvent)="onTableEvent($event)"
-    ></app-generic-table>
+    <div class="row clearfix">
+      <div class="col-12">
+        <app-generic-table [data]="shardings()" [columns]="columns() || []" [config]="tableConfig"
+          [formDialogComponent]="ShardingDialogComponent" [deleteDialogComponent]="DeleteConfirmDialogComponent"
+          (tableEvent)="onTableEvent($event)"></app-generic-table>
+      </div>
+    </div>
   </div>
 </section>

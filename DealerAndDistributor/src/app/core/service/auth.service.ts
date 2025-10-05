@@ -1,6 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpEvent, HttpHandler, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, tap, throwError, switchMap, Subscription, timer } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -29,7 +29,8 @@ export class AuthService {
     private store: LocalStorageService,
     private toastrService: ToastrService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private httpBackend: HttpBackend
   ) {
     this.currentUserTokenSource = new BehaviorSubject<string>(this.store.getAuthItem<string>('token') ?? '');
     this.currentUserToken$ = this.currentUserTokenSource.asObservable();
@@ -94,14 +95,22 @@ export class AuthService {
 
 
   logout() {
-    // remove user from local storage to log user out
+    // capture token before clearing for server-side logout
+    const token = this.store.getAuthItem<string>('token') ?? '';
+    // use a raw HttpClient that bypasses interceptors to avoid recursive logout on 401/403
+    const rawHttp = new HttpClient(this.httpBackend);
+    const headers = token && token.trim() ? new HttpHeaders({ Authorization: 'Bearer ' + token }) : undefined;
+    // fire-and-forget; swallow any errors
+    rawHttp.post(LOGOUT, {}, { headers }).subscribe({
+      error: () => { /* ignore logout errors */ }
+    });
+
+    // clear local storage/session regardless of server response
     this.store.clear();
-    // also clear auth items from session explicitly
     this.store.removeAuthItem('token');
     this.store.removeAuthItem('refreshToken');
     this.store.removeAuthItem('refreshTokenExpiryTime');
-    this.http.post(LOGOUT, {}).subscribe();
-    // TODO : call logout API using HTTPClient and JWT token for server-side logout if required
+    // navigate to login
     this.router.navigateByUrl(LOGIN_ROUTE);
     // stop any scheduled refresh timers
     this.refreshSub?.unsubscribe();

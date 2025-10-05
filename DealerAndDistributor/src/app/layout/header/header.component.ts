@@ -19,6 +19,8 @@ import { UnsubscribeOnDestroyAdapter } from '../../core/shared';
 import { AuthService, InConfiguration, LanguageService } from '../../core';
 import { ConfigService } from '../../core/config';
 import { LocalStorageService } from '../../core/shared/services';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmLogoutComponent } from '@core/shared/components/confirm-logout/confirm-logout.component';
 
 interface Notifications {
   message: string;
@@ -65,7 +67,8 @@ export class HeaderComponent
     private router: Router,
     public languageService: LanguageService,
 
-    private storageSevice: LocalStorageService
+    private storageSevice: LocalStorageService,
+    private dialog: MatDialog
 
   ) {
     super();
@@ -200,6 +203,11 @@ export class HeaderComponent
     }
   }
   logout() {
-    this.authService.logout();
+    import('../../core/shared/components/confirm-logout/confirm-logout.component').then(() => {
+      const ref = this.dialog.open(ConfirmLogoutComponent, {
+        width: '420px',
+      });
+      ref.afterClosed().subscribe();
+    });
   }
 }
