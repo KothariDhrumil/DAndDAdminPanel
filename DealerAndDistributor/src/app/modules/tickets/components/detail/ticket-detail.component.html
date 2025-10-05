@@ -18,23 +18,16 @@
                                     statusLabel(t.ticketStatus) }}</mat-chip>
                                 <mat-chip [color]="priorityChipColor(t.priority)" selected>{{ priorityLabel(t.priority)
                                     }}</mat-chip>
+                                <button mat-raised-button color="primary" (click)="openUpdateDialog()">
+                                    <mat-icon>edit</mat-icon>
+                                    <span class="ms-1">Edit</span>
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <div class="body">
                         <div class="wrapper wrapper-content animated fadeInUp">
-                            <mat-form-field appearance="outline">
-                                <mat-label>Status</mat-label>
-                                <mat-select [value]="t.ticketStatus" (selectionChange)="updateStatus($event.value)">
-                                    <mat-option [value]="0">Open</mat-option>
-                                    <mat-option [value]="1">InProgress</mat-option>
-                                    <mat-option [value]="2">Resolved</mat-option>
-                                    <mat-option [value]="3">Closed</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-
-
                             <mat-list>
                                 <mat-list-item>
                                     <mat-icon matListItemIcon>message</mat-icon>
@@ -110,7 +103,8 @@
                                             <span class=""><strong>Agent:</strong> {{ t.userAgent }}</span>
                                             }
                                             @if (t.timestamp) {
-                                            <span class="ms-3"><strong>Time:</strong> {{ t.timestamp | date:'medium' }}</span>
+                                            <span class="ms-3"><strong>Time:</strong> {{ t.timestamp | date:'medium'
+                                                }}</span>
                                             }
                                         </div>
                                     </mat-list-item>
@@ -175,16 +169,38 @@
                             </mat-accordion>
                             }
 
-                            @if (t.notes || t.resolution) {
+                            @if (t.notes) {
                             <mat-divider></mat-divider>
-                            @if (t.notes) { <p><strong>Notes:</strong> {{ t.notes }}</p> }
-                            @if (t.resolution) { <p><strong>Resolution:</strong> {{ t.resolution }}</p> }
+
+                            <ng-container>
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <mat-icon matListItemIcon>person</mat-icon>
+                                    <div matListItemTitle>Ownership</div>
+                                    <div matListItemLine>
+                                        <span><strong>Notes:</strong> {{ t.notes }}</span>
+
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            }
+                            @if (t.resolution) {
+                            <mat-divider></mat-divider>
+
+                            <ng-container>
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <mat-icon matListItemIcon>check_circle</mat-icon>
+                                    <div matListItemTitle>Resolution</div>
+                                    <div matListItemLine>
+                                        <span><strong>Resolution:</strong> {{ t.resolution }}</span>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
                             }
                         </div>
                     </div>
                 </div>
-                } @else {
-                <p>Loading ticket details...</p>
                 }
             </div>
         </div>

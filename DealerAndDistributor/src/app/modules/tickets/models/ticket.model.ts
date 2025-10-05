@@ -73,3 +73,12 @@ export interface PagedResult<T> {
     pageSize: number;
     totalRecords: number;
 }
+
+// Payload for updating a ticket via PUT /api/support-tickets/{id}
+export interface UpdateTicketPayload {
+    id: TicketId;
+    notes: string;
+    ticketStatus: TicketStatus;
+    priority: TicketPriority;
+    resolution: string;
+}

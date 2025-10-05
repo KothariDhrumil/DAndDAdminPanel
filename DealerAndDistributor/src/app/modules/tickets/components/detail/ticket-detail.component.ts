@@ -13,6 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { BreadcrumbComponent } from "@core/shared/components/breadcrumb/breadcrumb.component";
 
@@ -25,6 +26,7 @@ import { BreadcrumbComponent } from "@core/shared/components/breadcrumb/breadcru
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDialogModule,
     MatTooltipModule,
     MatListModule,
     MatDividerModule,
@@ -41,6 +43,7 @@ import { BreadcrumbComponent } from "@core/shared/components/breadcrumb/breadcru
 export class TicketDetailComponent {
   private route = inject(ActivatedRoute);
   private service = inject(TicketsService);
+  private dialog = inject(MatDialog);
   ticket = signal<TicketDetails | null>(null);
   statusOptions: TicketStatus[] = [TicketStatus.Open, TicketStatus.InProgress, TicketStatus.Resolved, TicketStatus.Closed];
 
@@ -70,14 +73,14 @@ export class TicketDetailComponent {
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.service.getById(id).subscribe(res => this.ticket.set(res.data));
+    this.service.getById(id).subscribe(res => {
+      this.ticket.set(res.data);
+    });
   }
 
-  updateStatus(newStatus: TicketStatus | number | string) {
-    const t = this.ticket();
-    if (!t) return;
-    const numeric = typeof newStatus === 'string' ? parseInt(newStatus, 10) : newStatus;
-    this.service.updateStatus(t.id, numeric as TicketStatus).subscribe(res => this.ticket.set(res.data));
+  refresh() {
+    const id = this.route.snapshot.paramMap.get('id')!;
+    this.service.getById(id).subscribe(res => this.ticket.set(res.data));
   }
 
   // Helpers
@@ -142,5 +145,20 @@ export class TicketDetailComponent {
   stringifiedResponseBody(): string {
     const v = this.parsedResponseBody();
     try { return JSON.stringify(v, null, 2); } catch { return String(v ?? ''); }
+  }
+
+
+  openUpdateDialog() {
+    const t = this.ticket();
+    if (!t) return;
+    import('../../components/update-ticket-dialog/update-ticket-dialog.component').then(m => {
+      const dialogRef = this.dialog.open(m.UpdateTicketDialogComponent, {
+        data: { id: t.id },
+        width: '560px',
+      });
+      dialogRef.afterClosed().subscribe(changed => {
+        if (changed) this.refresh();
+      });
+    });
   }
 }

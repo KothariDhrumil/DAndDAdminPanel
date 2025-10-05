@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse, PaginatedApiResponse } from '../../../core/models/interface/ApiResponse';
-import { Ticket, TicketComment, TicketId, PagedQuery, TicketStatus } from '../models/ticket.model';
+import { Ticket, TicketComment, TicketDetails, TicketId, PagedQuery, TicketStatus } from '../models/ticket.model';
 import { 
   SUPPORT_TICKETS_API,
   SUPPORT_TICKET_BY_ID_API,
@@ -38,7 +38,7 @@ export class TicketsService {
     return this.http.get<ApiResponse<Ticket>>(SUPPORT_TICKET_BY_ID_API(id));
   }
 
-  update(id: TicketId, patch: Partial<Ticket>): Observable<ApiResponse<Ticket>> {
+  update(id: TicketId, patch: Partial<TicketDetails>): Observable<ApiResponse<Ticket>> {
     return this.http.put<ApiResponse<Ticket>>(SUPPORT_TICKET_BY_ID_API(id), patch);
   }
 

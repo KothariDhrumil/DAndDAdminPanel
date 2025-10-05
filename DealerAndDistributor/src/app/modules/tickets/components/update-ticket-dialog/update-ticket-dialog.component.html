@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>Update Ticket</h2>
+<div mat-dialog-content>
+  <form [formGroup]="form" class="d-flex flex-column gap-3">
+   
+    <div class="d-flex align-items-center gap-3">
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="ticketStatus">
+          <mat-option [value]="0">Open</mat-option>
+          <mat-option [value]="1">InProgress</mat-option>
+          <mat-option [value]="2">Resolved</mat-option>
+          <mat-option [value]="3">Closed</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Priority</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option [value]="0">Low</mat-option>
+          <mat-option [value]="1">Medium</mat-option>
+          <mat-option [value]="2">High</mat-option>
+          <mat-option [value]="3">Urgent</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Resolution</mat-label>
+      <textarea matInput formControlName="resolution" rows="3"></textarea>
+    </mat-form-field>
+     <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()" [disabled]="loading || form.invalid">
+    <mat-icon>save</mat-icon>
+    <span class="ms-1">Save</span>
+  </button>
+  
+</div>
