@@ -65,6 +65,13 @@
         "List": "Customers List",
         "Create": "Customers Create"
       }
+    },
+    "Tickets": {
+      "Text": "Support Tickets",
+      "List": {
+        "List": "Support Tickets List",
+        "Create": "Support Tickets Create"
+      }
     }
   }
 }

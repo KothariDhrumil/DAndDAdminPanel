@@ -11,7 +11,7 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, SortInfo, PageInfo, RowAction } from './generic-table.model';
+import { ColumnDefinition, TableConfig, TableEventArgs, ContextMenuPosition, SortInfo, PageInfo, RowAction, BadgeColor } from './generic-table.model';
 import { MatDivider } from '@angular/material/divider';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -284,5 +284,22 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   export() {
     this.tableEvent.emit({ type: 'export' });
+  }
+
+  // Helpers: badge color handling with restricted palette
+  getBadgeColor(row: any, column: ColumnDefinition): BadgeColor | null {
+    if (column.badgeColor) return column.badgeColor;
+    if (column.badgeColorField) {
+      const val = row?.[column.badgeColorField];
+      if (val === 'green' || val === 'orange' || val === 'purple' || val === 'red') {
+        return val as BadgeColor;
+      }
+    }
+    return null;
+  }
+
+  badgeClass(row: any, column: ColumnDefinition): string | string[] {
+    const color = this.getBadgeColor(row, column);
+    return color ? ['badge', `badge-solid-${color}`] : 'badge';
   }
 }

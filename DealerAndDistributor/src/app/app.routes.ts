@@ -34,6 +34,10 @@ export const routes: Routes = [
         path: 'customers',
         loadChildren: () => import('./modules/customers/customers.routes').then(m => m.CUSTOMERS_ROUTES)
       },
+      {
+        path: 'tickets',
+        loadChildren: () => import('./modules/tickets/tickets.routes').then(m => m.TICKETS_ROUTES)
+      },
       // Example:
       // { path: 'dashboard', component: DashboardComponent },
     ],

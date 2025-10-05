@@ -126,6 +126,19 @@
       "badgeClass": "",
       "role": [],
       "submenu": []
+    },
+    {
+      "path": "/tickets",
+      "title": "MENUITEMS.Tickets.Text",
+      "iconType": "feather",
+      "icon": "help-circle",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [],
+      "submenu": []
     }
+
   ]
 }

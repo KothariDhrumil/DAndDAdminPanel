@@ -1,0 +1,15 @@
+<section class="container">
+  <h2 mat-dialog-title>Report this error?</h2>
+  <div mat-dialog-content>
+    <p>Sorry! there is some glitch in system. You can submit a ticket so we can investigate.</p>
+    <div class="details">
+      <div><strong>Reference ID:</strong> {{ data.dialogDisplay?.correlationId || data.payload.correlationId || '—' }}</div>
+  <div><strong>When:</strong> {{ (data.dialogDisplay?.timestamp || data.payload.timestamp) | date: 'medium' }}</div>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button type="button" (click)="cancel()" [disabled]="loading">Close</button>
+    <button mat-raised-button color="primary" type="button" (click)="submit()" [disabled]="loading">Submit Ticket</button>
+  </div>
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+</section>

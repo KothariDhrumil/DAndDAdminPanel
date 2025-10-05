@@ -7,7 +7,16 @@ export interface ColumnDefinition {
   hide?: boolean;
   sortable?: boolean;
   tooltip?: boolean;
+  // Optional CSS classes to apply to cells/headers of this column
+  class?: string;
+  headerClass?: string;
+  // For 'badge' type: control the color via a restricted set
+  badgeColor?: BadgeColor;           // static color
+  badgeColorField?: string;          // row field name that holds BadgeColor
 }
+
+// Restricted palette for badges
+export type BadgeColor = 'green' | 'orange' | 'purple' | 'red';
 
 // Optional per-row action buttons rendered in the actionBtn column
 export interface RowAction {

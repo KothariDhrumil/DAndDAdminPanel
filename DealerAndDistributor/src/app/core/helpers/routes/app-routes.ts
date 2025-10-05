@@ -11,4 +11,5 @@ export const SUPERADMIN_TENANT_DETAIL_ROUTE = '/superadmin/tenants/detail';
 export const SUPERADMIN_PLANS_ROUTE = '/superadmin/plans';
 export const SUPERADMIN_CUSTOMERS_ROUTE = '/superadmin/customers';
 export const ROLES_PERMISSION_ROUTE = '/roles-and-permission';
+export const TICKETS_ROUTE = '/tickets';
 

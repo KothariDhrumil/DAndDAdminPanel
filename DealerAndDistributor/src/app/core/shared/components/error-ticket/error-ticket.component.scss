@@ -1,0 +1,14 @@
+.container {
+  width: 520px;
+  max-width: 100%;
+}
+.details {
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+[mat-dialog-actions] {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

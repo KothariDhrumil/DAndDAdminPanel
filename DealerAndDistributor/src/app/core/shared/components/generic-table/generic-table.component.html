@@ -67,10 +67,11 @@
             @for (column of columns(); track column.def) {
             @if (isColumnVisible(column)) {
             <ng-container [matColumnDef]="column.def">
-              <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.def : ''">
+              <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.def : ''"
+                [ngClass]="column.headerClass">
                 <span class="truncate-text"> {{ column.label }} </span>
               </th>
-              <td mat-cell *matCellDef="let row"
+              <td mat-cell *matCellDef="let row" [ngClass]="column.class"
                 [ngStyle]="{'cursor': config().enableContextMenu ? 'context-menu' : 'default'}"
                 (click)="onRowClick(row)" (contextmenu)="onContextMenu($event, row)">
                 @switch (column.type) {
@@ -102,7 +103,16 @@
                 <img [ngSrc]="row[column.def]" width="40" height="40" [alt]="row[column.def]">
                 }
                 @case ('badge') {
-                <span class="badge" [ngClass]="row[column.def].toLowerCase()">{{ row[column.def] }}</span>
+                @let color = (column.badgeColor ? column.badgeColor : (column.badgeColorField ? row[column.badgeColorField] : null));
+                <span class="badge"
+                  [ngClass]="{
+                    'badge-solid-green': color === 'green',
+                    'badge-solid-orange': color === 'orange',
+                    'badge-solid-purple': color === 'purple',
+                    'badge-solid-red': color === 'red'
+                  }">
+                  {{ row[column.def] }}
+                </span>
                 }
                 @case ('check') {
                 <mat-icon>{{ row[column.def] ? 'check' : 'close' }}</mat-icon>
@@ -117,8 +127,8 @@
                   }
                   <!-- Custom row action buttons -->
                   @for (act of rowActions(); track act.name) {
-                  <button mat-icon-button (click)="triggerCustom(act.name, row, $event)"
-                    class="tbl-action-btn" [matTooltip]="act.tooltip || act.name" [color]="act.color || 'primary'">
+                  <button mat-icon-button (click)="triggerCustom(act.name, row, $event)" class="tbl-action-btn"
+                    [matTooltip]="act.tooltip || act.name" [color]="act.color || 'primary'">
                     <app-feather-icons [icon]="act.icon" [class]="'tbl-fav-edit'"></app-feather-icons>
                   </button>
                   }
@@ -143,14 +153,14 @@
             <tr class="mat-row" *matNoDataRow>
               <td class="mat-cell" [attr.colspan]="displayedColumns().length">
                 @if (filterValue()) {
-                  <div class="d-flex align-items-center gap-2">
-                    <span>No results matching "{{ filterValue() }}"</span>
-                    <button mat-stroked-button color="primary" (click)="clearFilter()">Clear search</button>
-                  </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span>No results matching "{{ filterValue() }}"</span>
+                  <button mat-stroked-button color="primary" (click)="clearFilter()">Clear search</button>
+                </div>
                 } @else {
-                  <div class="d-flex align-items-center gap-2">
-                    <span>No data available</span>
-                  </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span>No data available</span>
+                </div>
                 }
               </td>
             </tr>

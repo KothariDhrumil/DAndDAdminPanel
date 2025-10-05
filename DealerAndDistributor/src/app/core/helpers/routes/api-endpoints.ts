@@ -57,3 +57,10 @@ export const CUSTOMER_ORDERS_API = baseUrl + apiVersionNeutral + '/customerorder
 export const AUTH_ROLES_API = '/api/admin/auth-roles';
 export const LIST_ALL_AUTH_USERS_API = '/api/admin/auth-users';
 export const SYNC_AUTH_USER_WITH_CHANGE_LIST_API = '/api/admin/sync-auth-user-with-change-list';
+
+/*/ Support Tickets */
+export const SUPPORT_TICKETS_API = baseUrl + apiVersionNeutral + '/support-tickets';
+export const SUPPORT_TICKET_BY_ID_API = (id: string | number) => `${SUPPORT_TICKETS_API}/${id}`;
+export const SUPPORT_TICKET_COMMENTS_API = (id: string | number) => `${SUPPORT_TICKETS_API}/${id}/comments`;
+export const SUPPORT_TICKET_STATUS_API = (id: string | number) => `${SUPPORT_TICKETS_API}/${id}/status`;
+export const SUPPORT_TICKET_ASSIGN_API = (id: string | number) => `${SUPPORT_TICKETS_API}/${id}/assign`;
