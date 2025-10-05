@@ -95,7 +95,9 @@ public class CustomersController : VersionNeutralApiController
         CancellationToken ct = default)
     {
         var result = await handler.Handle(new ListCustomersWithTenantsQuery(pageNumber, pageSize), ct);
-        return Ok(result);
+        if (!result.IsSuccess)
+            return StatusCode(StatusCodes.Status400BadRequest, result);
+        return Ok(result.Data);
     }
 
     // List customers for a specific tenant (central link)
@@ -113,7 +115,9 @@ public class CustomersController : VersionNeutralApiController
             return BadRequest(Result.Failure(Error.Validation("TenantIdMissing", "Tenant id not provided or claim missing.")));
 
         var result = await handler.Handle(new ListCustomersByTenantQuery(tenantId.Value, pageNumber, pageSize), ct);
-        return Ok(result);
+        if (!result.IsSuccess)
+            return StatusCode(StatusCodes.Status400BadRequest, result);
+        return Ok(result.Data);
     }
 
     // NEW: List tenant-local customer profiles from RetailDbContext (per-tenant data)
@@ -136,7 +140,9 @@ public class CustomersController : VersionNeutralApiController
             new ListTenantCustomerProfilesQuery(effectiveTenantId.Value, pageNumber, pageSize, search),
             ct);
 
-        return Ok(result);
+        if (!result.IsSuccess)
+            return StatusCode(StatusCodes.Status400BadRequest, result);
+        return Ok(result.Data);
     }
 
     // Search by phone (central)
