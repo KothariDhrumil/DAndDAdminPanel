@@ -6,11 +6,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { ErrorTicketComponent } from "../shared/components/error-ticket/error-ticket.component";
 import { LocalStorageService } from "../shared/services";
 import { SupportTicketPayload } from "../shared/services/support-ticket.service";
+import { AuthService } from "@core/service/auth.service";
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
   private dialog = inject(MatDialog);
   private store = inject(LocalStorageService);
+  private authService = inject(AuthService);
   constructor() {}
 
   intercept(
@@ -19,6 +21,15 @@ export class ErrorInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError((err: HttpErrorResponse) => {
+        if (err.status === 401 || err.status === 403) {
+          // auto logout if 401 or 403 response returned from api
+          this.authService.logout();
+          // location.reload();
+          return of(); // or EMPTY  to terminate the stream
+
+
+        }
+
         // Do not auto-logout on 401/403 here; let JwtInterceptor handle refresh/retry
         const errorMsg = (err?.error?.message) ?? (err?.message) ?? (err?.statusText) ?? 'Unknown error';
 

@@ -12,7 +12,7 @@ import { LocalStorageService } from '../shared/services';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 import { LOGIN_ROUTE } from '../helpers/routes/app-routes';
-import { CONFIRM_OTP_API, GENERATE_OTP_API, LOGIN_API, REFRESH_TOKEN_API, REGISTER_API } from '../helpers/routes/api-endpoints';
+import { CONFIRM_OTP_API, GENERATE_OTP_API, LOGIN_API, LOGOUT, REFRESH_TOKEN_API, REGISTER_API } from '../helpers/routes/api-endpoints';
 import { SigninRequest } from '../models/interface/SigninRequest';
 import { RegisterRequest } from '../models/interface/RegisterRequest';
 import { UpsertTenantFormValue } from '@core/shared/components/upsert-tenant/upsert-tenant.component';
@@ -22,7 +22,7 @@ import { UpsertTenantFormValue } from '@core/shared/components/upsert-tenant/ups
 })
 export class AuthService {
   user$ = new BehaviorSubject<User>({});
- private currentUserTokenSource!: BehaviorSubject<string>;
+  private currentUserTokenSource!: BehaviorSubject<string>;
   public currentUserToken$!: Observable<string>;
   private refreshSub?: Subscription;
   constructor(
@@ -31,7 +31,7 @@ export class AuthService {
     private router: Router,
     private http: HttpClient
   ) {
-  this.currentUserTokenSource = new BehaviorSubject<string>(this.store.getAuthItem<string>('token') ?? '');
+    this.currentUserTokenSource = new BehaviorSubject<string>(this.store.getAuthItem<string>('token') ?? '');
     this.currentUserToken$ = this.currentUserTokenSource.asObservable();
     // schedule refresh if already authenticated on startup
     if (this.isAuthenticated && environment.tokenAutoRefreshEnabled) {
@@ -65,7 +65,7 @@ export class AuthService {
       })
     );
   }
-  
+
 
   public get isAuthenticated(): boolean {
     const token = this.store.getAuthItem<string>('token');
@@ -95,16 +95,13 @@ export class AuthService {
 
   logout() {
     // remove user from local storage to log user out
-  this.store.clear();
-  // also clear auth items from session explicitly
-  this.store.removeAuthItem('token');
-  this.store.removeAuthItem('refreshToken');
-  this.store.removeAuthItem('refreshTokenExpiryTime');
-
+    this.store.clear();
+    // also clear auth items from session explicitly
+    this.store.removeAuthItem('token');
+    this.store.removeAuthItem('refreshToken');
+    this.store.removeAuthItem('refreshTokenExpiryTime');
+    this.http.post(LOGOUT, {}).subscribe();
     // TODO : call logout API using HTTPClient and JWT token for server-side logout if required
-    
-
-
     this.router.navigateByUrl(LOGIN_ROUTE);
     // stop any scheduled refresh timers
     this.refreshSub?.unsubscribe();
@@ -112,8 +109,8 @@ export class AuthService {
   }
 
   public tryRefreshingToken(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  const jwtToken = this.store.getAuthItem<string>('token') ?? '';
-  const refreshToken = this.store.getAuthItem<string>('refreshToken') ?? '';
+    const jwtToken = this.store.getAuthItem<string>('token') ?? '';
+    const refreshToken = this.store.getAuthItem<string>('refreshToken') ?? '';
 
     if (!jwtToken || !refreshToken) {
       this.logout();
@@ -149,9 +146,9 @@ export class AuthService {
         })
       );
   }
-   /**
-   * Generate OTP for phone number
-   */
+  /**
+  * Generate OTP for phone number
+  */
   generateOTP(phoneNumber: string): Observable<ApiResponse<string>> {
     return this.http.get<ApiResponse<string>>(GENERATE_OTP_API + `?phoneNumber=${encodeURIComponent(phoneNumber)}`);
   }
@@ -161,15 +158,15 @@ export class AuthService {
    */
   confirmOTP(phoneNumber: string, code: string): Observable<ApiResponse<Token>> {
     return this.http.get<ApiResponse<Token>>(CONFIRM_OTP_API + `?phoneNumber=${encodeURIComponent(phoneNumber)}&code=${encodeURIComponent(code)}`)
-    .pipe(
-      tap((response: ApiResponse<Token>) => {
-        this.setToken(response, this.store.getRememberMe());
-      }),
-      catchError((error) => {
-        this.toastrService.error('Login failed');
-        return throwError(() => error);
-      })
-    );
+      .pipe(
+        tap((response: ApiResponse<Token>) => {
+          this.setToken(response, this.store.getRememberMe());
+        }),
+        catchError((error) => {
+          this.toastrService.error('Login failed');
+          return throwError(() => error);
+        })
+      );
   }
 
   private setToken(response: ApiResponse<Token>, rememberMe?: boolean) {
