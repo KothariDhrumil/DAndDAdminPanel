@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 {
     [DbContext(typeof(RetailDbContext))]
-    partial class RetailDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251006162329_AddPhoneNumberInCustomer")]
+    partial class AddPhoneNumberInCustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,55 +26,13 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Accounting.LedgerEntry", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("DataKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
-                    b.Property<DateTime>("EntryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReferenceId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TenantUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataKey");
-
-                    b.HasIndex("EntryDate");
-
-                    b.HasIndex("TenantUserId", "EntryDate");
-
-                    b.ToTable("LedgerEntries", "retail");
-                });
-
             modelBuilder.Entity("Domain.Customers.TenantCustomerProfile", b =>
                 {
-                    b.Property<Guid>("TenantUserId")
+                    b.Property<int>("TenantCustomerId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TenantCustomerId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -86,9 +47,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .HasColumnType("tinyint");
 
                     b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("GlobalCustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -98,16 +57,12 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .HasMaxLength(1024)
                         .HasColumnType("nvarchar(1024)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<Guid?>("ParentGlobalCustomerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
@@ -115,9 +70,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("TenantUserId");
-
-                    b.HasIndex("CreatedAt");
+                    b.HasKey("TenantCustomerId");
 
                     b.HasIndex("DataKey");
 
@@ -129,71 +82,9 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("UpdatedAt");
-
-                    b.HasIndex("GlobalCustomerId", "TenantId")
-                        .IsUnique();
+                    b.HasIndex("GlobalCustomerId", "DataKey");
 
                     b.ToTable("TenantCustomerProfiles", "retail");
-                });
-
-            modelBuilder.Entity("Domain.Customers.TenantUserProfile", b =>
-                {
-                    b.Property<Guid>("TenantUserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DataKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid>("GlobalUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<int>("RoleType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("TenantUserId");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("DataKey");
-
-                    b.HasIndex("RoleType");
-
-                    b.HasIndex("TenantId");
-
-                    b.HasIndex("UpdatedAt");
-
-                    b.HasIndex("GlobalUserId", "TenantId")
-                        .IsUnique();
-
-                    b.ToTable("TenantUserProfiles", "retail");
                 });
 
             modelBuilder.Entity("Domain.Orders.Order", b =>
@@ -204,9 +95,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("DataKey")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -215,6 +103,9 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 
                     b.Property<DateTime>("OrderedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("TenantCustomerId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Total")
                         .HasPrecision(9, 2)
@@ -226,7 +117,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 
                     b.HasIndex("OrderedAt");
 
-                    b.HasIndex("CustomerId", "DataKey");
+                    b.HasIndex("TenantCustomerId", "DataKey");
 
                     b.ToTable("Orders", "retail");
                 });
@@ -309,7 +200,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                 {
                     b.HasOne("Domain.Customers.TenantCustomerProfile", "CustomerProfile")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
+                        .HasForeignKey("TenantCustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

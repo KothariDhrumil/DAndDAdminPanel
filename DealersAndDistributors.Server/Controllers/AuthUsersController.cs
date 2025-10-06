@@ -104,7 +104,7 @@ public class AuthUsersController : VersionNeutralApiController
         // TODO : email id patching, remove it later on
         if (string.IsNullOrEmpty(newUser.Email))
         {
-            newUser.Email = $"{newUser.PhoneNumber}@dand.com";
+            newUser.Email = $"{newUser.PhoneNumber}@dandd.com";
             newUser.Password = $"{newUser.PhoneNumber}@DandD";
         }
 

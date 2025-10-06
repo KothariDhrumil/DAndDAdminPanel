@@ -1,5 +1,4 @@
-using AuthPermissions.BaseCode.CommonCode;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Customers;
 
@@ -7,20 +6,12 @@ namespace Domain.Customers;
 /// Per-tenant profile for a customer, stored in the tenant's Retail DB.
 /// Supports hierarchical (franchise) structure via materialized path.
 /// </summary>
-public class TenantCustomerProfile : IDataKeyFilterReadOnly
+public class TenantCustomerProfile : UserProfile
 {
-    [Key]
-    public int TenantCustomerId { get; private set; }
-
-    /// <summary>
+     /// <summary>
     /// Global customer identifier (CustomerAccount.GlobalCustomerId)
     /// </summary>
-    public Guid GlobalCustomerId { get; set; }
-
-    /// <summary>
-    /// AuthP TenantId this profile belongs to
-    /// </summary>
-    public int TenantId { get; set; }
+    public Guid GlobalCustomerId { get; set; }  
 
     /// <summary>
     /// Optional parent global customer id (null for root)
@@ -37,16 +28,4 @@ public class TenantCustomerProfile : IDataKeyFilterReadOnly
     /// Depth cached for quick filtering (root = 0)
     /// </summary>
     public byte Depth { get; set; }
-
-    public string? DisplayName { get; set; }
-    public string? Preferences { get; set; }
-    public int LoyaltyPoints { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// Multi-tenant filter key populated automatically from the current user context
-    /// </summary>
-    public string DataKey { get; set; } = default!;
 }

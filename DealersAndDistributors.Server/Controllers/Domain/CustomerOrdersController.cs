@@ -5,7 +5,7 @@ using AuthPermissions.BaseCode.CommonCode;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DealersAndDistributors.Server.Controllers;
+namespace DealersAndDistributors.Server.Controllers.Domain;
 
 public class CustomerOrdersController : VersionNeutralApiController
 {

@@ -21,14 +21,14 @@ public sealed class CreateCustomerCommand : ICommand<Guid>
         public async Task<Result<Guid>> Handle(CreateCustomerCommand command, CancellationToken ct)
         {
             var phone = command.PhoneNumber?.Trim();
-            
+
             var user = await provisioning.EnsureUserAsync(phone, command.FirstName, command.LastName, ct);
-            var globalCustomerId = await provisioning.EnsureCustomerAccountAsync(user, phone, user.Email, command.FirstName, command.LastName, ct);
+            var globalCustomerId = await provisioning.EnsureCustomerAccountAsync(user, ct);
 
             if (command.TenantId.HasValue)
             {
                 var display = string.Join(' ', new[] { command.FirstName, command.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)));
-                await provisioning.EnsureLinkedToTenantAsync(globalCustomerId, command.TenantId.Value, display, ct);
+                await provisioning.EnsureLinkedToTenantAsync(globalCustomerId, command.TenantId.Value, display, command.PhoneNumber, ct);
             }
             return Result.Success(globalCustomerId);
         }

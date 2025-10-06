@@ -28,7 +28,7 @@ public sealed class LinkCustomerToTenantCommand : ICommand
                 return Result.Failure(Error.NotFound("CustomerNotFound", "Customer not found."));
 
             var display = string.Join(' ', new[] { account.FirstName, account.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)));
-            await provisioning.EnsureLinkedToTenantAsync(account.GlobalCustomerId, command.TenantId, display, ct);
+            await provisioning.EnsureLinkedToTenantAsync(account.GlobalCustomerId, command.TenantId, display, account.PhoneNumber, ct);
 
             return Result.Success();
         }

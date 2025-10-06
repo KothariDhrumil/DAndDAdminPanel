@@ -9,6 +9,7 @@ using Domain.Customers;
 using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
+using Domain.Accounting;
 
 namespace Infrastructure.Persistence.Contexts;
 
@@ -39,6 +40,8 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<TenantCustomerProfile> TenantCustomerProfiles => Set<TenantCustomerProfile>();
+    public DbSet<TenantUserProfile> TenantUserProfiles => Set<TenantUserProfile>();
+    public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,18 +84,29 @@ public class RetailDbContext : DbContext, IRetailDbContext
         modelBuilder.Entity<Order>()
             .Property(x => x.Total).HasPrecision(9, 2);
         modelBuilder.Entity<Order>()
-            .HasIndex(x => new { x.TenantCustomerId, x.DataKey });
+            .HasIndex(x => new { x.CustomerId, x.DataKey });
         modelBuilder.Entity<Order>()
             .HasIndex(x => x.DataKey);
         modelBuilder.Entity<Order>()
             .HasIndex(x => x.OrderedAt);
 
+        // TenantCustomerProfile config (hierarchical customer profiles)
         modelBuilder.Entity<TenantCustomerProfile>()
             .ToTable("TenantCustomerProfiles", "retail");
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.DataKey);
+        // PK default value to NEWSEQUENTIALID on SQL Server
+        if (Database.IsSqlServer())
+        {
+            modelBuilder.Entity<TenantCustomerProfile>()
+                .Property(x => x.TenantUserId)
+                .HasDefaultValueSql("NEWSEQUENTIALID()")
+                .ValueGeneratedOnAdd();
+        }
+        // Uniqueness: one customer per tenant
         modelBuilder.Entity<TenantCustomerProfile>()
-            .HasIndex(x => new { x.GlobalCustomerId, x.DataKey });
+            .HasIndex(x => new { x.GlobalCustomerId, x.TenantId })
+            .IsUnique();
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.TenantId);
         modelBuilder.Entity<TenantCustomerProfile>()
@@ -101,6 +115,53 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.HierarchyPath);
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.Depth);
+        // Useful for time-based queries (audits/ledger later)
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasIndex(x => x.CreatedAt);
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasIndex(x => x.UpdatedAt);
+
+        // TenantUserProfile config (staff/users like HR/Admin/Salesman)
+        modelBuilder.Entity<TenantUserProfile>()
+            .ToTable("TenantUserProfiles", "retail");
+        modelBuilder.Entity<TenantUserProfile>()
+            .HasIndex(x => x.DataKey);
+        // PK default value to NEWSEQUENTIALID on SQL Server
+        if (Database.IsSqlServer())
+        {
+            modelBuilder.Entity<TenantUserProfile>()
+                .Property(x => x.TenantUserId)
+                .HasDefaultValueSql("NEWSEQUENTIALID()")
+                .ValueGeneratedOnAdd();
+        }
+        modelBuilder.Entity<TenantUserProfile>()
+            .HasIndex(x => x.TenantId);
+        // Uniqueness: one user profile per tenant
+        modelBuilder.Entity<TenantUserProfile>()
+            .HasIndex(x => new { x.GlobalUserId, x.TenantId })
+            .IsUnique();
+        // Helpful for filtering by role / lists per role type
+        modelBuilder.Entity<TenantUserProfile>()
+            .HasIndex(x => x.RoleType);
+        // Auditing / time-based queries
+        modelBuilder.Entity<TenantUserProfile>()
+            .HasIndex(x => x.CreatedAt);
+        modelBuilder.Entity<TenantUserProfile>()
+            .HasIndex(x => x.UpdatedAt);
+
+        // LedgerEntry config
+        modelBuilder.Entity<LedgerEntry>()
+            .ToTable("LedgerEntries", "retail");
+        modelBuilder.Entity<LedgerEntry>()
+            .Property(x => x.Amount).HasPrecision(18, 2);
+        modelBuilder.Entity<LedgerEntry>()
+            .HasIndex(x => x.DataKey);
+        modelBuilder.Entity<LedgerEntry>()
+            .HasIndex(x => x.EntryDate);
+        modelBuilder.Entity<LedgerEntry>()
+            .HasIndex(x => new { x.TenantUserId, x.EntryDate });
+        modelBuilder.Entity<LedgerEntry>()
+            .HasIndex(x => new { x.TenantUserId, x.EntryDate });
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -40,15 +40,15 @@ internal sealed class CreateChildCustomerCommandHandler(
             return Result.Failure<Guid>(Error.Validation("DepthLimit", "Maximum hierarchy depth reached."));
 
         var phone = command.PhoneNumber.Trim();
-        
+
 
         // Ensure identity user + central customer
         var user = await provisioning.EnsureUserAsync(phone, command.FirstName, command.LastName, ct);
-        var childGlobalId = await provisioning.EnsureCustomerAccountAsync(user, phone, user.Email, command.FirstName, command.LastName, ct);
+        var childGlobalId = await provisioning.EnsureCustomerAccountAsync(user, ct);
 
         // Ensure central link + base profile
         var display = string.Join(' ', new[] { command.FirstName, command.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)));
-        await provisioning.EnsureLinkedToTenantAsync(childGlobalId, tenantId, display, ct);
+        await provisioning.EnsureLinkedToTenantAsync(childGlobalId, tenantId, display, command.PhoneNumber, ct);
 
         // Now set hierarchy details if new profile (or update existing path)
         var childProfile = await retailDb.TenantCustomerProfiles

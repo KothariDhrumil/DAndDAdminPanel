@@ -14,11 +14,14 @@ public class Order : IDataKeyFilterReadOnly
 
     public decimal Total { get; set; }
 
-    // Local tenant profile reference (replaces previous GlobalCustomerId string)
-    public int TenantCustomerId { get; set; }
+    
+   // public int TenantCustomerId { get; set; }
+    
 
-    [ForeignKey(nameof(TenantCustomerId))]
+    [ForeignKey(nameof(CustomerId))]
     public TenantCustomerProfile CustomerProfile { get; set; } = default!;
+
+    public Guid CustomerId { get; set; }
 
     // Required for multi-tenant filtering
     public string DataKey { get; private set; } = default!;

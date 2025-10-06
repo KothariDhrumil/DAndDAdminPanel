@@ -35,7 +35,7 @@ internal sealed class CreateCustomerOrderCommandHandler(
         
         var order = new Order
         {
-            TenantCustomerId = profile.TenantCustomerId,
+            CustomerId = profile.TenantUserId,
             OrderedAt = DateTime.UtcNow,
             Total = command.Total,
             

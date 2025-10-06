@@ -14,7 +14,7 @@ public sealed record ListTenantCustomerProfilesQuery(
 ) : IQuery<PagedResult<List<TenantCustomerProfileDto>>>;
 
 public sealed record TenantCustomerProfileDto(
-    int TenantCustomerId,
+    Guid TenantCustomerId,
     Guid GlobalCustomerId,
     int TenantId,
     string? DisplayName);
@@ -49,7 +49,7 @@ internal sealed class ListTenantCustomerProfilesQueryHandler(
             .Skip((page - 1) * size)
             .Take(size)
             .Select(p => new TenantCustomerProfileDto(
-                p.TenantCustomerId,
+                p.TenantUserId,
                 p.GlobalCustomerId,
                 p.TenantId,
                 p.DisplayName                

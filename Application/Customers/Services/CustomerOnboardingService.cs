@@ -49,7 +49,7 @@ public sealed class CustomerOnboardingService : ICustomerOnboardingService
         return user;
     } 
 
-    public async Task<Guid> EnsureCustomerAccountAsync(ApplicationUser user, string phone, string email, string? firstName, string? lastName, CancellationToken ct)
+    public async Task<Guid> EnsureCustomerAccountAsync(ApplicationUser user,  CancellationToken ct)
     {
         var existing = await authDb.CustomerAccounts.SingleOrDefaultAsync(c => c.GlobalUserId == user.Id, ct);
         if (existing != null)
@@ -58,10 +58,10 @@ public sealed class CustomerOnboardingService : ICustomerOnboardingService
         var account = new CustomerAccount
         {
             GlobalUserId = user.Id,
-            FirstName = firstName ?? string.Empty,
-            LastName = lastName ?? string.Empty,
-            PhoneNumber = phone,
-            Email = email,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty,
+            PhoneNumber = user.PhoneNumber,
+            Email = user.Email,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Status = "Active"
@@ -71,7 +71,7 @@ public sealed class CustomerOnboardingService : ICustomerOnboardingService
         return account.GlobalCustomerId;
     }
 
-    public async Task EnsureLinkedToTenantAsync(Guid globalCustomerId, int tenantId, string? displayName, CancellationToken ct)
+    public async Task EnsureLinkedToTenantAsync(Guid globalCustomerId, int tenantId, string? displayName,string phoneNumber, CancellationToken ct)
     {
         var exists = await authDb.CustomerTenantLinks
             .AnyAsync(l => l.GlobalCustomerId == globalCustomerId && l.TenantId == tenantId, ct);
@@ -99,7 +99,8 @@ public sealed class CustomerOnboardingService : ICustomerOnboardingService
                 HierarchyPath = $"|{globalCustomerId}|",
                 Depth = 1,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                PhoneNumber = phoneNumber
             });
             await retailDb.SaveChangesAsync(ct);
         }

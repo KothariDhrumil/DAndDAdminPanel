@@ -43,12 +43,12 @@ internal sealed class GetMyOrdersQueryHandler(
                 var db = await retailFactory.CreateAsync(link.TenantId, ct);
                 var profileId = await db.TenantCustomerProfiles.AsNoTracking()
                     .Where(p => p.GlobalCustomerId == link.GlobalCustomerId)
-                    .Select(p => p.TenantCustomerId)
+                    .Select(p => p.TenantUserId)
                     .SingleOrDefaultAsync(ct);
-                if (profileId == 0) continue;
+                if (profileId == Guid.Empty) continue;
 
                 var orders = await db.Orders.AsNoTracking()
-                    .Where(o => o.TenantCustomerId == profileId)
+                    .Where(o => o.CustomerId == profileId)
                     .Select(o => new MyOrderDto
                     {
                         TenantId = link.TenantId,
@@ -68,13 +68,13 @@ internal sealed class GetMyOrdersQueryHandler(
             var db = await retailFactory.CreateAsync(query.tenantId.Value, ct);
             var profileId = await db.TenantCustomerProfiles.AsNoTracking()
                 .Where(p => p.GlobalCustomerId == query.GlobalCustomerId)
-                .Select(p => p.TenantCustomerId)
+                .Select(p => p.TenantUserId)
                 .SingleOrDefaultAsync(ct);
-            if (profileId == 0)
+            if (profileId == Guid.Empty)
                 return SharedKernel.Result.Failure<List<MyOrderDto>>(SharedKernel.Error.NotFound("ProfileNotFound", "Customer profile not found in tenant."));
        
             var orders = await db.Orders.AsNoTracking()
-                .Where(o => o.TenantCustomerId == profileId)
+                .Where(o => o.CustomerId == profileId)
                 .Select(o => new MyOrderDto
                 {
                     TenantId = query.tenantId.Value,

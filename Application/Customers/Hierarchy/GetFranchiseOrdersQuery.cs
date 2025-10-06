@@ -7,7 +7,7 @@ namespace Application.Customers.Hierarchy;
 
 public sealed record GetFranchiseOrdersQuery(int TenantId, Guid RootGlobalCustomerId) : IQuery<List<FranchiseOrderDto>>;
 
-public sealed record FranchiseOrderDto(int OrderId, int TenantCustomerId, DateTime OrderedAt, decimal Total);
+public sealed record FranchiseOrderDto(int OrderId, Guid TenantCustomerId, DateTime OrderedAt, decimal Total);
 
 internal sealed class GetFranchiseOrdersQueryHandler(ITenantRetailDbContextFactory factory)
     : IQueryHandler<GetFranchiseOrdersQuery, List<FranchiseOrderDto>>
@@ -25,19 +25,19 @@ internal sealed class GetFranchiseOrdersQueryHandler(ITenantRetailDbContextFacto
 
         var pathPrefix = root.HierarchyPath;
 
-        // descendant ids as Guid to match Orders.GlobalCustomerId type
-        List<int> descendantIds = await db.TenantCustomerProfiles
+        // descendant ids as int to match Orders.TenantCustomerId type
+        List<Guid> descendantIds = await db.TenantCustomerProfiles
             .AsNoTracking()
-            .Where(p => p.HierarchyPath.StartsWith(pathPrefix))
-            .Select(p => p.TenantCustomerId)
+            .Where(p => EF.Functions.Like(p.HierarchyPath, pathPrefix + "%"))
+            .Select(p => p.TenantUserId)
             .ToListAsync(ct);
 
         if (descendantIds.Count == 0)
             return SharedKernel.Result.Success(new List<FranchiseOrderDto>()); // empty
 
         var orders = await db.Orders.AsNoTracking()
-            .Where(o => descendantIds.Contains(o.TenantCustomerId))
-            .Select(o => new FranchiseOrderDto(o.Id, o.TenantCustomerId, o.OrderedAt, o.Total))
+            .Where(o => descendantIds.Contains(o.CustomerId))
+            .Select(o => new FranchiseOrderDto(o.Id, o.CustomerId, o.OrderedAt, o.Total))
             .OrderByDescending(o => o.OrderedAt)
             .ToListAsync(ct);
 
