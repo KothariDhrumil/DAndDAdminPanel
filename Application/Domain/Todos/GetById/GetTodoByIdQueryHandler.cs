@@ -5,7 +5,7 @@ using Domain.Todos;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Todos.GetById;
+namespace Application.Domain.Todos.GetById;
 
 internal sealed class GetTodoByIdQueryHandler(IRetailDbContext context, IUserContext userContext)
     : IQueryHandler<GetTodoByIdQuery, TodoResponse>

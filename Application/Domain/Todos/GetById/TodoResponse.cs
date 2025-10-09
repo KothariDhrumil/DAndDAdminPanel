@@ -1,4 +1,4 @@
-﻿namespace Application.Todos.GetById;
+﻿namespace Application.Domain.Todos.GetById;
 
 public sealed class TodoResponse
 {

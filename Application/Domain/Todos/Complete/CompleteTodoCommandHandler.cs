@@ -5,7 +5,7 @@ using Domain.Todos;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Todos.Complete;
+namespace Application.Domain.Todos.Complete;
 
 internal sealed class CompleteTodoCommandHandler(
     IRetailDbContext context,

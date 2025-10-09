@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions.Messaging;
 using Domain.Todos;
 
-namespace Application.Todos.Create;
+namespace Application.Domain.Todos.Create;
 
 public sealed class CreateTodoCommand : ICommand<Guid>
 {

@@ -1,13 +1,13 @@
 ﻿using Application.Abstractions.Messaging;
-using Application.Todos.Complete;
-using Application.Todos.Create;
-using Application.Todos.Get;
-using Application.Todos.GetById;
-using Application.Todos.Update;
+using Application.Domain.Todos.Complete;
+using Application.Domain.Todos.Create;
+using Application.Domain.Todos.Get;
+using Application.Domain.Todos.GetById;
+using Application.Domain.Todos.Update;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 
-namespace DealersAndDistributors.Server.Controllers;
+namespace DealersAndDistributors.Server.Controllers.Domain;
 
 public class TodosController : VersionedApiController
 {
@@ -19,14 +19,14 @@ public class TodosController : VersionedApiController
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A list of todo responses wrapped in an <see cref="IResult"/>.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetTodosAsync(IQueryHandler<GetTodosQuery, List<Application.Todos.Get.TodoResponse>> handler, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetTodosAsync(IQueryHandler<GetTodosQuery, List<Application.Domain.Todos.Get.TodoResponse>> handler, CancellationToken cancellationToken)
     {
         return Ok(await handler.Handle(new GetTodosQuery(), cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetTodoByIdAsync(Guid id,
-        IQueryHandler<GetTodoByIdQuery, Application.Todos.GetById.TodoResponse> handler,
+        IQueryHandler<GetTodoByIdQuery, Application.Domain.Todos.GetById.TodoResponse> handler,
         CancellationToken cancellationToken)
     {
         var response = await handler.Handle(new GetTodoByIdQuery(id), cancellationToken);

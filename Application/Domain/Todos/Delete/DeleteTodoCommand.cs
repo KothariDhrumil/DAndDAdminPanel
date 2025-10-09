@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Messaging;
 
-namespace Application.Todos.Delete;
+namespace Application.Domain.Todos.Delete;
 
 public sealed record DeleteTodoCommand(Guid TodoItemId) : ICommand;

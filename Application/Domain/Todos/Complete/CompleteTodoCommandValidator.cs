@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Application.Todos.Complete;
+namespace Application.Domain.Todos.Complete;
 
 internal sealed class CompleteTodoCommandValidator : AbstractValidator<CompleteTodoCommand>
 {

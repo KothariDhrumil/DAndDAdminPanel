@@ -4,7 +4,7 @@ using Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Todos.Get;
+namespace Application.Domain.Todos.Get;
 
 internal sealed class GetTodosQueryHandler(IRetailDbContext context)
     : IQueryHandler<GetTodosQuery, List<TodoResponse>>

@@ -5,7 +5,7 @@ using Domain.Todos;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Todos.Delete;
+namespace Application.Domain.Todos.Delete;
 
 internal sealed class DeleteTodoCommandHandler(IRetailDbContext context, IUserContext userContext)
     : ICommandHandler<DeleteTodoCommand>

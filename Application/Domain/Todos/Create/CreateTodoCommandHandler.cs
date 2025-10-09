@@ -4,7 +4,7 @@ using Application.Abstractions.Messaging;
 using Domain.Todos;
 using SharedKernel;
 
-namespace Application.Todos.Create;
+namespace Application.Domain.Todos.Create;
 
 internal sealed class CreateTodoCommandHandler(
     IRetailDbContext context,

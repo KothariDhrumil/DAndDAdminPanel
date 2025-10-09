@@ -4,7 +4,7 @@ using Domain.Todos;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Todos.Update;
+namespace Application.Domain.Todos.Update;
 
 internal sealed class UpdateTodoCommandHandler(
     IRetailDbContext context)

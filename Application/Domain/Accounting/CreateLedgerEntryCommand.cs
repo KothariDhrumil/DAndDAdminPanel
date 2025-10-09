@@ -4,7 +4,7 @@ using Domain.Accounting;
 using FluentValidation;
 using SharedKernel;
 
-namespace Application.Accounting;
+namespace Application.Domain.Accounting;
 
 public sealed class CreateLedgerEntryCommand : ICommand<long>
 {

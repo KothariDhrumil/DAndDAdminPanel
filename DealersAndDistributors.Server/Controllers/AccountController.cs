@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Authentication;
+using Application.Customers.Services;
 using Application.Identity.Account;
 using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.Services;
@@ -17,11 +18,15 @@ public sealed class AccountController : VersionNeutralApiController
 {
     private readonly ITokenService _tokenService;
     private readonly IDisableJwtRefreshToken _disableJwtRefreshService;
+    private readonly ITenantUserOnboardingService tenantUserOnboardingService;
 
-    public AccountController(ITokenService tokenService, IDisableJwtRefreshToken disableJwtRefreshService)
+    public AccountController(ITokenService tokenService, 
+        IDisableJwtRefreshToken disableJwtRefreshService,
+        ITenantUserOnboardingService tenantUserOnboardingService)
     {
         _tokenService = tokenService;
         _disableJwtRefreshService = disableJwtRefreshService;
+        this.tenantUserOnboardingService = tenantUserOnboardingService;
     }
 
     [HttpPost("authenticate")]
@@ -50,7 +55,7 @@ public sealed class AccountController : VersionNeutralApiController
     {
         var newUserData = new AddNewUserDto
         {
-            Email = $"{request.PhoneNumber}@dealers.com",
+            Email = $"{request.PhoneNumber}@DandD.com",
             UserName = request.PhoneNumber,
             Password = $"{request.PhoneNumber}@DandD",
             IsPersistent = false,
@@ -70,6 +75,7 @@ public sealed class AccountController : VersionNeutralApiController
         {
             return Ok(SharedKernel.Result.Failure<string>(new Error("101", status.GetAllErrors(","), ErrorType.Failure)));
         }
+        
         return Ok(SharedKernel.Result.Success<string>(status.Message));
     }
     [HttpGet("generate-otp")]
