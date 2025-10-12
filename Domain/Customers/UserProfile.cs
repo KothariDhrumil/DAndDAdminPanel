@@ -9,7 +9,10 @@ public abstract class UserProfile : IDataKeyFilterReadWrite, IDataKeyFilterReadO
     public Guid TenantUserId { get; private set; }
 
     [Required, MaxLength(100)]
-    public string? DisplayName { get; set; }
+    public string? FirstName { get; set; }
+
+    [Required, MaxLength(100)]
+    public string? LastName { get; set; }
 
     [Required, MaxLength(32)]
     public string PhoneNumber { get; set; }

@@ -14,7 +14,9 @@ public sealed class InitializeFranchiseProfileCommand : ICommand
 {
     public int TenantId { get; set; }
     public Guid GlobalCustomerId { get; set; }
-    public string? DisplayName { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? PhoneNumber { get; set; }
 
     internal sealed class Handler(ITenantRetailDbContextFactory factory)
         : ICommandHandler<InitializeFranchiseProfileCommand>
@@ -35,7 +37,9 @@ public sealed class InitializeFranchiseProfileCommand : ICommand
                 ParentGlobalCustomerId = null,
                 HierarchyPath = "|" + command.GlobalCustomerId + "|",
                 Depth = 1, // root depth =1 (or 0 if you prefer; adjust SetFranchiseParent accordingly)
-                DisplayName = command.DisplayName,
+                FirstName = command.FirstName,
+                LastName = command.LastName,
+                PhoneNumber = command.PhoneNumber,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             });

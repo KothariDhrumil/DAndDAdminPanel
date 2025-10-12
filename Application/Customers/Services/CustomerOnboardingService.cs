@@ -71,7 +71,7 @@ public sealed class CustomerOnboardingService : ICustomerOnboardingService
         return account.GlobalCustomerId;
     }
 
-    public async Task EnsureLinkedToTenantAsync(Guid globalCustomerId, int tenantId, string? displayName,string phoneNumber, CancellationToken ct)
+    public async Task EnsureLinkedToTenantAsync(Guid globalCustomerId, int tenantId, string? firstName,string? lastName, string phoneNumber, CancellationToken ct)
     {
         var exists = await authDb.CustomerTenantLinks
             .AnyAsync(l => l.GlobalCustomerId == globalCustomerId && l.TenantId == tenantId, ct);
@@ -94,7 +94,8 @@ public sealed class CustomerOnboardingService : ICustomerOnboardingService
             {
                 GlobalCustomerId = globalCustomerId,
                 TenantId = tenantId,
-                DisplayName = displayName,
+                FirstName = firstName,
+                LastName = lastName,
                 DataKey = retailDb.DataKey,
                 HierarchyPath = $"|{globalCustomerId}|",
                 Depth = 1,

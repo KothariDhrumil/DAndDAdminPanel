@@ -6,7 +6,7 @@ namespace Application.Customers.Services
 
     {
         Task<Guid> EnsureCustomerAccountAsync(ApplicationUser user, CancellationToken ct);
-        Task EnsureLinkedToTenantAsync(Guid globalCustomerId, int tenantId, string? displayName, string phoneNumber, CancellationToken ct);
+        Task EnsureLinkedToTenantAsync(Guid globalCustomerId, int tenantId, string firstName, string lastName, string phoneNumber, CancellationToken ct);
         Task<ApplicationUser> EnsureUserAsync(string phone, string firstName, string lastName, CancellationToken ct);
     }
 }

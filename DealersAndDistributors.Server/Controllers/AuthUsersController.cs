@@ -94,9 +94,11 @@ public class AuthUsersController : VersionNeutralApiController
         if (status.HasErrors)
             throw new Exception(status.GetAllErrors());
 
-        await tenantUserOnboardingService.CreateTenantUserProfileIfMissingAsync(
-            status.Result.UserId, (int)status.Result.TenantId, $"{newUser.FirstName} {newUser.LastName}", newUser.PhoneNumber, CancellationToken.None);
-        
+        if (status.Result.TenantId != null)
+        {
+            await tenantUserOnboardingService.CreateTenantUserProfileIfMissingAsync(
+                status.Result.UserId, (int)status.Result.TenantId, newUser.FirstName, newUser.LastName, newUser.PhoneNumber, CancellationToken.None);
+        }
         return Ok(Result.Success(status.Message));
 
     }
@@ -108,7 +110,7 @@ public class AuthUsersController : VersionNeutralApiController
     {
 
         StatusGeneric.IStatusGeneric status = await _authUsersAdmin.UpdateUserAsync(
-            change.UserId, change.Email, change.UserName, change.RoleIds, change.TenantName);
+            change.UserId, change.Email, change.UserName, change.RoleIds, change.TenantName, change.FirstName, change.LastName);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
@@ -151,7 +153,7 @@ public class AuthUsersController : VersionNeutralApiController
             return BadRequest(status.GetAllErrors());
 
         // Also update the tenant user profile
-        await tenantUserOnboardingService.UpdateTenantUserProfileAsync(tenantUser.GlobalUserId, $"{tenantUser.FirstName} {tenantUser.LastName}", ct);
+        await tenantUserOnboardingService.UpdateTenantUserProfileAsync(tenantUser.GlobalUserId, tenantUser.FirstName, tenantUser.LastName, ct);
 
         return Ok(Result.Success(status.Message));
     }

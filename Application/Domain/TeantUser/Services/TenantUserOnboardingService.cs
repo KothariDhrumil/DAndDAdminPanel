@@ -19,14 +19,14 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
     }
 
     // Method to create a tenant user profile by SuperAdmin if it doesn't exist
-    public async Task CreateTenantUserBySuperAdmin(int tenantId, string globalUserId, string? displayName, string phoneNumber, CancellationToken ct)
+    public async Task CreateTenantUserBySuperAdmin(int tenantId, string globalUserId, string firstName, string lastName, string phoneNumber, CancellationToken ct)
     {
         var retailDbContext = await tenantRetailDbContextFactory.CreateAsync(tenantId, ct);
 
-        await CreateTeantUser(globalUserId, displayName, phoneNumber, retailDbContext, ct);
+        await CreateTeantUser(globalUserId, firstName, lastName, phoneNumber, retailDbContext, ct);
     }
 
-    private static async Task CreateTeantUser(string globalUserId, string? displayName, string phoneNumber, IRetailDbContext retailDbContext, CancellationToken ct)
+    private static async Task CreateTeantUser(string globalUserId, string firstName, string lastName, string phoneNumber, IRetailDbContext retailDbContext, CancellationToken ct)
     {
         var userId = Guid.Parse(globalUserId);
         var hasProfile = await retailDbContext.TenantUserProfiles
@@ -36,7 +36,8 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
             retailDbContext.TenantUserProfiles.Add(new TenantUserProfile
             {
                 GlobalUserId = userId,
-                DisplayName = displayName,
+                FirstName = firstName,
+                LastName = lastName,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 PhoneNumber = phoneNumber
@@ -45,37 +46,38 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
         }
     }
 
-    public async Task CreateTenantUserProfileIfMissingAsync(string globalUserId, int TenantUserId, string? displayName, string phoneNumber, CancellationToken ct)
+    public async Task CreateTenantUserProfileIfMissingAsync(string globalUserId, int TenantUserId, string firstName, string lastName, string phoneNumber, CancellationToken ct)
     {
         var userId = Guid.Parse(globalUserId);
-        await CreateTeantUser(globalUserId, displayName, phoneNumber, context, ct);
+        await CreateTeantUser(globalUserId, firstName, lastName, phoneNumber, context, ct);
     }
 
     // Method to update the  tenant user profile
 
-    public async Task UpdateTenantUserProfileAsync(Guid globalUserId, string? displayName, CancellationToken ct)
+    public async Task UpdateTenantUserProfileAsync(Guid globalUserId, string firstName, string lastName, CancellationToken ct)
     {
-        await UpdateProfile(context,globalUserId, displayName, ct);
+        await UpdateProfile(context, globalUserId, firstName, lastName, ct);
     }
 
-    private async Task UpdateProfile(IRetailDbContext retailDbContext, Guid globalUserId, string? displayName, CancellationToken ct)
+    private async Task UpdateProfile(IRetailDbContext retailDbContext, Guid globalUserId, string firstName, string lastName, CancellationToken ct)
     {
         var profile = await retailDbContext.TenantUserProfiles
                     .FirstOrDefaultAsync(p => p.GlobalUserId == globalUserId, ct);
         if (profile != null)
         {
-            profile.DisplayName = displayName ?? profile.DisplayName;
+            profile.FirstName = firstName ?? profile.FirstName;
+            profile.LastName = lastName ?? profile.LastName;
             profile.UpdatedAt = DateTime.UtcNow;
             retailDbContext.TenantUserProfiles.Update(profile);
             await retailDbContext.SaveChangesAsync(ct);
         }
     }
 
-    public async Task UpdateTenantUserBySuperadmin(int tenantId, string globalUserId, string? displayName, CancellationToken ct)
+    public async Task UpdateTenantUserBySuperadmin(int tenantId, string globalUserId, string firstName, string lastName, CancellationToken ct)
     {
         var retailDbContext = await tenantRetailDbContextFactory.CreateAsync(tenantId, ct);
         var userId = Guid.Parse(globalUserId);
-        await UpdateProfile(retailDbContext, userId, displayName, ct);
+        await UpdateProfile(retailDbContext, userId, firstName, lastName, ct);
 
     }
 }

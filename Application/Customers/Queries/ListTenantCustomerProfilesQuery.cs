@@ -17,7 +17,9 @@ public sealed record TenantCustomerProfileDto(
     Guid TenantCustomerId,
     Guid GlobalCustomerId,
     int TenantId,
-    string? DisplayName);
+    string? FirstName,
+    string? LastName,
+    string? PhoneNumber);
 
 internal sealed class ListTenantCustomerProfilesQueryHandler(
     ITenantRetailDbContextFactory tenantRetailDbContextFactory
@@ -39,20 +41,22 @@ internal sealed class ListTenantCustomerProfilesQueryHandler(
         {
             var term = query.Search.Trim();
             profiles = profiles.Where(p =>
-                (p.DisplayName != null && p.DisplayName.Contains(term))); // || (p.Preferences != null && p.Preferences.Contains(term))
+                (p.FirstName != null && p.FirstName.Contains(term))); // || (p.Preferences != null && p.Preferences.Contains(term))
         }
 
         var total = await profiles.CountAsync(cancellationToken);
 
         var pageItems = await profiles
-            .OrderBy(p => p.DisplayName)
+            .OrderBy(p => p.FirstName)
             .Skip((page - 1) * size)
             .Take(size)
             .Select(p => new TenantCustomerProfileDto(
                 p.TenantUserId,
                 p.GlobalCustomerId,
                 p.TenantId,
-                p.DisplayName                
+                p.FirstName,
+                p.LastName,
+                p.PhoneNumber
                 ))
             .ToListAsync(cancellationToken);
 

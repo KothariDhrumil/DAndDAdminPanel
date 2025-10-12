@@ -47,8 +47,7 @@ internal sealed class CreateChildCustomerCommandHandler(
         var childGlobalId = await provisioning.EnsureCustomerAccountAsync(user, ct);
 
         // Ensure central link + base profile
-        var display = string.Join(' ', new[] { command.FirstName, command.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)));
-        await provisioning.EnsureLinkedToTenantAsync(childGlobalId, tenantId, display, command.PhoneNumber, ct);
+        await provisioning.EnsureLinkedToTenantAsync(childGlobalId, tenantId, command.FirstName, command.LastName, command.PhoneNumber, ct);
 
         // Now set hierarchy details if new profile (or update existing path)
         var childProfile = await retailDb.TenantCustomerProfiles

@@ -26,9 +26,8 @@ public sealed class CreateCustomerCommand : ICommand<Guid>
             var globalCustomerId = await provisioning.EnsureCustomerAccountAsync(user, ct);
 
             if (command.TenantId.HasValue)
-            {
-                var display = string.Join(' ', new[] { command.FirstName, command.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)));
-                await provisioning.EnsureLinkedToTenantAsync(globalCustomerId, command.TenantId.Value, display, command.PhoneNumber, ct);
+            { 
+                await provisioning.EnsureLinkedToTenantAsync(globalCustomerId, command.TenantId.Value, command.FirstName, command.LastName, command.PhoneNumber, ct);
             }
             return Result.Success(globalCustomerId);
         }

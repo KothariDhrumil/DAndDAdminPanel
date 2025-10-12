@@ -3,8 +3,8 @@
     public interface ITenantUserOnboardingService : ITransientService
 
     {
-        Task CreateTenantUserProfileIfMissingAsync(string globalUserId, int tenantId, string? displayName, string phoneNumber, CancellationToken ct);
-        Task UpdateTenantUserProfileAsync(Guid globalUserId, string? displayName, CancellationToken ct);
+        Task CreateTenantUserProfileIfMissingAsync(string globalUserId, int tenantId, string firstName, string lastName, string phoneNumber, CancellationToken ct);
+        Task UpdateTenantUserProfileAsync(Guid globalUserId, string firstName, string lastName, CancellationToken ct);
 
     }
 }
