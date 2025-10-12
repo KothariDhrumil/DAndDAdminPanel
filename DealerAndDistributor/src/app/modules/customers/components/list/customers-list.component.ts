@@ -95,7 +95,7 @@ export class CustomersListComponent {
         } else {
             this.service.getCustomersByTenant(this.pageNumber, this.pageSize).subscribe({
                 next: (res) => {
-                    const records: TenantCustomerProfile[] | undefined = (res as any).data?.data;
+                    const records: TenantCustomerProfile[] | undefined = (res as any).data;
                     if (Array.isArray(records)) {
                         this._items.set(records.map((c: TenantCustomerProfile) => ({
                             ...c,

@@ -15,4 +15,5 @@ export interface PlanRequest {
   planRate: number;
   isActive: boolean;
   roleIds: number[];
+  planId: number; // For backward compatibility with some APIs
 }

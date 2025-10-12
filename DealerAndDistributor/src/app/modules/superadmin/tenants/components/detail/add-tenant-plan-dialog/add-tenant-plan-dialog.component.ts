@@ -64,6 +64,7 @@ export class AddTenantPlanDialogComponent implements OnInit {
         isActive: new FormControl<boolean>(true, { nonNullable: true }),
         validFrom: new FormControl<Date | null>(new Date(), { validators: [Validators.required] }),
         validTo: new FormControl<Date | null>(null, { validators: [Validators.required] }),
+        // Remarks are never required
         remarks: new FormControl<string | null>(null),
         roles: new FormControl<number[]>([], { nonNullable: true })
     });
@@ -105,11 +106,14 @@ export class AddTenantPlanDialogComponent implements OnInit {
             const from = this.coerceDate(ap.validFrom) ?? new Date();
             const to = this.coerceDate(ap.validTo) ?? this.addDays(from, 0);
             // We'll set planId after plans load to ensure it exists in options
+            // Try to preselect roles from the selected plan (by planName or planId)
+            
             this.form.patchValue({
                 isActive: ap.isActive,
                 validFrom: from,
                 validTo: to,
-                remarks: ap.remarks ?? null
+                remarks: ap.remarks ?? null,
+                roles: Array.isArray(ap.roles) ? ap.roles.map(n => Number(n)) : []
             }, { emitEvent: false });
             // Mark that the next plan selection is from edit prefill
             this.editingPrefill = true;
@@ -127,13 +131,16 @@ export class AddTenantPlanDialogComponent implements OnInit {
                 // In edit mode, set the existing plan selection if it matches one of the options
                 const ap = this.data.activePlan;
                 if (ap) {
-                    // Prefer matching by ID if present in the list (some APIs include it)
                     let match = this.plans().find(p => (p as any).tenantPlanId === ap.tenantPlanId || p.id === (ap as any).planId);
-                    // Fallback: match by plan name if ID not available in plan model
                     if (!match) match = this.plans().find(p => p.name === ap.planName);
                     if (match) {
                         this.form.patchValue({ planId: match.id }, { emitEvent: true });
                         this.selectedPlanId.set(match.id);
+                        // Patch roles after planId is set and plans are loaded
+                        if (Array.isArray(ap.roles)) {
+                            this.form.patchValue({ roles: ap.roles.map(n => Number(n)) }, { emitEvent: true });
+                            this.cdr.detectChanges();
+                        }
                     }
                 }
                 // Otherwise pre-select first plan if none selected
@@ -184,7 +191,17 @@ export class AddTenantPlanDialogComponent implements OnInit {
 
     save(): void {
         this.submitError.set(null);
-        if (this.form.invalid) return;
+        // In edit mode, allow unchanged start date and remarks
+        if (this.form.invalid) {
+            // If only validFrom is invalid and we're editing, allow submit
+            if (this.isEditModeFlag && this.form.errors == null) {
+                // validFrom is required, but in edit mode, allow unchanged
+                // If validFrom is null, block submit
+                if (!this.form.value.validFrom) return;
+            } else {
+                return;
+            }
+        }
 
         // If setting active and there's already an active plan, confirm overwrite
         if (!this.data.tenantPlanId && this.data.hasActivePlan && this.form.value.isActive) {

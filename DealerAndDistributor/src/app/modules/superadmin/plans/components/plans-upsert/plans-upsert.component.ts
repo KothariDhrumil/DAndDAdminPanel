@@ -12,6 +12,8 @@ import { SUPERADMIN_PLANS_ROUTE } from '../../../../../core/helpers/routes/app-r
 import { Plan, PlanRequest } from '../../models/plan.model';
 import { RolesSelectorComponent } from '../../../../../core/shared/components/roles-selector/roles-selector.component';
 import { ApiResponse } from '../../../../../core/models/interface/ApiResponse';
+import { AuthService, Role } from '@core/index';
+import { RoleTypes } from 'src/app/modules/roles-and-permission/models/enums/roletypes.enum';
 
 @Component({
   selector: 'app-plans-upsert',
@@ -46,11 +48,13 @@ export class PlansUpsertComponent implements OnInit {
   currentId: number | null = null;
 
   breadcrumbTitle = computed(() => this.isEdit() ? 'Edit Plan' : 'Create Plan');
+  roleTypes: number[] = [];
 
   constructor(
     private readonly plansService: PlansService,
     private readonly route: ActivatedRoute,
-    private readonly router: Router
+    private readonly router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -64,6 +68,13 @@ export class PlansUpsertComponent implements OnInit {
         this.loadPlan(this.currentId);
       } else {
         this.loading.set(false);
+      }
+
+      if (this.authService.isSuperAdmin) {
+        this.roleTypes = [RoleTypes.FeatureRole];
+      }
+      else {
+        this.roleTypes = [];
       }
     });
   }
@@ -96,7 +107,8 @@ export class PlansUpsertComponent implements OnInit {
       planValidityInDays: raw.planValidityInDays!,
       planRate: raw.planRate!,
       isActive: raw.isActive,
-      roleIds: (raw.roleIds || []).map((id: number | string) => Number(id))
+      roleIds: (raw.roleIds || []).map((id: number | string) => Number(id)),
+      planId : this.currentId ?? 0,      
     };
 
     const obs = this.isEdit() && this.currentId

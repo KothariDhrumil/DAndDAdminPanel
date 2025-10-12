@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CustomerWithTenants, TenantCustomerProfile } from '../models/customer.model';
-import { CUSTOMERS_WITH_TENANTS_API, CUSTOMERS_BY_TENANT_API, CUSTOMERS_SEARCH_BY_PHONE_API, CUSTOMERS_LINK_API, CUSTOMERS_API, CUSTOMERS_TENANT_PROFILE_API, CUSTOMERS_CHILD_API, CUSTOMERS_CHILD_LINK_API, CUSTOMER_ORDERS_API } from '../../../core/helpers/routes/api-endpoints';
+import { CUSTOMERS_WITH_TENANTS_API, CUSTOMERS_BY_TENANT_API, CUSTOMERS_SEARCH_BY_PHONE_API, CUSTOMERS_LINK_API, CUSTOMERS_API,  CUSTOMERS_CHILD_API, CUSTOMERS_CHILD_LINK_API, CUSTOMER_ORDERS_API, DOMAIN_CUSTOMERS_API } from '../../../core/helpers/routes/api-endpoints';
 import { PaginatedApiResponse } from '../../../core/models/interface/ApiResponse';
 import { ApiResponse } from '../../../core/models/interface/ApiResponse';
 
@@ -17,7 +17,7 @@ export class CustomersService {
 
   getCustomersByTenant(pageNumber: number, pageSize: number): Observable<PaginatedApiResponse<TenantCustomerProfile[]>> {
     const params = new HttpParams().set('pageNumber', pageNumber).set('pageSize', pageSize);
-    return this.http.get<PaginatedApiResponse<TenantCustomerProfile[]>>(CUSTOMERS_TENANT_PROFILE_API, { params });
+    return this.http.get<PaginatedApiResponse<TenantCustomerProfile[]>>(DOMAIN_CUSTOMERS_API, { params });
   }
    
   searchByPhone(phone: string): Observable<ApiResponse<CustomerWithTenants | null>> {

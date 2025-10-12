@@ -8,6 +8,7 @@ export interface TenantPlanItem {
   planName: string;
   planRate: number;
   createdOn: string; // ISO date
+  roles: number[];
 }
 
 export interface TenantPlanUpsertRequest {

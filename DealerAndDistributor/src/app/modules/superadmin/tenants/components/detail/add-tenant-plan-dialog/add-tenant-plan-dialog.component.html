@@ -20,9 +20,9 @@
 
         @if (selectedPlan()) {
         <div class="plan-preview">
-            <div class="preview-line"><strong>Name:</strong> {{ selectedPlan()!.name }}</div>
-            <div class="preview-line"><strong>Validity:</strong> {{ selectedPlan()!.planValidityInDays }} days</div>
-            <div class="preview-line"><strong>Rate:</strong> {{ selectedPlan()!.planRate | currency }}</div>
+            <strong>Name:</strong> {{ selectedPlan()!.name }} | <strong>Validity:</strong> {{
+            selectedPlan()!.planValidityInDays }} days | <strong>Rate:</strong> {{ selectedPlan()!.planRate | currency
+            }}
         </div>
         }
 
@@ -59,6 +59,7 @@
 
 <div mat-dialog-actions align="end">
     <button mat-stroked-button (click)="close()">Cancel</button>
-    <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || saving()">{{ data.tenantPlanId ? 'Update' : 'Save' }}</button>
+    <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || saving()">{{ data.tenantPlanId
+        ? 'Update' : 'Save' }}</button>
     @if (saving()) { <mat-spinner diameter="20" class="ms-2"></mat-spinner> }
 </div>
