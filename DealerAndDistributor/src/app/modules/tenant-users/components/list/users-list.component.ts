@@ -28,8 +28,8 @@ export class UsersListComponent {
   columns = computed<ColumnDefinition[]>(() => [
     { def: 'userName', label: 'User Name', type: 'text', sortable: true },
     { def: 'email', label: 'Email', type: 'email', sortable: true },
-    { def: 'tenantName', label: 'Tenant', type: 'text', sortable: true },
-    { def: 'hasTenant', label: 'Has Tenant', type: 'check' },
+    // { def: 'tenantName', label: 'Tenant', type: 'text', sortable: true },
+    // { def: 'hasTenant', label: 'Has Tenant', type: 'check' },
     { def: 'roleNames', label: 'Roles', type: 'text' },
     { def: 'actions', label: 'Actions', type: 'actionBtn' },
   ]);
@@ -40,7 +40,7 @@ export class UsersListComponent {
   ]);
 
   tableConfig: TableConfig = {
-    enableSelection: true,
+    enableSelection: false,
     enableSearch: true,
     enableExport: false,
     enableRefresh: true,

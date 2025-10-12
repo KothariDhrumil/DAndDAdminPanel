@@ -46,10 +46,10 @@
       }
     },
     "TenantUsers": {
-      "Text": "Tenant Users",
+      "Text": "Users",
       "List": {
-        "List": "Tenant Users List",
-        "Create": "Tenant Users Create"
+        "List": "Users List",
+        "Create": "Users Create"
       }
     },
     "Todos": {
