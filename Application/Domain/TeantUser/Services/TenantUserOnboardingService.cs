@@ -55,15 +55,27 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
 
     public async Task UpdateTenantUserProfileAsync(Guid globalUserId, string? displayName, CancellationToken ct)
     {
-        var profile = await context.TenantUserProfiles
-            .FirstOrDefaultAsync(p => p.GlobalUserId == globalUserId, ct);
+        await UpdateProfile(context,globalUserId, displayName, ct);
+    }
+
+    private async Task UpdateProfile(IRetailDbContext retailDbContext, Guid globalUserId, string? displayName, CancellationToken ct)
+    {
+        var profile = await retailDbContext.TenantUserProfiles
+                    .FirstOrDefaultAsync(p => p.GlobalUserId == globalUserId, ct);
         if (profile != null)
         {
             profile.DisplayName = displayName ?? profile.DisplayName;
             profile.UpdatedAt = DateTime.UtcNow;
-            context.TenantUserProfiles.Update(profile);
-            await context.SaveChangesAsync(ct);
+            retailDbContext.TenantUserProfiles.Update(profile);
+            await retailDbContext.SaveChangesAsync(ct);
         }
     }
 
+    public async Task UpdateTenantUserBySuperadmin(int tenantId, string globalUserId, string? displayName, CancellationToken ct)
+    {
+        var retailDbContext = await tenantRetailDbContextFactory.CreateAsync(tenantId, ct);
+        var userId = Guid.Parse(globalUserId);
+        await UpdateProfile(retailDbContext, userId, displayName, ct);
+
+    }
 }

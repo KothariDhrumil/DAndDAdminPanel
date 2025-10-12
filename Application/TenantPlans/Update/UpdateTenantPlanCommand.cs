@@ -84,7 +84,7 @@ public sealed class UpdateTenantPlanCommand : ICommand
             tenantPlan.Remarks = command.Remarks;
 
             // If the plan is active, update the tenant roles to reflect effective roles
-            if (tenantPlan.IsActive)
+            if (tenantPlan.IsActive && (toRemove.Count != 0 || toAdd.Count != 0))
             {
                 var effectiveRoleIds = tenantPlan.Roles.Select(r => r.RoleId).ToList();
                 var status = await authTenantAdmin.UpdateTenantRolesAsync(command.TenantId, effectiveRoleIds);
@@ -92,32 +92,51 @@ public sealed class UpdateTenantPlanCommand : ICommand
                     throw new ApiException(status.GetAllErrors());
 
 
-                // If any roles were removed from the tenant plan, remove those roles from all users in this tenant
-                if (toRemove.Count > 0)
-                {
-                    // Find users in this tenant who currently have any of the removed roles
-                    var usersToUpdate = await authUsersAdminService
-                        .QueryAuthUsers(command.TenantId).Include(x=>x.UserRoles)
-                        .Where(u => u.UserRoles.Any(ur => toRemove.Contains(ur.RoleId)))
-                        .ToListAsync(cancellationToken);
+                //var usersToUpdate = authUsersAdminService
+                //      .QueryAuthUsers(command.TenantId).Include(x => x.UserRoles);
 
-                    foreach (var user in usersToUpdate)
-                    {
-                        // New user role set = existing minus removed roles
-                        var newUserRoleIds = user.UserRoles
-                            .Select(ur => ur.RoleId)
-                            .Where(roleId => !toRemove.Contains(roleId))
-                            .Distinct()
-                            .ToList();
+                //// If any roles were removed from the tenant plan, remove those roles from all users in this tenant
+                //if (toRemove.Count > 0)
+                //{
+                //    // Find users in this tenant who currently have any of the removed roles
+                //    var users = await usersToUpdate.Where(u => u.UserRoles.Any(ur => toRemove.Contains(ur.RoleId)))
+                //        .ToListAsync(cancellationToken);
 
-                        var userUpdateStatus = await authUsersAdminService.UpdateUserAsync(
-                            user.UserId,
-                            roleIds: newUserRoleIds);
+                //    foreach (var user in users)
+                //    {
+                //        // New user role set = existing minus removed roles
+                //        var newUserRoleIds = user.UserRoles
+                //            .Select(ur => ur.RoleId)
+                //            .Where(roleId => !toRemove.Contains(roleId))
+                //            .Distinct()
+                //            .ToList();
 
-                        if (userUpdateStatus.HasErrors)
-                            throw new ApiException(userUpdateStatus.GetAllErrors());
-                    }
-                }
+                //        var userUpdateStatus = await authUsersAdminService.UpdateUserAsync(
+                //            user.UserId,
+                //            roleIds: newUserRoleIds);
+
+                //        if (userUpdateStatus.HasErrors)
+                //            throw new ApiException(userUpdateStatus.GetAllErrors());
+                //    }
+                //}
+
+
+                //// add the roles if its added new one
+                //if (toAdd.Count > 0)
+                //{
+                //    var users = await usersToUpdate.ToListAsync();
+                //    foreach (var user in users)
+                //    {
+
+                //        var userUpdateStatus = await authUsersAdminService.UpdateUserAsync(
+                //            user.UserId,
+                //            roleIds: effectiveRoleIds);
+
+                //        if (userUpdateStatus.HasErrors)
+                //            throw new ApiException(userUpdateStatus.GetAllErrors());
+                //    }
+                //}
+
             }
 
             await context.SaveChangesAsync(cancellationToken);

@@ -27,16 +27,7 @@ internal sealed class GetActiveTenantPlanByIdQueryHandler(AuthPermissionsDbConte
                 ValidFrom = TenantPlanItem.ValidFrom,
                 ValidTo = TenantPlanItem.ValidTo,
                 PlanName = TenantPlanItem.Plan.Name,
-                Roles = TenantPlanItem.Plan.Roles.Select(x => new AuthPermissions.AdminCode.RoleWithPermissionNamesDto()
-                {
-                    RoleId = x.RoleId,
-                    Description = x.Description,
-                    PackedPermissionsInRole = x.PackedPermissionsInRole,
-                    RoleName = x.RoleName,
-                    RoleType = x.RoleType
-                }).ToList()
-
-
+                Roles = TenantPlanItem.Roles.Select(x => x.RoleId).ToList()
             })
             .SingleOrDefaultAsync(cancellationToken);
 
