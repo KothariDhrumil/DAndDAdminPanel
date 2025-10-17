@@ -40,7 +40,7 @@ export class CustomersListComponent {
         { def: 'phoneNumber', label: 'Phone', type: 'phone', sortable: false },
         { def: 'firstName', label: 'First Name', type: 'text', sortable: false },
         { def: 'lastName', label: 'Last Name', type: 'text', sortable: false },
-        { def: 'tenantNames', label: 'Tenants', type: 'text', sortable: false },
+        //{ def: 'tenantNames', label: 'Tenants', type: 'text', sortable: false },
         { def: 'actions', label: 'Actions', type: 'actionBtn' }
     ]);
 
@@ -101,7 +101,8 @@ export class CustomersListComponent {
                             ...c,
                             tenantNames: c.tenantId ? c.tenantId.toString() : null,
                             // Flatten tenant names for display
-                            firstName: c.displayName || '',
+                            firstName: c.firstName || '',
+                            lastName: c.lastName || '',
                             phoneNumber: c.phoneNumber || '',
                             globalCustomerId: c.globalCustomerId
                         }) as any));

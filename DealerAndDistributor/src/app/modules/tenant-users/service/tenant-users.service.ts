@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs'; 
 import { AuthUserItem } from '../models/tenant-user.model';
 import { ApiResponse, PaginatedApiResponse } from '@core/models/interface/ApiResponse';
-import { AUTHUSERS_LIST_API, AUTHUSERS_API } from '@core/helpers/routes/api-endpoints';
+import { AUTHUSERS_LIST_API, AUTHUSERS_API, AUTHUSERS_UPDATE_TENANT_API } from '@core/helpers/routes/api-endpoints';
 
 export interface ListUsersRequest {
   pageNumber?: number;
@@ -58,5 +58,9 @@ export class TenantUsersService {
 
   updateUser(payload: UpdateUserRequest): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(AUTHUSERS_API, payload);
+  }
+
+  updateNameUser(payload: UpdateUserRequest): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(AUTHUSERS_UPDATE_TENANT_API, payload);
   }
 }

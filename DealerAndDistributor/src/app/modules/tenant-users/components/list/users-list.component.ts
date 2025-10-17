@@ -30,6 +30,10 @@ export class UsersListComponent {
     { def: 'email', label: 'Email', type: 'email', sortable: true },
     // { def: 'tenantName', label: 'Tenant', type: 'text', sortable: true },
     // { def: 'hasTenant', label: 'Has Tenant', type: 'check' },
+    // columns for first and last name
+    { def: 'firstName', label: 'First Name', type: 'text', sortable: true },
+    { def: 'lastName', label: 'Last Name', type: 'text', sortable: true },
+    { def: 'phoneNumber', label: 'Phone Number', type: 'text', sortable: true },
     { def: 'roleNames', label: 'Roles', type: 'text' },
     { def: 'actions', label: 'Actions', type: 'actionBtn' },
   ]);
@@ -103,10 +107,10 @@ export class UsersListComponent {
   }
 
   private openUpdateRoles(user: AuthUserItem) {
-    const ref = this.dialog.open(UpdateUserRolesDialogComponent, { 
+    const ref = this.dialog.open(UpdateUserRolesDialogComponent, {
       width: '640px',
-      data: { 
-        userId: user.userId, 
+      data: {
+        userId: user.userId,
         userName: user.userName,
         currentRoles: user.roleNames || []
       }
@@ -115,7 +119,14 @@ export class UsersListComponent {
   }
 
   private openUpdateProfile(user: AuthUserItem) {
-    const ref = this.dialog.open(AddUserDialogComponent, { width: '640px', data: { userId: user.userId } });
+    const ref = this.dialog.open(AddUserDialogComponent, {
+      width: '640px', data: {
+        userId: user.userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber
+      }
+    });
     ref.afterClosed().subscribe((changed: boolean) => { if (changed) this.loadUsers(); });
   }
 

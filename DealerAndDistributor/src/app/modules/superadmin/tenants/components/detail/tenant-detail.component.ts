@@ -52,7 +52,7 @@ import { TenantUsersService } from 'src/app/modules/tenant-users/service/tenant-
         MatFormFieldModule,
         MatProgressSpinnerModule,
         MatDialogModule,
-        GenericTableComponent,        
+        GenericTableComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
@@ -107,15 +107,19 @@ export class TenantDetailComponent implements OnInit {
     readonly loadingUsers = signal(false);
     readonly errorUsers = signal<string | null>(null);
     readonly userColumns = signal<ColumnDefinition[]>([
-        { def: 'userName', label: 'User Name', type: 'text', sortable: true },
-        { def: 'email', label: 'Email', type: 'email', sortable: true },
-        { def: 'hasTenant', label: 'Has Tenant', type: 'check' },
-        { def: 'tenantName', label: 'Tenant', type: 'text' },
+        // { def: 'userName', label: 'User Name', type: 'text', sortable: true },
+        // { def: 'email', label: 'Email', type: 'email', sortable: true },
+        // { def: 'hasTenant', label: 'Has Tenant', type: 'check' },
+
+        //{ def: 'tenantName', label: 'Tenant', type: 'text' },
+        { def: 'firstName', label: 'First Name', type: 'text', sortable: true },
+        { def: 'lastName', label: 'Last Name', type: 'text', sortable: true },
+        { def: 'phoneNumber', label: 'Phone Number', type: 'text', sortable: true },
         { def: 'roleNames', label: 'Roles', type: 'text' },
         { def: 'actions', label: 'Actions', type: 'actionBtn' },
     ]);
     readonly userTableConfig: TableConfig = {
-        enableSelection: true,
+        enableSelection: false,
         enableSearch: true,
         enableExport: false,
         enableRefresh: true,
@@ -340,7 +344,14 @@ export class TenantDetailComponent implements OnInit {
 
     private openUpdateUserProfileDialog(user: AuthUserItem) {
         const tenantId = this.tenant()?.tenantId ?? Number(this.route.snapshot.paramMap.get('id'));
-        const ref = this.dialog.open(AddUserDialogComponent, { data: { userId: user.userId }, width: '640px' });
+        const ref = this.dialog.open(AddUserDialogComponent, {
+            data: {
+                userId: user.userId,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                phoneNumber: user.phoneNumber
+            }, width: '640px'
+        });
         ref.afterClosed().subscribe(ok => { if (ok && tenantId) this.loadTenantUsers(tenantId); });
     }
 

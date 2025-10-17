@@ -17,7 +17,8 @@ export interface TenantCustomerProfile {
   globalCustomerId: string;
   tenantCustomerId : number;
   phoneNumber: string;
-  displayName: string;
+   firstName: string;
+  lastName: string;
   tenantId: number;
 }
 

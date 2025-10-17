@@ -7,7 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TenantUsersService, CreateUserRequest, UpdateUserRequest } from '../../service/tenant-users.service';
 
-export interface AddUserDialogData { userId?: string | null; tenantId?: number }
+export interface AddUserDialogData {
+  userId?: string | null;
+  tenantId?: number;
+  firstName?: string | null;
+  lastName?: string | null;
+  phoneNumber?: string | null;
+}
 
 @Component({
   selector: 'app-add-user-dialog',
@@ -38,6 +44,15 @@ export class AddUserDialogComponent {
     if (data?.userId) {
       this.form.patchValue({ userId: data.userId });
     }
+    if (data?.firstName) {
+      this.form.patchValue({ firstName: data.firstName });
+    }
+    if (data?.lastName) {
+      this.form.patchValue({ lastName: data.lastName });
+    }
+    if (data?.phoneNumber) {
+      this.form.patchValue({ phoneNumber: data.phoneNumber });
+    }
   }
 
   save() {
@@ -50,7 +65,7 @@ export class AddUserDialogComponent {
         lastName: raw.lastName,
         phoneNumber: raw.phoneNumber
       } as any;
-      this.usersService.updateUser(update).subscribe({
+      this.usersService.updateNameUser(update).subscribe({
         next: r => this.dialogRef.close(!!r?.isSuccess),
         error: () => this.dialogRef.close(false)
       });
