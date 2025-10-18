@@ -294,7 +294,7 @@ export class TenantDetailComponent implements OnInit {
     private loadTenantUsers(tenantId: number) {
         this.loadingUsers.set(true);
         this.errorUsers.set(null);
-        this.tenantUsersService.listUsersByTenant(tenantId).subscribe({
+        this.tenantUsersService.listUsers(tenantId).subscribe({
             next: (res) => {
                 if (res?.isSuccess && Array.isArray(res.data)) this.tenantUsers.set(res.data);
                 else { this.tenantUsers.set([]); this.errorUsers.set('No users found'); }

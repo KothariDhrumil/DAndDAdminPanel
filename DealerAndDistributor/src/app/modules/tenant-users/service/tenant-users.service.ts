@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs'; 
 import { AuthUserItem } from '../models/tenant-user.model';
 import { ApiResponse, PaginatedApiResponse } from '@core/models/interface/ApiResponse';
-import { AUTHUSERS_LIST_API, AUTHUSERS_API, AUTHUSERS_UPDATE_TENANT_API } from '@core/helpers/routes/api-endpoints';
+import { AUTHUSERS_LIST_BY_TENANT_API, AUTHUSERS_API, AUTHUSERS_UPDATE_TENANT_API, AUTHUSERS_LIST_BY_USER_TYPE_API } from '@core/helpers/routes/api-endpoints';
 
 export interface ListUsersRequest {
   pageNumber?: number;
@@ -35,21 +35,21 @@ export interface UpdateUserRequest {
 export class TenantUsersService {
   private http = inject(HttpClient);
 
-  listUsers(req: ListUsersRequest = { pageNumber: 1, pageSize: 10, orderBy: 'userName' }): Observable<PaginatedApiResponse<AuthUserItem[]>> {
+  listUsers(tenantId: number, req: ListUsersRequest = { pageNumber: 1, pageSize: 10, orderBy: 'userName' }): Observable<PaginatedApiResponse<AuthUserItem[]>> {
     let params = new HttpParams();
     if (req.pageNumber) params = params.set('pageNumber', req.pageNumber);
     if (req.pageSize) params = params.set('pageSize', req.pageSize);
     if (req.orderBy) params = params.set('orderBy', req.orderBy);
-    return this.http.get<PaginatedApiResponse<AuthUserItem[]>>(AUTHUSERS_LIST_API, { params });
+    return this.http.get<PaginatedApiResponse<AuthUserItem[]>>(`${AUTHUSERS_LIST_BY_TENANT_API}/${tenantId}`, { params });
   }
 
-  listUsersByTenant(tenantId: number, req: ListUsersRequest = { pageNumber: 1, pageSize: 10, orderBy: 'userName' }): Observable<PaginatedApiResponse<AuthUserItem[]>> {
+  listUsersByUserType(userTypeId: number, req: ListUsersRequest = { pageNumber: 1, pageSize: 10, orderBy: 'userName' }): Observable<PaginatedApiResponse<AuthUserItem[]>> {
     let params = new HttpParams();
 
     if (req.pageNumber) params = params.set('pageNumber', req.pageNumber);
     if (req.pageSize) params = params.set('pageSize', req.pageSize);
     if (req.orderBy) params = params.set('orderBy', req.orderBy);
-    return this.http.get<PaginatedApiResponse<AuthUserItem[]>>(`${AUTHUSERS_LIST_API}/${tenantId}`, { params });
+    return this.http.get<PaginatedApiResponse<AuthUserItem[]>>(`${AUTHUSERS_LIST_BY_USER_TYPE_API}/${userTypeId}`, { params });
   }
 
   createUser(payload: CreateUserRequest): Observable<ApiResponse<any>> {
