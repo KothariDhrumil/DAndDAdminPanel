@@ -19,15 +19,30 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
         this.tenantRetailDbContextFactory = tenantRetailDbContextFactory;
     }
 
-    // Method to create a tenant user profile by SuperAdmin if it doesn't exist
-    public async Task CreateTenantUserBySuperAdmin(int tenantId, string globalUserId, string firstName, string lastName, string phoneNumber, CancellationToken ct)
+    //// Method to create a tenant user profile by SuperAdmin if it doesn't exist
+    //public async Task CreateTenantUserBySuperAdmin(int tenantId, string globalUserId, string firstName, string lastName, string phoneNumber, CancellationToken ct)
+    //{
+    //    var retailDbContext = await tenantRetailDbContextFactory.CreateAsync(tenantId, ct);
+
+    //    await CreateTeantUser(globalUserId, firstName, lastName, phoneNumber, retailDbContext, ct);
+    //}
+
+    public async Task CreateTenantUserProfileIfMissingAsync(string globalUserId, int TenantUserId, string firstName, string lastName, string phoneNumber, int userTypeId, CancellationToken ct)
     {
-        var retailDbContext = await tenantRetailDbContextFactory.CreateAsync(tenantId, ct);
-
-        await CreateTeantUser(globalUserId, firstName, lastName, phoneNumber, retailDbContext, ct);
+        var userId = Guid.Parse(globalUserId);
+        await CreateTeantUser(globalUserId, firstName, lastName, phoneNumber,userTypeId, context, ct);
     }
-
-    private static async Task CreateTeantUser(string globalUserId, string firstName, string lastName, string phoneNumber, IRetailDbContext retailDbContext, CancellationToken ct)
+    public async Task UpdateTenantUserProfileAsync(UpdateTenantUserModel updateTenantUserModel, CancellationToken ct)
+    {
+        await UpdateProfile(context, updateTenantUserModel.UserId, updateTenantUserModel.FirstName, updateTenantUserModel.LastName, updateTenantUserModel.UserTypeId, ct);
+    }
+    public async Task<List<string>> GetProfilesByRoleTypeId(int userTypeId)
+    {
+        return await context.TenantUserProfiles.Where(p => p.UserTypeId == userTypeId)
+            .Select(p => p.GlobalUserId.ToString())
+            .ToListAsync();
+    }
+    private static async Task CreateTeantUser(string globalUserId, string firstName, string lastName, string phoneNumber, int userTypeId, IRetailDbContext retailDbContext, CancellationToken ct)
     {
         var userId = Guid.Parse(globalUserId);
         var hasProfile = await retailDbContext.TenantUserProfiles
@@ -41,24 +56,14 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
                 LastName = lastName,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                UserTypeId = userTypeId
             });
             await retailDbContext.SaveChangesAsync(ct);
         }
     }
 
-    public async Task CreateTenantUserProfileIfMissingAsync(string globalUserId, int TenantUserId, string firstName, string lastName, string phoneNumber, CancellationToken ct)
-    {
-        var userId = Guid.Parse(globalUserId);
-        await CreateTeantUser(globalUserId, firstName, lastName, phoneNumber, context, ct);
-    }
-
     // Method to update the  tenant user profile
-
-    public async Task UpdateTenantUserProfileAsync(UpdateTenantUserModel updateTenantUserModel, CancellationToken ct)
-    {
-        await UpdateProfile(context, updateTenantUserModel.UserId, updateTenantUserModel.FirstName, updateTenantUserModel.LastName, updateTenantUserModel.UserTypeId, ct);
-    }
 
     private async Task UpdateProfile(IRetailDbContext retailDbContext, Guid globalUserId, string firstName, string lastName, int userTypeId, CancellationToken ct)
     {
@@ -74,6 +79,8 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
             await retailDbContext.SaveChangesAsync(ct);
         }
     }
+
+
 
     //public async Task UpdateTenantUserBySuperadmin(int tenantId, string globalUserId, string firstName, string lastName, CancellationToken ct)
     //{
