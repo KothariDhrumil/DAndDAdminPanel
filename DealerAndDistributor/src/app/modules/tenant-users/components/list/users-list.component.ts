@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { UserTypeService } from '../../user-types/service/user-type.service';
 import { CommonModule } from '@angular/common';
 import { TenantUsersService, CreateUserRequest, UpdateUserRequest } from '../../service/tenant-users.service';
 import { AuthUserItem } from '../../models/tenant-user.model';
@@ -26,8 +27,8 @@ export class UsersListComponent {
   users = computed(() => this._users());
 
   columns = computed<ColumnDefinition[]>(() => [
-   // { def: 'userName', label: 'User Name', type: 'text', sortable: true },
-   // { def: 'email', label: 'Email', type: 'email', sortable: true },
+    // { def: 'userName', label: 'User Name', type: 'text', sortable: true },
+    // { def: 'email', label: 'Email', type: 'email', sortable: true },
     // { def: 'tenantName', label: 'Tenant', type: 'text', sortable: true },
     // { def: 'hasTenant', label: 'Has Tenant', type: 'check' },
     // columns for first and last name
@@ -58,7 +59,17 @@ export class UsersListComponent {
     title: 'Users',
   };
 
-  constructor() {
+  constructor(private userTypeService: UserTypeService) {
+    this.userTypeService.list().subscribe(res => {
+      if (Array.isArray(res.data)) {
+        const options = res.data.map(ut => ({ label: ut.name, value: ut.userTypeId }));
+        const cols = this.columns();
+        const userTypeCol = cols.find(c => c.def === 'userTypeId');
+        if (userTypeCol && userTypeCol.filterConfig) {
+          userTypeCol.filterConfig.options = options;
+        }
+      }
+    });
     this.loadUsers();
   }
 

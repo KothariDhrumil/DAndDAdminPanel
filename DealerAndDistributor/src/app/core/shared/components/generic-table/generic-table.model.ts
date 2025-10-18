@@ -1,4 +1,12 @@
 import { MatTableDataSource } from '@angular/material/table';
+export interface ColumnFilterConfig {
+  type: 'text' | 'number' | 'date' | 'range' | 'select' | 'multi-select' | 'checkbox';
+  options?: Array<{ label: string; value: any }>; // for select/multi-select/checkbox
+  min?: number | Date; // for range
+  max?: number | Date; // for range
+  step?: number; // for number/range
+  placeholder?: string;
+}
 
 export interface ColumnDefinition {
   def: string;
@@ -13,6 +21,7 @@ export interface ColumnDefinition {
   // For 'badge' type: control the color via a restricted set
   badgeColor?: BadgeColor;           // static color
   badgeColorField?: string;          // row field name that holds BadgeColor
+  filterConfig?: ColumnFilterConfig;
 }
 
 // Restricted palette for badges
@@ -43,6 +52,8 @@ export interface TableConfig {
   pageSize?: number;
   pageSizeOptions: number[];
   title?: string;
+
+  enableFilter?: boolean;
 }
 
 export interface SortInfo {

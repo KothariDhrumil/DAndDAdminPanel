@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Filter Options</h2>
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <ng-container *ngFor="let col of columns">
+      <ng-container *ngIf="col.filterConfig">
+        <div class="filter-row">
+          <label>{{ col.label }}</label>
+          <!-- Render filter control based on filterConfig.type -->
+          <!-- TODO: Add controls for text, multi-select, range, etc. -->
+        </div>
+      </ng-container>
+    </ng-container>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="apply()">Apply</button>
+</div>

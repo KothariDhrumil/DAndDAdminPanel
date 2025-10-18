@@ -1,3 +1,4 @@
+import { FilterDialogComponent } from './filter-dialog/filter-dialog.component';
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -301,5 +302,19 @@ export class GenericTableComponent implements OnInit, OnChanges {
   badgeClass(row: any, column: ColumnDefinition): string | string[] {
     const color = this.getBadgeColor(row, column);
     return color ? ['badge', `badge-solid-${color}`] : 'badge';
+  }
+
+  openFilterDialog() {
+    const dialogRef = this.matDialog.open(FilterDialogComponent, {
+      width: '480px',
+      data: this.columns(),
+      autoFocus: false
+    });
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        // TODO: Apply filter logic based on result
+        this.tableEvent.emit({ type: 'filter', filter: result });
+      }
+    });
   }
 }

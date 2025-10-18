@@ -35,8 +35,12 @@
               matTooltip="Show/Hide Column">
               <mat-icon>filter_list</mat-icon>
             </button>
-
             }
+             @if (config().enableFilter) {
+            <button mat-icon-button class="tbl-header-btn col-purple" matTooltip="Filter Options" (click)="openFilterDialog()">
+              <mat-icon>tune</mat-icon>
+            </button>
+          }
             @if (config().enableExport) {
             <button mat-icon-button (click)="export()" class="tbl-header-btn col-blue" matTooltip="Xlsx Download">
               <mat-icon class="material-icons-outlined">file_download</mat-icon>
