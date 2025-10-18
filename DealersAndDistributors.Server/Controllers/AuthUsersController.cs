@@ -1,8 +1,12 @@
-﻿using AuthPermissions.AdminCode;
+﻿using Application.Customers.Services;
+using Application.Domain.TeantUser.Update;
+using AuthPermissions.AdminCode;
 using AuthPermissions.AspNetCore;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.SupportCode.AddUsersServices;
+using AuthPermissions.SupportCode.AddUsersServices.Authentication;
+using Domain;
 using ExamplesCommonCode.CommonAdmin;
 using Infrastructure.Auth.AuthP;
 using Infrastructure.Identity;
@@ -10,9 +14,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Graph;
 using NSwag.Annotations;
 using Shared;
+using SharedKernel;
+using System.Security.Claims;
 
 namespace DealersAndDistributors.Server.Controllers;
 
@@ -21,123 +26,113 @@ namespace DealersAndDistributors.Server.Controllers;
 /// </summary>
 public class AuthUsersController : VersionNeutralApiController
 {
-    private readonly UserManager<IdentityUser> _userManager;
     private readonly IAuthUsersAdminService _authUsersAdmin;
+    private readonly IAddNewUserManager _addNewUserManager;
+    private readonly ITenantUserOnboardingService tenantUserOnboardingService;
 
     /// <summary>
     /// Initializes a new instance of the AuthUsersController
     /// </summary>
     /// <param name="userManager">The ASP.NET Core Identity user manager</param>
     /// <param name="authUsersAdmin">The service for managing authentication users</param>
+    /// <param name="addNewUserManager"></param>
+    /// <param name="tenantUserOnboardingService"></param>
     public AuthUsersController(
-        UserManager<IdentityUser> userManager,
-        IAuthUsersAdminService authUsersAdmin)
+        UserManager<ApplicationUser> userManager,
+        IAuthUsersAdminService authUsersAdmin,
+        IAddNewUserManager addNewUserManager,
+        ITenantUserOnboardingService tenantUserOnboardingService)
     {
-        _userManager = userManager;
         _authUsersAdmin = authUsersAdmin;
+        this._addNewUserManager = addNewUserManager;
+        this.tenantUserOnboardingService = tenantUserOnboardingService;
     }
 
     [HttpGet("listusers")]
     //[HasPermission(Permissions.AccessAll)]
     [OpenApiOperation("List users filtered by authUser tenant.", "")]
-    public async Task<PaginatedResult<List<AuthUserDisplay>>> ListAuthUsersFilteredByTenantAsync(int pageNumber, int pageSize, string orderBy)
+    public async Task<IActionResult> ListAuthUsersAsync(int pageNumber, int pageSize, string orderBy)
     {
         string? authDataKey = User.GetAuthDataKeyFromUser();
         IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(authDataKey);
-        var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.Email)).ToListAsync();
+        var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.UserTenant.TenantFullName)).ToListAsync();
 
-        return new PaginatedResult<List<AuthUserDisplay>>(users);
+        return Ok(PagedResult<List<AuthUserDisplay>>.Success(users));
     }
 
-    [HttpGet("profile")]
-    [HasPermission(Permissions.UserRead)]
-    public async Task<ActionResult<AuthUserDisplay>> GetCurrentAuthUserInfo()
+    [HttpGet("listusers/{tenantId:int}")]
+    //[HasPermission(Permissions.UserRead)]
+    [OpenApiOperation("List users filtered by authUser tenant.", "")]
+    public async Task<IActionResult> ListAuthUsersByTenantIdAsync(int pageNumber, int pageSize, string orderBy, int tenantId)
     {
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            string? userId = User.GetUserIdFromUser();
-            StatusGeneric.IStatusGeneric<AuthUser> status = await _authUsersAdmin.FindAuthUserByUserIdAsync(userId);
+        string? authDataKey = User.GetAuthDataKeyFromUser();
+        IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(tenantId);
+        var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.UserTenant.TenantFullName)).ToListAsync();
 
-            return status.HasErrors
-            ? throw new Exception(status.GetAllErrors())
-            : Ok(AuthUserDisplay.DisplayUserInfo(status.Result));
-        }
-
-        return Unauthorized();
+        return Ok(PagedResult<List<AuthUserDisplay>>.Success(users));
     }
 
     [HttpPost]
-    [AllowAnonymous]
-    [OpenApiOperation("Creates a new user and tenant with roles.", "")]
-    public async Task<ActionResult> CreateUserAndTenantAsync([FromServices] ISignInAndCreateTenant userRegisterInvite, CreateUserRequest request)
+    //[HasPermission(Permissions.UserRead)]
+    [OpenApiOperation("Add User in Tenant")]
+    public async Task<ActionResult> CreateAsync(AddNewUserDto newUser)
     {
-        var newUserData = new AddNewUserDto
+        var tenantId = User.GetTenantId();
+        if (newUser.TenantId == null)
         {
-            Email = request.Email,
-            UserName = request.UserName,
-            Password = request.Password,
-            IsPersistent = false
-        };
-        var newTenantData = new AddNewTenantDto
+            newUser.TenantId = tenantId;
+        }
+        // TODO : email id patching, remove it later on
+        if (string.IsNullOrEmpty(newUser.Email))
         {
-            TenantName = request.TenantName,
-            HasOwnDb = false,
-        };
-        var status = await userRegisterInvite.SignUpNewTenantAsync(newUserData, newTenantData);
+            newUser.Email = $"{newUser.PhoneNumber}@dandd.com";
+            newUser.Password = $"{newUser.PhoneNumber}@DandD";
+        }
+
+        var status = await _addNewUserManager.SetUserInfoAsync(newUser);
+
         if (status.HasErrors)
             throw new Exception(status.GetAllErrors());
 
-        return Ok(status.Message);
-    }
+        if (status.Result.TenantId != null)
+        {
+            await tenantUserOnboardingService.CreateTenantUserProfileIfMissingAsync(
+                status.Result.UserId, (int)status.Result.TenantId, newUser.FirstName, newUser.LastName, newUser.PhoneNumber, CancellationToken.None);
+        }
+        return Ok(Result.Success(status.Message));
 
-    [HttpGet("view-sync-changes")]
-    [HasPermission(Permissions.UserSync)]
-    public async Task<PaginatedResult<List<SyncAuthUserWithChange>>> SyncUsers()
-    {
-        var data = await _authUsersAdmin.SyncAndShowChangesAsync();
-        return new PaginatedResult<List<SyncAuthUserWithChange>>(data);
-    }
-
-    [HttpPost("apply-sync-changes")]
-    [HasPermission(Permissions.UserSync)]
-    public async Task<ActionResult> SyncUsers(IEnumerable<SyncAuthUserWithChange> data)
-    {
-        var status = await _authUsersAdmin.ApplySyncChangesAsync(data);
-        if (status.HasErrors)
-            throw new Exception(status.GetAllErrors());
-
-        return Ok(status.Message);
     }
 
     [HttpPut]
-    [HasPermission(Permissions.UserChange)]
+    //[HasPermission(Permissions.UserChange)]
     [OpenApiOperation("Update an authUser.", "")]
     public async Task<ActionResult> UpdateAsync(SetupManualUserChange change)
     {
+
         StatusGeneric.IStatusGeneric status = await _authUsersAdmin.UpdateUserAsync(
-            change.UserId, change.Email, change.UserName, change.RoleNames, change.TenantName);
+            change.UserId, change.Email, change.UserName, change.RoleIds, change.TenantName, change.FirstName, change.LastName);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     // todo Change the input type to represent only required changes
     [HttpPut("roles")]
-    [HasPermission(Permissions.UserRolesChange)]
+    //[HasPermission(Permissions.UserRolesChange)]
     [OpenApiOperation("Update an authUser's roles.", "")]
     public async Task<ActionResult> UpdateRolesAsync(SetupManualUserChange change)
     {
         StatusGeneric.IStatusGeneric status = await _authUsersAdmin.UpdateUserAsync(
-            change.UserId, roleNames: change.RoleNames);
+            change.UserId, roleIds: change.RoleIds);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
 
     [HttpDelete("{id}")]
-    [HasPermission(Permissions.UserRemove)]
+    //[HasPermission(Permissions.UserRemove)]
     [OpenApiOperation("Delete an authUser.", "")]
     public async Task<ActionResult> DeleteAsync(string id)
     {
@@ -145,15 +140,23 @@ public class AuthUsersController : VersionNeutralApiController
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
-            : Ok(status.Message);
+            : Ok(Result.Success(status.Message));
     }
-}
 
-public class PaginatedResult<T>
-{
-    public T Data { get; set; }
-    public PaginatedResult(T data)
+    // update method to tenant user in tenant
+    [HttpPut("update-tenant-user")]
+    [OpenApiOperation("Update a tenant user.", "")]
+    public async Task<ActionResult> UpdateTenantUserAsync(UpdateTenantUserModel tenantUser, CancellationToken ct)
     {
-        Data = data;
+        var status = await _addNewUserManager.UpdateUserNameAsync(tenantUser.GlobalUserId.ToString(), tenantUser.FirstName, tenantUser.LastName);
+        if (status.HasErrors)
+            return BadRequest(status.GetAllErrors());
+
+        // Also update the tenant user profile
+        await tenantUserOnboardingService.UpdateTenantUserProfileAsync(tenantUser.GlobalUserId, tenantUser.FirstName, tenantUser.LastName, ct);
+
+        return Ok(Result.Success(status.Message));
     }
+
+
 }

@@ -1,42 +1,42 @@
-﻿using Ardalis.Specification;
-using Application;
-using Domain;
-using Infrastructure.Persistence;
+﻿using Application.Abstractions.Data;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Persistence;
 
 public static class StartupExtensions
 {
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    private static string ProductDbContextHistoryName = "ProductDbContextHistory";
+
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration) =>
+        services
+            .AddIdentity(configuration)
+            .AddShardingDatabase(configuration);
+
+
+    private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
     {
+
         string? conn = configuration.GetConnectionString("IdentityConnection");
         return services
             .AddDbContext<AppIdentityDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("IdentityConnection")))
-            .AddRepositories();
+                options.UseSqlServer(configuration.GetConnectionString("IdentityConnection")));
+
+
     }
-    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    private static IServiceCollection AddShardingDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        // Add Repositories
-        services.AddScoped(typeof(IRepository<>), typeof(RetailDbRepository<>));
+        services.AddDbContext<RetailDbContext>(options =>
+             options.UseSqlServer(
+                 configuration.GetConnectionString("DefaultConnection"), dbOptions =>
+             dbOptions.MigrationsHistoryTable(ProductDbContextHistoryName)));
 
-        foreach (Type? aggregateRootType in
-            typeof(IAggregateRoot).Assembly.GetExportedTypes()
-                .Where(t => typeof(IAggregateRoot).IsAssignableFrom(t) && t.IsClass)
-                .ToList())
-        {
-            // Add ReadRepositories.
-            services.AddScoped(typeof(IReadRepository<>).MakeGenericType(aggregateRootType), sp =>
-                sp.GetRequiredService(typeof(IRepository<>).MakeGenericType(aggregateRootType)));
-
-        }
+        services.AddScoped<IRetailDbContext>(sp => sp.GetRequiredService<RetailDbContext>());
 
         return services;
     }
+
 }
 

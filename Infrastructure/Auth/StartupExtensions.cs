@@ -21,7 +21,7 @@ public static class StartupExtensions
         }
         else
         {
-            services.AddJwtAuth();
+            services.AddAuthenticationInternal();
         }
 
         return services

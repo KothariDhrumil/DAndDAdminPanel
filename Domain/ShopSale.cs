@@ -2,10 +2,11 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using AuthPermissions.BaseCode.CommonCode;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain;
 
-public class ShopSale : IAggregateRoot, IDataKeyFilterReadOnly
+public class ShopSale :  IDataKeyFilterReadOnly
 {
     private ShopSale() { } //needed by EF Core
 

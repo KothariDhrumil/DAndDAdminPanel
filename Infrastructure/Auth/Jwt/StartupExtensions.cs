@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Application.Abstractions.Authentication;
+using Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -6,7 +8,7 @@ namespace Infrastructure.Auth.Jwt;
 
 internal static class StartupExtensions
 {
-    internal static IServiceCollection AddJwtAuth(this IServiceCollection services)
+    internal static IServiceCollection AddAuthenticationInternal(this IServiceCollection services)
     {
         services.AddOptions<JwtSettings>()
             .BindConfiguration($"SecuritySettings:{nameof(JwtSettings)}")
@@ -15,13 +17,16 @@ internal static class StartupExtensions
 
         services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
 
-        return services
+        services
             .AddAuthentication(authentication =>
             {
                 authentication.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 authentication.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, null!)
-            .Services;
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, null!);
+
+        services.AddScoped<IUserContext, UserContext>();
+
+        return services;
     }
 }

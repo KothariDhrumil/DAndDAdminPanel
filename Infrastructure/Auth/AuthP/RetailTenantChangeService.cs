@@ -4,6 +4,7 @@ using AuthPermissions.AspNetCore.ShardingServices;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using Domain;
+using Infrastructure.DomainEvents;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -19,14 +20,19 @@ public class RetailTenantChangeService : ITenantChangeService
     private readonly DbContextOptions<RetailDbContext> _options;
     private readonly ILogger _logger;
     private readonly IGetSetShardingEntries _shardingService;
+    private readonly IDomainEventsDispatcher domainEventsDispatcher;
 
     public IReadOnlyList<int> DeletedTenantIds { get; private set; } = default!;
 
-    public RetailTenantChangeService(DbContextOptions<RetailDbContext> options, ILogger<RetailTenantChangeService> logger, IGetSetShardingEntries shardingService)
+    public RetailTenantChangeService(DbContextOptions<RetailDbContext> options,
+        ILogger<RetailTenantChangeService> logger,
+        IGetSetShardingEntries shardingService,
+        IDomainEventsDispatcher domainEventsDispatcher)
     {
         _options = options;
         _logger = logger;
         _shardingService = shardingService;
+        this.domainEventsDispatcher = domainEventsDispatcher;
     }
 
     /// <summary>
@@ -174,12 +180,12 @@ public class RetailTenantChangeService : ITenantChangeService
                 if (retailOutletToDelete != null)
                 {
                     //yes, its a shop so delete all the stock / sales 
-                    var deleteSalesSql =
-                        $"DELETE FROM retail.{nameof(RetailDbContext.ShopSales)} WHERE DataKey = '{tenant.GetTenantDataKey()}'";
-                    await context.Database.ExecuteSqlRawAsync(deleteSalesSql);
-                    var deleteStockSql =
-                        $"DELETE FROM retail.{nameof(RetailDbContext.ShopStocks)} WHERE DataKey = '{tenant.GetTenantDataKey()}'";
-                    await context.Database.ExecuteSqlRawAsync(deleteStockSql);
+                    //var deleteSalesSql =
+                    //    $"DELETE FROM retail.{nameof(RetailDbContext.ShopSales)} WHERE DataKey = '{tenant.GetTenantDataKey()}'";
+                    //await context.Database.ExecuteSqlRawAsync(deleteSalesSql);
+                    //var deleteStockSql =
+                    //    $"DELETE FROM retail.{nameof(RetailDbContext.ShopStocks)} WHERE DataKey = '{tenant.GetTenantDataKey()}'";
+                    //await context.Database.ExecuteSqlRawAsync(deleteStockSql);
 
                     context.Remove(retailOutletToDelete); //finally delete the RetailOutlet
                     await context.SaveChangesAsync();
@@ -345,10 +351,12 @@ public class RetailTenantChangeService : ITenantChangeService
         }
 
         //else we remove all the data with the DataKey of the tenant
-        var deleteSalesSql = $"DELETE FROM retail.{nameof(RetailDbContext.ShopSales)} WHERE DataKey = '{dataKey}'";
-        await context.Database.ExecuteSqlRawAsync(deleteSalesSql);
-        var deleteStockSql = $"DELETE FROM retail.{nameof(RetailDbContext.ShopStocks)} WHERE DataKey = '{dataKey}'";
-        await context.Database.ExecuteSqlRawAsync(deleteStockSql);
+
+
+        //var deleteSalesSql = $"DELETE FROM retail.{nameof(RetailDbContext.ShopSales)} WHERE DataKey = '{dataKey}'";
+        //await context.Database.ExecuteSqlRawAsync(deleteSalesSql);
+        //var deleteStockSql = $"DELETE FROM retail.{nameof(RetailDbContext.ShopStocks)} WHERE DataKey = '{dataKey}'";
+        //await context.Database.ExecuteSqlRawAsync(deleteStockSql);
 
         var companyTenant = await context.RetailOutlets.SingleOrDefaultAsync();
         if (companyTenant != null)
@@ -364,7 +372,7 @@ public class RetailTenantChangeService : ITenantChangeService
         if (connectionString == null)
             return null;
 
-        return new RetailDbContext(_options, new StubGetShardingDataFromUser(connectionString, dataKey));
+        return new RetailDbContext(_options, new StubGetShardingDataFromUser(connectionString, dataKey), domainEventsDispatcher);
     }
 
     /// <summary>
@@ -380,11 +388,20 @@ public class RetailTenantChangeService : ITenantChangeService
     {
         //Thanks to https://stackoverflow.com/questions/33911316/entity-framework-core-how-to-check-if-database-exists
         //There are various options to detect if a database is there - this seems the clearest
-        if (!await context.Database.CanConnectAsync())
+        if (context.Database.CanConnect())
         {
             //The database doesn't exist
             if (migrateEvenIfNoDb)
-                await context.Database.MigrateAsync();
+            {
+                try
+                {
+                    await context.Database.MigrateAsync();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
             else
             {
                 return $"The database defined by the connection string '{tenant.DatabaseInfoName}' doesn't exist.";

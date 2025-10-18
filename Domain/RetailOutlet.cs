@@ -5,7 +5,7 @@ using AuthPermissions.BaseCode.CommonCode;
 
 namespace Domain;
 
-public class RetailOutlet : IAggregateRoot, IDataKeyFilterReadOnly
+public class RetailOutlet :  IDataKeyFilterReadOnly
 {
     private RetailOutlet() { } //Needed by EF Core
 

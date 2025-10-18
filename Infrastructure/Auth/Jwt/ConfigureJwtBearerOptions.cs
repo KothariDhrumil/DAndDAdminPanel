@@ -1,9 +1,11 @@
-﻿using System.Net;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using SharedKernel;
+using System.Security.Claims;
+using System.Text;
 
 namespace Infrastructure.Auth.Jwt;
 
@@ -44,26 +46,37 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
         };
         options.Events = new JwtBearerEvents
         {
-            OnChallenge = context =>
-            {
-                context.HandleResponse();
-                if (!context.Response.HasStarted)
-                {
-                    throw new HttpRequestException("Authentication Failed.", null, HttpStatusCode.Unauthorized);
-                }
-
-                return Task.CompletedTask;
-            },
-            OnForbidden = _ => throw new HttpRequestException("You are not authorized to access this resource.", null, HttpStatusCode.Forbidden),
             OnAuthenticationFailed = context =>
             {
                 if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                 {
                     context.Response.Headers.Add("Token-Expired", "true");
                 }
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                var result = JsonConvert.SerializeObject(Result.Failure<Error>(GenericErrors.UnAuthorized));
+                return context.Response.WriteAsync(result);
 
+            },
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.ContentType = "application/json";
+                    var result = JsonConvert.SerializeObject(Result.Failure(GenericErrors.UnAuthorized));
+                    return context.Response.WriteAsync(result);
+                }
                 return Task.CompletedTask;
-            }
+            },
+            OnForbidden = context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
+                var result = JsonConvert.SerializeObject(Result.Failure(GenericErrors.Fobidden));
+                return context.Response.WriteAsync(result);
+            },
         };
     }
 }

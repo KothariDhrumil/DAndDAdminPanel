@@ -4,6 +4,7 @@ using AuthPermissions.SupportCode.DownStatusCode;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using Shared;
+using SharedKernel;
 
 namespace DealersAndDistributors.Server.Controllers;
 
@@ -19,9 +20,9 @@ public class StatusController : VersionNeutralApiController
     [HttpGet]
     [HasPermission(Permissions.AppStatusList)]
     [OpenApiOperation("Get a list of tenant's up/down status.", "")]
-    public List<KeyValuePair<string, string>> GetList()
+    public ActionResult<List<KeyValuePair<string, string>>> GetList()
     {
-        return _status.GetAllDownKeyValues();
+        return Ok(Result.Success(_status.GetAllDownKeyValues()));
     }
 
     [HttpPost()]
@@ -33,7 +34,7 @@ public class StatusController : VersionNeutralApiController
         data.StartedUtc = DateTime.UtcNow;
 
         _status.SetAppDown(data);
-        return Ok();
+        return Ok(Result.Success());
     }
 
     [HttpPost("{tenantId:int}")]
@@ -42,7 +43,7 @@ public class StatusController : VersionNeutralApiController
     public async Task<IActionResult> TakeTenantDown(int tenantId)
     {
         await _status.SetTenantDownWithDelayAsync(TenantDownVersions.ManualDown, tenantId);
-        return Ok();
+        return Ok(Result.Success());
     }
 
     /// <summary>
@@ -56,7 +57,7 @@ public class StatusController : VersionNeutralApiController
     public IActionResult Remove(string key)
     {
         _status.RemoveAnyDown(key);
-        return Ok();
+        return Ok(Result.Success());
     }
 }
 
