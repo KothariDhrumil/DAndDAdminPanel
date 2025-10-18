@@ -20,6 +20,6 @@ public sealed class TenentPlanResponse
 
     public DateTime CreatedOn { get; set; }
 
-    public List<RoleWithPermissionNamesDto> Roles { get; set; }
+    public List<int > Roles { get; set; }
     
 }

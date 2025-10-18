@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Namotion.Reflection;
 using SharedKernel;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Infrastructure;
@@ -45,6 +46,15 @@ public static class StartupExtensions
         {
             client.BaseAddress = new Uri(config["SMSConfiguration:BaseURL"]);
         });
+        // Authorization policy for Customers
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("CustomersOnly", policy =>
+            {
+                policy.RequireClaim("cid");
+            });
+        });
+
         return services;
     }
     private static void RegisterSwagger(this IServiceCollection services)

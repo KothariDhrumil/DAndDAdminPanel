@@ -15,7 +15,7 @@ public static class AppAuthSetupData
 
     public static readonly List<BulkLoadUserWithRolesTenant> UsersRolesDefinition = new()
     {
-        new ("Super@g1.com", null, "SuperAdmin"),
+        new ("Super@g1.com", null, "SuperAdmin", "SuperAdmin", "Admin","10000000000"),
     };
 }
 

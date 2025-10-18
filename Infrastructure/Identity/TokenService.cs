@@ -33,32 +33,23 @@ internal class TokenService(
             {
                 throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
             }
-            //if (request.OtpEnabled)
-            //{
-            //    string code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
-            //    if (code != null) 
-            //    {
-            //        //var code = await _userManager.GenerateTwoFactorTokenAsync(account, _userManager.Options.Tokens.PasswordResetTokenProvider);
-            //        await sMSService.SendOTPAsync(new SMSRequestDTO() { To = request.PhoneNumber, Body = $"{code}", Template = "DELUX_OTP" });
-            //        return Response.Success();
-            //    }
-            //}
             TokenAndRefreshToken result = await _tokenBuilder.GenerateTokenAndRefreshTokenAsync(user.Id);
+            // TODO: If this is a customer login flow, ensure the 'cid' claim (GlobalCustomerId) is added when building the token
             return Result.Success(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
         }
-        throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
+        return Result.Failure(Error.Validation(System.Net.HttpStatusCode.Unauthorized.ToString(), "Authentication Failed"));
     }
 
-    public async Task<Result<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request)
+    public async Task<Result> RefreshTokenAsync(RefreshTokenRequest request)
     {
         (var updatedTokens, int _) = await _tokenBuilder.RefreshTokenUsingRefreshTokenAsync(request.Adapt<TokenAndRefreshToken>());
         if (updatedTokens == null)
-            throw new HttpRequestException("Refresh Authentication Token Failed.", null, System.Net.HttpStatusCode.Unauthorized);
+            return Result.Failure(Error.Validation(System.Net.HttpStatusCode.Unauthorized.ToString(), "Authentication Failed"));
 
         return Result.Success(new TokenResponse(updatedTokens.Token, updatedTokens.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays))); ;
     }
 
-    public async Task<Result<TokenResponse>> ConfirmPhoneAsync(string phoneNumber, string code, string ipAddress)
+    public async Task<Result> ConfirmPhoneAsync(string phoneNumber, string code, string ipAddress)
     {
         var user = await _userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
         if (user is not null)
@@ -74,14 +65,19 @@ internal class TokenService(
                 TokenAndRefreshToken result = await _tokenBuilder.GenerateTokenAndRefreshTokenAsync(user.Id);
                 return Result.Success(new TokenResponse(result.Token, result.RefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
             }
-            throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
+            return Result.Failure(Error.Validation(System.Net.HttpStatusCode.Unauthorized.ToString(), "Authentication Failed"));
         }
-        throw new HttpRequestException("Authentication Failed.", null, System.Net.HttpStatusCode.Unauthorized);
+        return Result.Failure(Error.Validation(System.Net.HttpStatusCode.Unauthorized.ToString(), "Authentication Failed"));
     }
 
-    public async Task<Result<string>> GenerateOTPAsync(GenerateOTPRequest request)
+    public async Task<Result> GenerateOTPAsync(GenerateOTPRequest request)
     {
-        var account = await _userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) ?? throw new Exception($"{request.PhoneNumber} not registered");
+        var account = await _userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber);
+        if (account is null)
+        {
+            return Result.Failure(Error.Validation(System.Net.HttpStatusCode.Unauthorized.ToString(), "Authentication Failed"));
+        }
+        
 
         string code = await _userManager.GenerateChangePhoneNumberTokenAsync(account, account.PhoneNumber);
 

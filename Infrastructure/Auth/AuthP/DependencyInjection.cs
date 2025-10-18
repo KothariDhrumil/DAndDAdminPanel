@@ -1,4 +1,6 @@
-﻿using AuthPermissions;
+﻿using Application.Abstractions.Authentication;
+using Application.Abstractions.Persistence;
+using AuthPermissions;
 using AuthPermissions.AspNetCore;
 using AuthPermissions.AspNetCore.Services;
 using AuthPermissions.AspNetCore.ShardingServices;
@@ -12,10 +14,11 @@ using AuthPermissions.SupportCode.AddUsersServices.Authentication;
 using AuthPermissions.SupportCode.DownStatusCode;
 using Domain;
 using Infrastructure.Auth.Jwt;
+using Infrastructure.Identity;
+using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,8 +51,8 @@ public static class DependencyInjection
             // This sets up the JWT Token. The config is suitable for using the Refresh Token with your JWT Token
             options.ConfigureAuthPJwtToken = new AuthPJwtConfiguration
             {
-                Issuer = "retail",
-                Audience = "retail",
+                Issuer = jwtSettings.RetailKey,
+                Audience = jwtSettings.RetailKey,
                 SigningKey = jwtSettings.Key,
                 TokenExpires = new TimeSpan(0, jwtSettings.TokenExpirationInMinutes, 0),
                 RefreshTokenExpires = TimeSpan.FromDays(jwtSettings.RefreshTokenExpirationInDays)
@@ -64,7 +67,7 @@ public static class DependencyInjection
         .RegisterAddClaimToUser<AddTenantNameClaim>()
         .RegisterTenantChangeService<RetailTenantChangeService>()
         .AddAuthUsersIfEmpty(AppAuthSetupData.UsersRolesDefinition)
-        .AddRolesPermissionsIfEmpty(AppAuthSetupData.RolesDefinition)     
+        .AddRolesPermissionsIfEmpty(AppAuthSetupData.RolesDefinition)
         .RegisterFindUserInfoService<IndividualAccountUserLookup>()
         .RegisterAuthenticationProviderReader<SyncIndividualAccountUsers>()
         .AddSuperUserToIndividualAccounts<ApplicationUser>()
@@ -73,7 +76,7 @@ public static class DependencyInjection
             //Migrate individual account database
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<AppIdentityDbContext>>();
 
-            
+
 
             //Migrate the application part of the database
             options.RegisterServiceToRunInJob<StartupServiceMigrateAnyDbContext<RetailDbContext>>();
@@ -103,6 +106,8 @@ public static class DependencyInjection
         services.AddTransient<ISignUpGetShardingEntry, DemoShardOnlyGetDatabaseForNewTenant>(); //handles sharding tenants
         services.AddTransient<IAddNewUserManager, IndividualUserAddUserManager<ApplicationUser>>();
         services.AddTransient<ISignInAndCreateTenant, SignInAndCreateTenant>();
+        services.AddTransient<ITenantRetailDbContextFactory, TenantRetailDbContextFactory>();
+        services.AddTransient<ICustomerTokenService, CustomerTokenService>();
 
         return services;
     }

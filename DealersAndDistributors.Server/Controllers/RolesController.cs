@@ -40,7 +40,7 @@ public class RolesController : VersionNeutralApiController
     [OpenApiOperation("Get permissions. This should not be used by a user that has a tenant.", "")]
     public IActionResult ListPermissions()
     {
-        var tenantId = User.GetTenantIdFromUser();
+        var tenantId = User.GetTenantId();
         return Ok(PagedResult<List<PermissionDisplay>>.Success(_authRolesAdmin.GetPermissionDisplay(false, tenantId: tenantId)));
 
     }
@@ -90,7 +90,7 @@ public class RolesController : VersionNeutralApiController
     [OpenApiOperation("Create a role. This should not be used by a user that has a tenant.", "")]
     public async Task<ActionResult> RegisterRoleAsync(RoleCreateUpdateDto input)
     {
-        var tenantId = User.GetTenantIdFromUser();
+        var tenantId = User.GetTenantId();
 
         StatusGeneric.IStatusGeneric status = await _authRolesAdmin
                 .CreateRoleToPermissionsAsync(input.RoleName, input.GetSelectedPermissionNames(), input.Description, input.RoleType, tenantId);
@@ -120,7 +120,7 @@ public class RolesController : VersionNeutralApiController
     [OpenApiOperation("Delete a role. This should not be used by a user that has a tenant.", "")]
     public async Task<ActionResult> DeleteAsync(int id)
     {
-        var tenantId = User.GetTenantIdFromUser();
+        var tenantId = User.GetTenantId();
 
         StatusGeneric.IStatusGeneric status = await _authRolesAdmin.DeleteRoleAsync(id, true, tenantId);
 

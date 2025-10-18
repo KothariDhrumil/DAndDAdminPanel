@@ -1,4 +1,6 @@
-﻿using AuthPermissions.AdminCode;
+﻿using Application.Customers.Services;
+using Application.Domain.TeantUser.Update;
+using AuthPermissions.AdminCode;
 using AuthPermissions.AspNetCore;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
@@ -26,6 +28,7 @@ public class AuthUsersController : VersionNeutralApiController
 {
     private readonly IAuthUsersAdminService _authUsersAdmin;
     private readonly IAddNewUserManager _addNewUserManager;
+    private readonly ITenantUserOnboardingService tenantUserOnboardingService;
 
     /// <summary>
     /// Initializes a new instance of the AuthUsersController
@@ -33,13 +36,16 @@ public class AuthUsersController : VersionNeutralApiController
     /// <param name="userManager">The ASP.NET Core Identity user manager</param>
     /// <param name="authUsersAdmin">The service for managing authentication users</param>
     /// <param name="addNewUserManager"></param>
+    /// <param name="tenantUserOnboardingService"></param>
     public AuthUsersController(
         UserManager<ApplicationUser> userManager,
         IAuthUsersAdminService authUsersAdmin,
-        IAddNewUserManager addNewUserManager)
+        IAddNewUserManager addNewUserManager,
+        ITenantUserOnboardingService tenantUserOnboardingService)
     {
         _authUsersAdmin = authUsersAdmin;
         this._addNewUserManager = addNewUserManager;
+        this.tenantUserOnboardingService = tenantUserOnboardingService;
     }
 
     [HttpGet("listusers")]
@@ -66,37 +72,12 @@ public class AuthUsersController : VersionNeutralApiController
         return Ok(PagedResult<List<AuthUserDisplay>>.Success(users));
     }
 
-    //[HttpGet("view-sync-changes")]
-    //[HasPermission(Permissions.UserSync)]
-    ////hide from swagger as this is an internal only method
-    //[OpenApiIgnore]
-    //public async Task<PaginatedResult<List<SyncAuthUserWithChange>>> SyncUsers()
-    //{
-    //    var data = await _authUsersAdmin.SyncAndShowChangesAsync();
-    //    return new PaginatedResult<List<SyncAuthUserWithChange>>(data);
-    //}
-
-    //[HttpPost("apply-sync-changes")]
-    //[HasPermission(Permissions.UserSync)]
-    //[OpenApiIgnore]
-    //public async Task<ActionResult> SyncUsers(IEnumerable<SyncAuthUserWithChange> data)
-    //{
-    //    var status = await _authUsersAdmin.ApplySyncChangesAsync(data);
-    //    if (status.HasErrors)
-    //        throw new Exception(status.GetAllErrors());
-
-    //    return Ok(status.Message);
-    //}
-
-
-    // Lets add end point for Adding auth user in tenant , call   ; for this
-
     [HttpPost]
     //[HasPermission(Permissions.UserRead)]
     [OpenApiOperation("Add User in Tenant")]
     public async Task<ActionResult> CreateAsync(AddNewUserDto newUser)
     {
-        var tenantId = User.GetTenantIdFromUser();
+        var tenantId = User.GetTenantId();
         if (newUser.TenantId == null)
         {
             newUser.TenantId = tenantId;
@@ -104,24 +85,32 @@ public class AuthUsersController : VersionNeutralApiController
         // TODO : email id patching, remove it later on
         if (string.IsNullOrEmpty(newUser.Email))
         {
-            newUser.Email = $"{newUser.PhoneNumber}@dand.com";
+            newUser.Email = $"{newUser.PhoneNumber}@dandd.com";
             newUser.Password = $"{newUser.PhoneNumber}@DandD";
         }
 
         var status = await _addNewUserManager.SetUserInfoAsync(newUser);
 
-        return status.HasErrors
-            ? throw new Exception(status.GetAllErrors())
-            : Ok(Result.Success(status.Message));
+        if (status.HasErrors)
+            throw new Exception(status.GetAllErrors());
+
+        if (status.Result.TenantId != null)
+        {
+            await tenantUserOnboardingService.CreateTenantUserProfileIfMissingAsync(
+                status.Result.UserId, (int)status.Result.TenantId, newUser.FirstName, newUser.LastName, newUser.PhoneNumber, CancellationToken.None);
+        }
+        return Ok(Result.Success(status.Message));
+
     }
-    
+
     [HttpPut]
     //[HasPermission(Permissions.UserChange)]
     [OpenApiOperation("Update an authUser.", "")]
     public async Task<ActionResult> UpdateAsync(SetupManualUserChange change)
     {
+
         StatusGeneric.IStatusGeneric status = await _authUsersAdmin.UpdateUserAsync(
-            change.UserId, change.Email, change.UserName, change.RoleIds, change.TenantName);
+            change.UserId, change.Email, change.UserName, change.RoleIds, change.TenantName, change.FirstName, change.LastName);
 
         return status.HasErrors
             ? throw new Exception(status.GetAllErrors())
@@ -153,4 +142,21 @@ public class AuthUsersController : VersionNeutralApiController
             ? throw new Exception(status.GetAllErrors())
             : Ok(Result.Success(status.Message));
     }
+
+    // update method to tenant user in tenant
+    [HttpPut("update-tenant-user")]
+    [OpenApiOperation("Update a tenant user.", "")]
+    public async Task<ActionResult> UpdateTenantUserAsync(UpdateTenantUserModel tenantUser, CancellationToken ct)
+    {
+        var status = await _addNewUserManager.UpdateUserNameAsync(tenantUser.GlobalUserId.ToString(), tenantUser.FirstName, tenantUser.LastName);
+        if (status.HasErrors)
+            return BadRequest(status.GetAllErrors());
+
+        // Also update the tenant user profile
+        await tenantUserOnboardingService.UpdateTenantUserProfileAsync(tenantUser.GlobalUserId, tenantUser.FirstName, tenantUser.LastName, ct);
+
+        return Ok(Result.Success(status.Message));
+    }
+
+
 }

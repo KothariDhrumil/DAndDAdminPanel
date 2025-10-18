@@ -31,17 +31,6 @@ internal sealed class GetPlanByIdQueryHandler(AuthPermissionsDbContext context, 
             PlanRate = planEntity.PlanRate,
             PlanValidityInDays = planEntity.PlanValidityInDays,
             RoleIds = [.. planEntity.Roles.Select(r => r.RoleId)]
-            //Permissions = planEntity.RoleIds != null && planEntity.RoleIds.Any()
-            //    ? string.Join(", ", await context.RoleToPermissions
-            //        .AsNoTracking()
-            //        .Where(rp => planEntity.RoleIds.Contains(rp.RoleId))
-            //        .Select(rp => rp.PermissionName)
-            //        .Distinct()
-            //        .ToListAsync(cancellationToken))
-            //    : options.DefaultRolePermissions != null && options.DefaultRolePermissions.Any()
-            //        ? string.Join(", ", options.DefaultRolePermissions)
-            //        : "No permissions assigned"
-
         };
 
         return Result.Success(response);

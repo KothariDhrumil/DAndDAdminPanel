@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Messaging;
+using Application.Exceptions;
 using AuthPermissions.AdminCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
@@ -23,9 +24,12 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
 
     internal sealed class CreateTenantPlanCommandHandler(
         AuthPermissionsDbContext context,
-        IAuthTenantAdminService authTenantAdmin)
+        IAuthTenantAdminService authTenantAdmin,
+        IAuthUsersAdminService authUsersAdminService)
         : ICommandHandler<CreateTenantPlanCommand, int>
     {
+        private readonly IAuthUsersAdminService authUsersAdminService = authUsersAdminService;
+
         public async Task<Result<int>> Handle(CreateTenantPlanCommand command, CancellationToken cancellationToken)
         {
             // Load roles by ids provided by UI (effective roles)
@@ -55,7 +59,7 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
                 var roleIds = effectiveRoles.Select(r => r.RoleId).ToList();
                 var status = await authTenantAdmin.UpdateTenantRolesAsync(command.TenantId, roleIds);
                 if (status.HasErrors)
-                    throw new Application.Exceptions.ApiException(status.GetAllErrors());
+                    throw new ApiException(status.GetAllErrors());                
             }
             await context.SaveChangesAsync(cancellationToken);
 

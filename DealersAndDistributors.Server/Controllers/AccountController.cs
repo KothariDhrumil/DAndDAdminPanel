@@ -1,4 +1,5 @@
-﻿
+﻿using Application.Abstractions.Authentication;
+using Application.Customers.Services;
 using Application.Identity.Account;
 using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.Services;
@@ -10,18 +11,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SharedKernel;
-using StatusGeneric;
+
 namespace DealersAndDistributors.Server.Controllers;
 
 public sealed class AccountController : VersionNeutralApiController
 {
     private readonly ITokenService _tokenService;
     private readonly IDisableJwtRefreshToken _disableJwtRefreshService;
+    private readonly ITenantUserOnboardingService tenantUserOnboardingService;
 
-    public AccountController(ITokenService tokenService, IDisableJwtRefreshToken disableJwtRefreshService)
+    public AccountController(ITokenService tokenService, 
+        IDisableJwtRefreshToken disableJwtRefreshService,
+        ITenantUserOnboardingService tenantUserOnboardingService)
     {
         _tokenService = tokenService;
         _disableJwtRefreshService = disableJwtRefreshService;
+        this.tenantUserOnboardingService = tenantUserOnboardingService;
     }
 
     [HttpPost("authenticate")]
@@ -50,7 +55,7 @@ public sealed class AccountController : VersionNeutralApiController
     {
         var newUserData = new AddNewUserDto
         {
-            Email = $"{request.PhoneNumber}@dealers.com",
+            Email = $"{request.PhoneNumber}@DandD.com",
             UserName = request.PhoneNumber,
             Password = $"{request.PhoneNumber}@DandD",
             IsPersistent = false,
@@ -70,9 +75,9 @@ public sealed class AccountController : VersionNeutralApiController
         {
             return Ok(SharedKernel.Result.Failure<string>(new Error("101", status.GetAllErrors(","), ErrorType.Failure)));
         }
+        
         return Ok(SharedKernel.Result.Success<string>(status.Message));
     }
-
     [HttpGet("generate-otp")]
     [AllowAnonymous]
     public async Task<IActionResult> GenerateOTPAsync([FromQuery] GenerateOTPRequest request)
@@ -120,4 +125,28 @@ public sealed class AccountController : VersionNeutralApiController
             ? Request.Headers["X-Forwarded-For"]
             : HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "N/A";
     */
+
+    // CUSTOMER: request OTP
+    [HttpPost("customer/generate-otp")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CustomerGenerateOtpAsync(
+        [FromServices] ICustomerTokenService customerTokenService,
+        [FromBody] CustomerSendOtpRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await customerTokenService.SendOtpAsync(request, cancellationToken);
+        return Ok(response);
+    }
+
+    // CUSTOMER: verify OTP and get JWT
+    [HttpPost("customer/authenticate")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CustomerAuthenticateAsync(
+        [FromServices] ICustomerTokenService customerTokenService,
+        [FromBody] CustomerTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await customerTokenService.AuthenticateAsync(request, cancellationToken);
+        return Ok(response);
+    }
 }

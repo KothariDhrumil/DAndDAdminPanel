@@ -23,10 +23,13 @@ namespace DealersAndDistributors.Server.Controllers
                 }
                 var status = await service.FindAuthUserByUserIdAsync(userId);
                 var user = await userService.GetUserDetailsAsync(userId);
+                var userRole = User.GetLoggedInUserRole();
                 return Ok(SharedKernel.Result.Success<UserInfo>(new UserInfo()
                 {
                     AuthUser = !status.HasErrors ? AuthUserDisplay.DisplayUserInfo(status.Result) : null,
-                    User = user
+                    User = user,
+                    UserRole = userRole
+
                 }));
             }
             return null;

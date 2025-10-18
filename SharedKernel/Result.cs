@@ -42,30 +42,49 @@ public class Result<T> : Result
     }
 }
 
-public class PagedResult<T> : Result<T>
+public class PagedResult<T> : Result
 {
+    public T? Data { get; set; }
     public int PageNumber { get; set; }
     public int PageSize { get; set; }
     public int TotalRecords { get; set; }
 
-    public PagedResult(T data, Error error, int pageNumber = 1, int pageSize = 10, int? totalRecords = null) : base(data, true, error)
+    public PagedResult(T data, Error error, int pageNumber = 1, int pageSize = 10, int? totalRecords = null)
+        : base(true, error)
     {
         PageNumber = pageNumber;
         PageSize = pageSize;
         Data = data;
 
-        // If totalRecords is not provided, try to get count from data
         if (totalRecords.HasValue)
         {
             TotalRecords = totalRecords.Value;
         }
-        else if (data is IEnumerable<object> enumerable)
-        {
-            TotalRecords = enumerable.Count();
-        }
         else
         {
-            TotalRecords = data != null ? 1 : 0;
+            // Try to infer count from data
+            if (data is System.Collections.ICollection collection)
+            {
+                TotalRecords = collection.Count;
+            }
+            else if (data is System.Collections.IEnumerable enumerable)
+            {
+                int count = 0;
+                var enumerator = enumerable.GetEnumerator();
+                try
+                {
+                    while (enumerator.MoveNext()) count++;
+                }
+                finally
+                {
+                    (enumerator as IDisposable)?.Dispose();
+                }
+                TotalRecords = count;
+            }
+            else
+            {
+                TotalRecords = data != null ? 1 : 0;
+            }
         }
     }
 
