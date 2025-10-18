@@ -17,5 +17,6 @@ public interface IRetailDbContext : IDataKeyFilterReadOnly
     DbSet<TodoItem> TodoItems { get; }
     DbSet<Order> Orders { get; }
     DbSet<LedgerEntry> LedgerEntries { get; }
+    DbSet<UserType> UserTypes { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

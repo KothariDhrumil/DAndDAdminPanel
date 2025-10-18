@@ -42,6 +42,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<TenantCustomerProfile> TenantCustomerProfiles => Set<TenantCustomerProfile>();
     public DbSet<TenantUserProfile> TenantUserProfiles => Set<TenantUserProfile>();
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
+    public DbSet<UserType> UserTypes => Set<UserType>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -140,9 +141,6 @@ public class RetailDbContext : DbContext, IRetailDbContext
         modelBuilder.Entity<TenantUserProfile>()
             .HasIndex(x => new { x.GlobalUserId, x.TenantId })
             .IsUnique();
-        // Helpful for filtering by role / lists per role type
-        modelBuilder.Entity<TenantUserProfile>()
-            .HasIndex(x => x.RoleType);
         // Auditing / time-based queries
         modelBuilder.Entity<TenantUserProfile>()
             .HasIndex(x => x.CreatedAt);

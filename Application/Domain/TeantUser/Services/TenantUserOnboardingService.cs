@@ -1,6 +1,7 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Persistence;
 using Application.Customers.Services;
+using Application.Domain.TeantUser.Update;
 using Domain.Customers;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,12 +55,12 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
 
     // Method to update the  tenant user profile
 
-    public async Task UpdateTenantUserProfileAsync(Guid globalUserId, string firstName, string lastName, CancellationToken ct)
+    public async Task UpdateTenantUserProfileAsync(UpdateTenantUserModel updateTenantUserModel, CancellationToken ct)
     {
-        await UpdateProfile(context, globalUserId, firstName, lastName, ct);
+        await UpdateProfile(context, updateTenantUserModel.UserId, updateTenantUserModel.FirstName, updateTenantUserModel.LastName, updateTenantUserModel.UserTypeId, ct);
     }
 
-    private async Task UpdateProfile(IRetailDbContext retailDbContext, Guid globalUserId, string firstName, string lastName, CancellationToken ct)
+    private async Task UpdateProfile(IRetailDbContext retailDbContext, Guid globalUserId, string firstName, string lastName, int userTypeId, CancellationToken ct)
     {
         var profile = await retailDbContext.TenantUserProfiles
                     .FirstOrDefaultAsync(p => p.GlobalUserId == globalUserId, ct);
@@ -68,16 +69,17 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
             profile.FirstName = firstName ?? profile.FirstName;
             profile.LastName = lastName ?? profile.LastName;
             profile.UpdatedAt = DateTime.UtcNow;
+            profile.UserTypeId = userTypeId;
             retailDbContext.TenantUserProfiles.Update(profile);
             await retailDbContext.SaveChangesAsync(ct);
         }
     }
 
-    public async Task UpdateTenantUserBySuperadmin(int tenantId, string globalUserId, string firstName, string lastName, CancellationToken ct)
-    {
-        var retailDbContext = await tenantRetailDbContextFactory.CreateAsync(tenantId, ct);
-        var userId = Guid.Parse(globalUserId);
-        await UpdateProfile(retailDbContext, userId, firstName, lastName, ct);
+    //public async Task UpdateTenantUserBySuperadmin(int tenantId, string globalUserId, string firstName, string lastName, CancellationToken ct)
+    //{
+    //    var retailDbContext = await tenantRetailDbContextFactory.CreateAsync(tenantId, ct);
+    //    var userId = Guid.Parse(globalUserId);
+    //    await UpdateProfile(retailDbContext, userId, firstName, lastName, ct);
 
-    }
+    //}
 }

@@ -148,12 +148,12 @@ public class AuthUsersController : VersionNeutralApiController
     [OpenApiOperation("Update a tenant user.", "")]
     public async Task<ActionResult> UpdateTenantUserAsync(UpdateTenantUserModel tenantUser, CancellationToken ct)
     {
-        var status = await _addNewUserManager.UpdateUserNameAsync(tenantUser.GlobalUserId.ToString(), tenantUser.FirstName, tenantUser.LastName);
+        var status = await _addNewUserManager.UpdateUserNameAsync(tenantUser.UserId.ToString(), tenantUser.FirstName, tenantUser.LastName);
         if (status.HasErrors)
             return BadRequest(status.GetAllErrors());
 
         // Also update the tenant user profile
-        await tenantUserOnboardingService.UpdateTenantUserProfileAsync(tenantUser.GlobalUserId, tenantUser.FirstName, tenantUser.LastName, ct);
+        await tenantUserOnboardingService.UpdateTenantUserProfileAsync(tenantUser, ct);
 
         return Ok(Result.Success(status.Message));
     }

@@ -8,9 +8,6 @@ using SharedKernel;
 
 namespace DealersAndDistributors.Server.Controllers.Domain;
 
-[Authorize]
-[ApiController]
-[Route("api/ledger")]
 public class LedgerController : VersionNeutralApiController
 {
     [HttpPost]
