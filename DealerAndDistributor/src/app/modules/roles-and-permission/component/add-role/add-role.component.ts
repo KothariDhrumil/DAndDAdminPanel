@@ -16,7 +16,6 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { BreadcrumbComponent } from "../../../../core/shared/components/breadcrumb/breadcrumb.component";
 import { MatListModule } from "@angular/material/list";
 import { ActivatedRoute, Router } from '@angular/router';
-import { Role } from '../../../../core';
 import { ROLES_PERMISSION_ROUTE } from '@core/helpers/routes/app-routes';
 
 @Component({

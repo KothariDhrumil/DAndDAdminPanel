@@ -101,7 +101,38 @@
       "badge": "",
       "badgeClass": "",
       "role": [],
-      "submenu": []
+      "submenu": [
+        {
+          "path": "/tenant-users/user-types",
+          "title": "MENUITEMS.UserTypes.Text",
+          "iconType": "feather",
+          "icon": "setting",
+          "class": "",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "UserManagement",
+            "AccessAll"
+          ],
+          "submenu": []
+        },
+        {
+          "path": "/tenant-users",
+          "title": "MENUITEMS.TenantUsers.Text",
+          "iconType": "feather",
+          "icon": "plus",
+          "class": "",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "UserManagement",
+            "AccessAll"
+          ],
+          "submenu": []
+        }
+      ]
     },
     {
       "path": "/user/todos",

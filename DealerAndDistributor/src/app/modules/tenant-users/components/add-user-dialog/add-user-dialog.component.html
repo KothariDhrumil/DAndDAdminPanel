@@ -10,6 +10,17 @@
       </div>
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
+          <mat-label>User Type</mat-label>
+          <mat-select formControlName="userTypeId">
+            <mat-option [value]="null">Select User Type</mat-option>
+             @for (ut of userTypes; track ut.id) {
+              <mat-option [value]="ut.id">{{ ut.name }}</mat-option>
+             }
+            </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
           <mat-label>First Name</mat-label>
           <input matInput formControlName="firstName" />
         </mat-form-field>

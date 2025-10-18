@@ -1,3 +1,4 @@
+import { UserTypeListComponent } from './user-types/components/user-type-list.component';
 import { Routes } from '@angular/router';
 
 
@@ -11,5 +12,9 @@ export const TENANT_USERS_ROUTES: Routes = [
       }
     ]
   },
-  // Add more user child routes here
+    // Add more user child routes here
+    {
+      path: 'user-types',
+      component: UserTypeListComponent
+    }
 ];

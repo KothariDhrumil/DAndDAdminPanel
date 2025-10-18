@@ -72,6 +72,13 @@
         "List": "Support Tickets List",
         "Create": "Support Tickets Create"
       }
+    },
+    "UserTypes": {
+      "Text": "User Types",
+      "List": {
+        "List": "User Types List",
+        "Create": "User Types Create"
+      }
     }
   }
 }

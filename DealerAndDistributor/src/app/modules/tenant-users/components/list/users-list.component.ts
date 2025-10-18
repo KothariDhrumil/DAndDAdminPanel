@@ -26,8 +26,8 @@ export class UsersListComponent {
   users = computed(() => this._users());
 
   columns = computed<ColumnDefinition[]>(() => [
-    { def: 'userName', label: 'User Name', type: 'text', sortable: true },
-    { def: 'email', label: 'Email', type: 'email', sortable: true },
+   // { def: 'userName', label: 'User Name', type: 'text', sortable: true },
+   // { def: 'email', label: 'Email', type: 'email', sortable: true },
     // { def: 'tenantName', label: 'Tenant', type: 'text', sortable: true },
     // { def: 'hasTenant', label: 'Has Tenant', type: 'check' },
     // columns for first and last name

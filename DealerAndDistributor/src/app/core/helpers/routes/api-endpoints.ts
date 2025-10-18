@@ -38,6 +38,8 @@ export const API_ROLES_BY_TYPE = API_ROLES + '/get-roles-by-type';
 export const AUTHUSERS_API = baseUrl + apiVersionNeutral + '/authusers';
 export const AUTHUSERS_UPDATE_TENANT_API = baseUrl + apiVersionNeutral + '/authusers/update-tenant-user';
 export const AUTHUSERS_LIST_API = AUTHUSERS_API + '/listusers';
+// User Types
+export const API_USER_TYPES = baseUrl + apiVersionV1 + '/usertypes';
 
 /*/ Todos Routes */
 export const TODOS_API = baseUrl + apiVersionV1 + '/todos';
