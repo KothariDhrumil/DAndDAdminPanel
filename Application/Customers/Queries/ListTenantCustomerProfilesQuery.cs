@@ -10,17 +10,20 @@ public sealed record ListTenantCustomerProfilesQuery(
     int TenantId,
     int PageNumber,
     int PageSize,
-    string? Search
+    string? Search,
+    int? RouteId = null
 ) : IQuery<PagedResult<List<TenantCustomerProfileDto>>>;
 
 public sealed record TenantCustomerProfileDto(
-    Guid TenantCustomerId,
+    Guid TenantUserId,
     Guid GlobalCustomerId,
     int TenantId,
     string? FirstName,
     string? LastName,
     string? PhoneNumber,
-    string Route);
+    int? RouteId,
+    string Route,
+    int SequenceNo);
 
 internal sealed class ListTenantCustomerProfilesQueryHandler(
     ITenantRetailDbContextFactory tenantRetailDbContextFactory
@@ -38,18 +41,23 @@ internal sealed class ListTenantCustomerProfilesQueryHandler(
 
         var profiles = db.TenantCustomerProfiles.AsNoTracking();
 
+        if (query.RouteId.HasValue)
+        {
+            profiles = profiles.Where(p => p.RouteId == query.RouteId.Value);
+        }
+
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
             var term = query.Search.Trim();
             profiles = profiles.Where(p =>
-                (p.FirstName != null && p.FirstName.Contains(term))); // || (p.Preferences != null && p.Preferences.Contains(term))
+                (p.FirstName != null && p.FirstName.Contains(term)));
         }
 
         var total = await profiles.CountAsync(cancellationToken);
 
         var pageItems = await profiles
             .Include(x=>x.Route)
-            .OrderBy(p => p.FirstName)
+            .OrderBy(p => p.SequenceNo).ThenBy(x => x.FirstName)
             .Skip((page - 1) * size)
             .Take(size)
             .Select(p => new TenantCustomerProfileDto(
@@ -59,8 +67,11 @@ internal sealed class ListTenantCustomerProfilesQueryHandler(
                 p.FirstName,
                 p.LastName,
                 p.PhoneNumber,
-                p.Route.Name
+                p.RouteId,
+                p.Route.Name,
+                p.SequenceNo
                 ))
+            
             .ToListAsync(cancellationToken);
 
         var paged = PagedResult<List<TenantCustomerProfileDto>>.Success(pageItems, page, size, total);

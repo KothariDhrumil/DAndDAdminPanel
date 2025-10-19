@@ -18,6 +18,7 @@ public class CustomerProfileController : VersionedApiController
     public async Task<ActionResult> ListTenantProfilesAsync(
         [FromServices] IQueryHandler<ListTenantCustomerProfilesQuery, PagedResult<List<TenantCustomerProfileDto>>> handler,
         int? tenantId = null,
+        int? routeId = null,
         int pageNumber = 1,
         int pageSize = 20,
         string? search = null,
@@ -28,7 +29,7 @@ public class CustomerProfileController : VersionedApiController
             return BadRequest(Result.Failure(Error.Validation("TenantIdMissing", "Tenant id not provided or claim missing.")));
 
         var result = await handler.Handle(
-            new ListTenantCustomerProfilesQuery(effectiveTenantId.Value, pageNumber, pageSize, search),
+            new ListTenantCustomerProfilesQuery(effectiveTenantId.Value, pageNumber, pageSize, search, routeId),
             ct);
 
         if (!result.IsSuccess)
@@ -83,6 +84,26 @@ public class CustomerProfileController : VersionedApiController
     {
         command.TenantUserId = customerId;
         var result = await handler.Handle(command, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("route-customer-sequence")]
+    [Authorize]
+    [OpenApiOperation("Update customer sequence for all customers in a route.", "")]
+    public async Task<IActionResult> UpdateCustomerRouteSequenceAsync(
+        [FromQuery] int routeId,
+        [FromBody] List<CustomerSequenceUpdateDto> updates,
+        [FromServices] ICommandHandler<UpdateCustomerRouteSequenceCommand> handler,
+        CancellationToken ct)
+    {
+        var command = new UpdateCustomerRouteSequenceCommand
+        {
+            RouteId = routeId,
+            Updates = updates
+        };
+        var result = await handler.Handle(command, ct);
+        if (!result.IsSuccess)
+            return StatusCode(StatusCodes.Status400BadRequest, result);
         return Ok(result);
     }
 }
