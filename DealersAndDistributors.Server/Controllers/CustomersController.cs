@@ -40,8 +40,8 @@ public class CustomersController : VersionNeutralApiController
     [Authorize]
     [OpenApiOperation("Update a customer basic fields.")]
     public async Task<ActionResult> UpdateAsync(
-        [FromServices] ICommandHandler<UpdateCustomerCommand> handler,
-        [FromBody] UpdateCustomerCommand command,
+        [FromServices] ICommandHandler<UpdateCustomerProfileToCentralCommand> handler,
+        [FromBody] UpdateCustomerProfileToCentralCommand command,
         CancellationToken ct)
     {
         var result = await handler.Handle(command, ct);

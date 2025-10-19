@@ -2,21 +2,32 @@ using Application.Abstractions.Messaging;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Oracle.ManagedDataAccess.Types;
 using SharedKernel;
 
 namespace Application.Customers.Update;
 
-public sealed class UpdateCustomerCommand : ICommand
+public sealed class UpdateCustomerProfileToCentralCommand : ICommand
 {
     public Guid GlobalCustomerId { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
 
+    public string Address { get; set; } = string.Empty;
+    public double OpeningBalance { get; set; }
+    public bool IsActive { get; set; }
+    public bool TaxExempt { get; set; }
+    public bool CourierChargesApplicable { get; set; }
+
+    public string GSTNumber { get; set; } = string.Empty;
+    public string GSTName { get; set; }
+    public double CreditLimit { get; set; }
+
     internal sealed class Handler(AuthPermissionsDbContext authDb)
-        : ICommandHandler<UpdateCustomerCommand>
+        : ICommandHandler<UpdateCustomerProfileToCentralCommand>
     {
-        public async Task<Result> Handle(UpdateCustomerCommand command, CancellationToken ct)
+        public async Task<Result> Handle(UpdateCustomerProfileToCentralCommand command, CancellationToken ct)
         {
             var account = await authDb.CustomerAccounts
                 .SingleOrDefaultAsync(c => c.GlobalCustomerId == command.GlobalCustomerId, ct);
@@ -27,16 +38,15 @@ public sealed class UpdateCustomerCommand : ICommand
             account.LastName = command.LastName;
             if (!string.IsNullOrWhiteSpace(command.PhoneNumber))
                 account.PhoneNumber = command.PhoneNumber.Trim();
-            //account.UpdatedAt = DateTime.UtcNow;
-
             authDb.CustomerAccounts.Update(account);
+
             await authDb.SaveChangesAsync(ct);
             return Result.Success();
         }
     }
 }
 
-public sealed class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCommand>
+public sealed class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerProfileToCentralCommand>
 {
     public UpdateCustomerCommandValidator()
     {
