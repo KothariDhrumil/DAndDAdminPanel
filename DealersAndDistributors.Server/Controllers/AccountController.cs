@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Authentication;
-using Application.Customers.Services;
+using Application.Domain.TeantUser.Services;
 using Application.Identity.Account;
 using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.Services;

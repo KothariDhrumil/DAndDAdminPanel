@@ -1,6 +1,7 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Persistence;
-using Application.Customers.Services;
+using Application.Domain.TeantUser.Models;
+using Application.Domain.TeantUser.Services;
 using Application.Domain.TeantUser.Update;
 using Domain.Customers;
 using Microsoft.EntityFrameworkCore;
@@ -30,16 +31,21 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
     public async Task CreateTenantUserProfileIfMissingAsync(string globalUserId, int TenantUserId, string firstName, string lastName, string phoneNumber, int userTypeId, CancellationToken ct)
     {
         var userId = Guid.Parse(globalUserId);
-        await CreateTeantUser(globalUserId, firstName, lastName, phoneNumber,userTypeId, context, ct);
+        await CreateTeantUser(globalUserId, firstName, lastName, phoneNumber, userTypeId, context, ct);
     }
     public async Task UpdateTenantUserProfileAsync(UpdateTenantUserModel updateTenantUserModel, CancellationToken ct)
     {
         await UpdateProfile(context, updateTenantUserModel.UserId, updateTenantUserModel.FirstName, updateTenantUserModel.LastName, updateTenantUserModel.UserTypeId, ct);
     }
-    public async Task<List<string>> GetProfilesByRoleTypeId(int userTypeId)
+    public async Task<List<TenantUserProfileResponse>> GetProfilesByRoleTypeId(int userTypeId)
     {
         return await context.TenantUserProfiles.Where(p => p.UserTypeId == userTypeId)
-            .Select(p => p.GlobalUserId.ToString())
+            .Select(p => new TenantUserProfileResponse()
+            {
+                UserId = p.GlobalUserId.ToString().ToLower(),
+                UserTypeId = p.UserTypeId,
+                UserType = p.UserType.Name,
+            })
             .ToListAsync();
     }
     private static async Task CreateTeantUser(string globalUserId, string firstName, string lastName, string phoneNumber, int userTypeId, IRetailDbContext retailDbContext, CancellationToken ct)

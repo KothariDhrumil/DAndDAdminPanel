@@ -1,9 +1,11 @@
-﻿using Application.Customers.Services;
+﻿using Application.Domain.TeantUser.Models;
+using Application.Domain.TeantUser.Services;
 using Application.Domain.TeantUser.Update;
 using AuthPermissions.AdminCode;
 using AuthPermissions.AspNetCore;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
+using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
 using AuthPermissions.SupportCode.AddUsersServices;
 using AuthPermissions.SupportCode.AddUsersServices.Authentication;
 using Domain;
@@ -61,11 +63,33 @@ public class AuthUsersController : VersionNeutralApiController
             var profiles = await tenantUserOnboardingService.GetProfilesByRoleTypeId(userTypeId);
             if (profiles.Count == 0)
             {
-                return Ok(PagedResult<List<AuthUserDisplay>>.Success());
+                return Ok(PagedResult<List<TenantUserProfileResponse>>.Success());
             }
-            userQuery = userQuery.Where(u => profiles.Contains(u.UserId));
+            var authUsers = userQuery
+                                .Include(x => x.UserRoles).ThenInclude(x => x.Role)
+                                .Where(u => profiles.Select(x => x.UserId).Contains(u.UserId))
+                                .AsNoTracking()
+                                .ToList();
+
+            // merge the profiles with userQuery to filter users by userTypeId
+            var mergedQuery = from user in authUsers
+                              join profile in profiles
+                              on user.UserId equals profile.UserId
+                              select new TenantUserProfileResponse()
+                              {
+                                  UserId = profile.UserId,
+                                  UserType = profile.UserType,
+                                  UserTypeId = profile.UserTypeId,
+                                  FirstName = user.FirstName,
+                                  LastName = user.LastName,
+                                  PhoneNumber = user.PhoneNumber,
+                                  RoleNames = user.UserRoles.Where(x => x.Role.RoleType != RoleTypes.FeatureRole).Select(y => y.Role.RoleName).ToArray()
+
+                              };
+            return Ok(PagedResult<List<TenantUserProfileResponse>>.Success(mergedQuery.ToList()));
+
         }
-        var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.UserTenant.TenantFullName)).ToListAsync();
+        var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.FirstName)).ToListAsync();
 
         return Ok(PagedResult<List<AuthUserDisplay>>.Success(users));
     }
@@ -106,7 +130,7 @@ public class AuthUsersController : VersionNeutralApiController
         if (status.Result.TenantId != null)
         {
             await tenantUserOnboardingService.CreateTenantUserProfileIfMissingAsync(
-                status.Result.UserId, (int)status.Result.TenantId, newUser.FirstName, newUser.LastName, newUser.PhoneNumber,newUser.UserTypeId, CancellationToken.None);
+                status.Result.UserId, (int)status.Result.TenantId, newUser.FirstName, newUser.LastName, newUser.PhoneNumber, newUser.UserTypeId, CancellationToken.None);
         }
         return Ok(Result.Success(status.Message));
 
