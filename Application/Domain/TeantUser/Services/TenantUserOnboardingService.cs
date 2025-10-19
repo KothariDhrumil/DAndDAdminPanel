@@ -45,6 +45,7 @@ public sealed class TenantUserOnboardingService : ITenantUserOnboardingService
                 UserId = p.GlobalUserId.ToString().ToLower(),
                 UserTypeId = p.UserTypeId,
                 UserType = p.UserType.Name,
+                tenantUserId = p.TenantUserId,
             })
             .ToListAsync();
     }

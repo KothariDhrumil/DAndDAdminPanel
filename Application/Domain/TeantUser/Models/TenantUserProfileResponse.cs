@@ -3,6 +3,7 @@
 public sealed class TenantUserProfileResponse
 {
     public string UserId { get; set; }
+    public Guid tenantUserId { get; set; }
     public string UserType { get; set; }
     public int? UserTypeId { get; set; }
     public string FirstName { get; set; }

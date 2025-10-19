@@ -43,6 +43,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<TenantUserProfile> TenantUserProfiles => Set<TenantUserProfile>();
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
     public DbSet<UserType> UserTypes => Set<UserType>();
+    public DbSet<Route> Routes => Set<Route>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -160,6 +161,18 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => new { x.TenantUserId, x.EntryDate });
         modelBuilder.Entity<LedgerEntry>()
             .HasIndex(x => new { x.TenantUserId, x.EntryDate });
+
+        // Route config
+        modelBuilder.Entity<Route>()
+            .ToTable("Routes", "retail");
+        modelBuilder.Entity<Route>()
+            .HasIndex(x => x.DataKey);
+        modelBuilder.Entity<Route>()
+            .HasIndex(x => x.Id);
+        modelBuilder.Entity<Route>()
+            .HasIndex(x => x.TenantUserId);
+        modelBuilder.Entity<Route>()
+            .HasIndex(x => x.IsActive);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

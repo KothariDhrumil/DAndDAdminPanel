@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 {
     [DbContext(typeof(RetailDbContext))]
-    partial class RetailDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251019101826_UpdateInRoutes")]
+    partial class UpdateInRoutes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,7 +90,11 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TenantUserId")
+                    b.Property<string>("TenantUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("TenantUserId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -99,6 +106,8 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.HasIndex("IsActive");
 
                     b.HasIndex("TenantUserId");
+
+                    b.HasIndex("TenantUserId1");
 
                     b.ToTable("Routes", "retail");
                 });
@@ -394,7 +403,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                 {
                     b.HasOne("Domain.Customers.TenantUserProfile", "TenantUser")
                         .WithMany()
-                        .HasForeignKey("TenantUserId")
+                        .HasForeignKey("TenantUserId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

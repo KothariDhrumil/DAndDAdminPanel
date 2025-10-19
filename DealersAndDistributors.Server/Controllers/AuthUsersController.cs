@@ -83,7 +83,8 @@ public class AuthUsersController : VersionNeutralApiController
                                   FirstName = user.FirstName,
                                   LastName = user.LastName,
                                   PhoneNumber = user.PhoneNumber,
-                                  RoleNames = user.UserRoles.Where(x => x.Role.RoleType != RoleTypes.FeatureRole).Select(y => y.Role.RoleName).ToArray()
+                                  RoleNames = user.UserRoles.Where(x => x.Role.RoleType != RoleTypes.FeatureRole).Select(y => y.Role.RoleName).ToArray(),
+                                  tenantUserId = profile.tenantUserId
 
                               };
             return Ok(PagedResult<List<TenantUserProfileResponse>>.Success(mergedQuery.ToList()));
