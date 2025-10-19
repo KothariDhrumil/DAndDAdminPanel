@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 {
     [DbContext(typeof(RetailDbContext))]
-    partial class RetailDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251018192411_RemovedStaticUserTypeAndAddedDynamic")]
+    partial class RemovedStaticUserTypeAndAddedDynamic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,9 +188,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserTypeId")
-                        .HasColumnType("int");
-
                     b.HasKey("TenantUserId");
 
                     b.HasIndex("CreatedAt");
@@ -197,8 +197,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.HasIndex("TenantId");
 
                     b.HasIndex("UpdatedAt");
-
-                    b.HasIndex("UserTypeId");
 
                     b.HasIndex("GlobalUserId", "TenantId")
                         .IsUnique();
@@ -351,15 +349,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.HasIndex("DataKey");
 
                     b.ToTable("TodoItems", "retail");
-                });
-
-            modelBuilder.Entity("Domain.Customers.TenantUserProfile", b =>
-                {
-                    b.HasOne("Domain.Customers.UserType", "UserType")
-                        .WithMany()
-                        .HasForeignKey("UserTypeId");
-
-                    b.Navigation("UserType");
                 });
 
             modelBuilder.Entity("Domain.Orders.Order", b =>

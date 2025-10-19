@@ -7,15 +7,7 @@ public class TenantUserProfile: UserProfile
     /// </summary>
     public Guid GlobalUserId { get; set; }
 
-    public UserType RoleType { get; set; }
+    public UserType UserType { get; set; }
 
-}
-
-public enum UserType
-{
-    Admin = 1,
-    Salesman = 2,
-    Accountant = 3,
-    DeliveryPerson = 4,
-    Manager = 5
+    public int? UserTypeId { get; set; }
 }

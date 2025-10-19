@@ -7,6 +7,7 @@ using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.SupportCode.AddUsersServices;
 using AuthPermissions.SupportCode.AddUsersServices.Authentication;
 using Domain;
+using Domain.Customers;
 using ExamplesCommonCode.CommonAdmin;
 using Infrastructure.Auth.AuthP;
 using Infrastructure.Identity;
@@ -48,19 +49,28 @@ public class AuthUsersController : VersionNeutralApiController
         this.tenantUserOnboardingService = tenantUserOnboardingService;
     }
 
-    [HttpGet("listusers")]
+    [HttpGet("listusers/{userTypeId:int}")]
     //[HasPermission(Permissions.AccessAll)]
     [OpenApiOperation("List users filtered by authUser tenant.", "")]
-    public async Task<IActionResult> ListAuthUsersAsync(int pageNumber, int pageSize, string orderBy)
+    public async Task<IActionResult> ListAuthUsersAsync(int pageNumber, int pageSize, string orderBy, int userTypeId)
     {
         string? authDataKey = User.GetAuthDataKeyFromUser();
         IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(authDataKey);
+        if (userTypeId > 0)
+        {
+            var profiles = await tenantUserOnboardingService.GetProfilesByRoleTypeId(userTypeId);
+            if (profiles.Count == 0)
+            {
+                return Ok(PagedResult<List<AuthUserDisplay>>.Success());
+            }
+            userQuery = userQuery.Where(u => profiles.Contains(u.UserId));
+        }
         var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.UserTenant.TenantFullName)).ToListAsync();
 
         return Ok(PagedResult<List<AuthUserDisplay>>.Success(users));
     }
 
-    [HttpGet("listusers/{tenantId:int}")]
+    [HttpGet("list-auth-users/{tenantId:int}")]
     //[HasPermission(Permissions.UserRead)]
     [OpenApiOperation("List users filtered by authUser tenant.", "")]
     public async Task<IActionResult> ListAuthUsersByTenantIdAsync(int pageNumber, int pageSize, string orderBy, int tenantId)
@@ -68,7 +78,6 @@ public class AuthUsersController : VersionNeutralApiController
         string? authDataKey = User.GetAuthDataKeyFromUser();
         IQueryable<AuthUser> userQuery = _authUsersAdmin.QueryAuthUsers(tenantId);
         var users = await AuthUserDisplay.TurnIntoDisplayFormat(userQuery.OrderBy(x => x.UserTenant.TenantFullName)).ToListAsync();
-
         return Ok(PagedResult<List<AuthUserDisplay>>.Success(users));
     }
 
@@ -97,7 +106,7 @@ public class AuthUsersController : VersionNeutralApiController
         if (status.Result.TenantId != null)
         {
             await tenantUserOnboardingService.CreateTenantUserProfileIfMissingAsync(
-                status.Result.UserId, (int)status.Result.TenantId, newUser.FirstName, newUser.LastName, newUser.PhoneNumber, CancellationToken.None);
+                status.Result.UserId, (int)status.Result.TenantId, newUser.FirstName, newUser.LastName, newUser.PhoneNumber,newUser.UserTypeId, CancellationToken.None);
         }
         return Ok(Result.Success(status.Message));
 
@@ -148,12 +157,12 @@ public class AuthUsersController : VersionNeutralApiController
     [OpenApiOperation("Update a tenant user.", "")]
     public async Task<ActionResult> UpdateTenantUserAsync(UpdateTenantUserModel tenantUser, CancellationToken ct)
     {
-        var status = await _addNewUserManager.UpdateUserNameAsync(tenantUser.GlobalUserId.ToString(), tenantUser.FirstName, tenantUser.LastName);
+        var status = await _addNewUserManager.UpdateUserNameAsync(tenantUser.UserId.ToString(), tenantUser.FirstName, tenantUser.LastName);
         if (status.HasErrors)
             return BadRequest(status.GetAllErrors());
 
         // Also update the tenant user profile
-        await tenantUserOnboardingService.UpdateTenantUserProfileAsync(tenantUser.GlobalUserId, tenantUser.FirstName, tenantUser.LastName, ct);
+        await tenantUserOnboardingService.UpdateTenantUserProfileAsync(tenantUser, ct);
 
         return Ok(Result.Success(status.Message));
     }
