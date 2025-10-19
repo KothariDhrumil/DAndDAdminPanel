@@ -19,6 +19,6 @@ public sealed class CreateUserTypeCommandHandler(IRetailDbContext db) : ICommand
         };
         db.UserTypes.Add(entity);
         await db.SaveChangesAsync(ct);
-        return Result.Success(entity.UserTypeId);
+        return Result.Success(entity.Id);
     }
 }

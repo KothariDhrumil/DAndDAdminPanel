@@ -6,6 +6,9 @@ using AuthPermissions.BaseCode.CommonCode;
 using Application.Abstractions.Data;
 using Application.Abstractions.Persistence;
 using AuthPermissions.AspNetCore.GetDataKeyCode;
+using SharedKernel;
+using Application.Abstractions.Authentication;
+using Infrastructure.DomainEvents;
 
 namespace Infrastructure.Persistence;
 
@@ -14,18 +17,24 @@ public sealed class TenantRetailDbContextFactory : ITenantRetailDbContextFactory
     private readonly DbContextOptions<RetailDbContext> _options;
     private readonly AuthPermissionsDbContext _authDb;
     private readonly IGetSetShardingEntries _sharding;
-    private readonly Infrastructure.DomainEvents.IDomainEventsDispatcher _dispatcher;
+    private readonly IDomainEventsDispatcher _dispatcher;
+    private readonly IDateTimeProvider dateTimeProvider;
+    private readonly IUserContext userContext;
 
     public TenantRetailDbContextFactory(
         DbContextOptions<RetailDbContext> options,
         AuthPermissionsDbContext authDb,
         IGetSetShardingEntries sharding,
-        Infrastructure.DomainEvents.IDomainEventsDispatcher dispatcher)
+        IDomainEventsDispatcher dispatcher,
+        IDateTimeProvider dateTimeProvider,
+        IUserContext userContext)
     {
         _options = options;
         _authDb = authDb;
         _sharding = sharding;
         _dispatcher = dispatcher;
+        this.dateTimeProvider = dateTimeProvider;
+        this.userContext = userContext;
     }
 
     public async Task<IRetailDbContext> CreateAsync(int tenantId, CancellationToken ct)
@@ -34,7 +43,7 @@ public sealed class TenantRetailDbContextFactory : ITenantRetailDbContextFactory
         var connectionString = _sharding.FormConnectionString(tenant.DatabaseInfoName);
         var dataKey = tenant.GetTenantDataKey();
         var stub = new StubGetShardingDataFromUser(connectionString, dataKey);
-        var context = new RetailDbContext(_options, stub, _dispatcher);
+        var context = new RetailDbContext(_options, stub, _dispatcher, userContext, dateTimeProvider);
 
         // Apply pending migrations (if any) for this tenant database
         try

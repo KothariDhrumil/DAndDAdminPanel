@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 {
     [DbContext(typeof(RetailDbContext))]
-    partial class RetailDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251019190655_RemovedCustomerRoute")]
+    partial class RemovedCustomerRoute
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,7 +236,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
-                    b.Property<int?>("RouteId")
+                    b.Property<int>("RouteId")
                         .HasColumnType("int");
 
                     b.Property<int>("SequenceNo")
@@ -268,8 +271,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .IsUnique();
 
                     b.HasIndex("RouteId", "SequenceNo")
-                        .IsUnique()
-                        .HasFilter("[RouteId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("TenantCustomerProfiles", "retail");
                 });
@@ -526,7 +528,8 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.HasOne("Domain.Customers.Route", "Route")
                         .WithMany("Customers")
                         .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Route");
                 });

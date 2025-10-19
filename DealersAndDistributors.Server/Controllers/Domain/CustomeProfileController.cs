@@ -73,4 +73,16 @@ public class CustomerProfileController : VersionedApiController
             return StatusCode(StatusCodes.Status400BadRequest, result);
         return Ok(result);
     }
+
+    [HttpPut("{customerId:guid}/route")]
+    public async Task<IActionResult> UpdateCustomerRouteAsync(
+    Guid customerId,
+    [FromBody] UpdateCustomerRouteCommand command,
+    ICommandHandler<UpdateCustomerRouteCommand> handler,
+    CancellationToken cancellationToken)
+    {
+        command.TenantUserId = customerId;
+        var result = await handler.Handle(command, cancellationToken);
+        return Ok(result);
+    }
 }

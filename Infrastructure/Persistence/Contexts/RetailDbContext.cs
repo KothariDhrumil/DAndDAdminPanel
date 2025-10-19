@@ -1,27 +1,34 @@
-﻿using Application.Abstractions.Data;
+﻿using Application.Abstractions.Authentication;
+using Application.Abstractions.Data;
 using AuthPermissions.AspNetCore.GetDataKeyCode;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using Domain;
+using Domain.AbstactClass;
+using Domain.Accounting;
+using Domain.Customers;
 using Domain.Orders;
 using Domain.Todos;
-using Domain.Customers;
 using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
-using Domain.Accounting;
+using System;
 
 namespace Infrastructure.Persistence.Contexts;
 
 public class RetailDbContext : DbContext, IRetailDbContext
 {
     private readonly IDomainEventsDispatcher domainEventsDispatcher;
+    private readonly IUserContext userContext;
+    private readonly IDateTimeProvider dateTimeProvider;
 
     public string DataKey { get; }
 
     public RetailDbContext(DbContextOptions<RetailDbContext> options,
         IGetShardingDataFromUser shardingDataKeyAndConnect,
-         IDomainEventsDispatcher domainEventsDispatcher)
+         IDomainEventsDispatcher domainEventsDispatcher,
+         IUserContext userContext,
+         IDateTimeProvider dateTimeProvider)
         : base(options)
     {
         // The DataKey is null when: no one is logged in, its a background service, or user hasn't got an assigned tenant
@@ -34,6 +41,8 @@ public class RetailDbContext : DbContext, IRetailDbContext
             Database.SetConnectionString(shardingDataKeyAndConnect.ConnectionString);
         
         this.domainEventsDispatcher = domainEventsDispatcher;
+        this.userContext = userContext;
+        this.dateTimeProvider = dateTimeProvider;
     }
 
     public DbSet<RetailOutlet> RetailOutlets => Set<RetailOutlet>();
@@ -117,11 +126,20 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.HierarchyPath);
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.Depth);
-        // Useful for time-based queries (audits/ledger later)
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.CreatedAt);
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.UpdatedAt);
+        // Index for RouteId (for fast queries by route)
+        modelBuilder.Entity<TenantCustomerProfile>()
+         .HasIndex(c => new { c.RouteId, c.SequenceNo })
+         .IsUnique(); // Prevent duplicate sequence numbers per route
+
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasOne(c => c.Route)
+            .WithMany(r => r.Customers)
+            .HasForeignKey(c => c.RouteId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // TenantUserProfile config (staff/users like HR/Admin/Salesman)
         modelBuilder.Entity<TenantUserProfile>()
@@ -173,6 +191,18 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.TenantUserId);
         modelBuilder.Entity<Route>()
             .HasIndex(x => x.IsActive);
+
+        // CustomerRoute config
+        modelBuilder.Entity<CustomerRoute>()
+            .ToTable("CustomerRoutes", "retail");
+        modelBuilder.Entity<CustomerRoute>()
+            .HasIndex(x => x.CustomerId);
+        modelBuilder.Entity<CustomerRoute>()
+            .HasIndex(x => x.RouteId);
+        modelBuilder.Entity<CustomerRoute>()
+            .HasIndex(x => x.OrderId);
+        modelBuilder.Entity<CustomerRoute>()
+            .HasIndex(x => x.DataKey);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -188,11 +218,34 @@ public class RetailDbContext : DbContext, IRetailDbContext
         //     - handlers can fail
 
         this.MarkWithDataKeyIfNeeded(DataKey);
+        
+        UpdateAuditableEntities();
+
         int result = await base.SaveChangesAsync(cancellationToken);
 
         await PublishDomainEventsAsync();
 
         return result;
+    }
+
+    private void UpdateAuditableEntities()
+    {
+
+        foreach (var entry in ChangeTracker.Entries<AuditableBaseEntity>().ToList())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.CreatedAt = dateTimeProvider.Now;
+                    entry.Entity.CreatedBy = userContext.UserId;
+                    break;
+
+                case EntityState.Modified:
+                    entry.Entity.UpdatedAt = dateTimeProvider.Now;
+                    entry.Entity.UpdatedBy = userContext.UserId;
+                    break;
+            }
+        }
     }
 
     private async Task PublishDomainEventsAsync()

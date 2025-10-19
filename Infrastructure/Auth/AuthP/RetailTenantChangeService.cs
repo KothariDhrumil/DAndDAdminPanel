@@ -1,4 +1,5 @@
-﻿using AuthPermissions.AdminCode;
+﻿using Application.Abstractions.Authentication;
+using AuthPermissions.AdminCode;
 using AuthPermissions.AspNetCore.GetDataKeyCode;
 using AuthPermissions.AspNetCore.ShardingServices;
 using AuthPermissions.BaseCode.CommonCode;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using SharedKernel;
 using System.Data;
 using TestSupport.SeedDatabase;
 
@@ -21,18 +23,24 @@ public class RetailTenantChangeService : ITenantChangeService
     private readonly ILogger _logger;
     private readonly IGetSetShardingEntries _shardingService;
     private readonly IDomainEventsDispatcher domainEventsDispatcher;
+    private readonly IUserContext userContext;
+    private readonly IDateTimeProvider dateTimeProvider;
 
     public IReadOnlyList<int> DeletedTenantIds { get; private set; } = default!;
 
     public RetailTenantChangeService(DbContextOptions<RetailDbContext> options,
         ILogger<RetailTenantChangeService> logger,
         IGetSetShardingEntries shardingService,
-        IDomainEventsDispatcher domainEventsDispatcher)
+        IDomainEventsDispatcher domainEventsDispatcher,
+        IUserContext userContext,
+        IDateTimeProvider dateTimeProvider)
     {
         _options = options;
         _logger = logger;
         _shardingService = shardingService;
         this.domainEventsDispatcher = domainEventsDispatcher;
+        this.userContext = userContext;
+        this.dateTimeProvider = dateTimeProvider;
     }
 
     /// <summary>
@@ -372,7 +380,7 @@ public class RetailTenantChangeService : ITenantChangeService
         if (connectionString == null)
             return null;
 
-        return new RetailDbContext(_options, new StubGetShardingDataFromUser(connectionString, dataKey), domainEventsDispatcher);
+        return new RetailDbContext(_options, new StubGetShardingDataFromUser(connectionString, dataKey), domainEventsDispatcher, userContext, dateTimeProvider);
     }
 
     /// <summary>

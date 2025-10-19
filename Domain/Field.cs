@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using Domain.AbstactClass;
+using Microsoft.VisualBasic.FileIO;
 
 namespace Domain
 {

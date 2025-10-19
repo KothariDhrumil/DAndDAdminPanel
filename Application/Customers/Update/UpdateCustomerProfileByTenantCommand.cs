@@ -60,5 +60,4 @@ namespace Application.Customers.Update
             RuleFor(x => x.PhoneNumber).Length(10, 32).When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber));
         }
     }
-
 }

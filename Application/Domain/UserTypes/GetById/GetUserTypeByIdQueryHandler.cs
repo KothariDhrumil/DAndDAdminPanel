@@ -10,10 +10,10 @@ public sealed class GetUserTypeByIdQueryHandler(IRetailDbContext db) : IQueryHan
     public async Task<Result<GetByIdUserTypeResponseDTO>> Handle(GetUserTypeByIdQuery query, CancellationToken ct)
     {
         var type = await db.UserTypes.AsNoTracking()
-            .Where(x => x.UserTypeId == query.UserTypeId)
+            .Where(x => x.Id == query.UserTypeId)
             .Select(x => new GetByIdUserTypeResponseDTO
             {
-                UserTypeId = x.UserTypeId,
+                UserTypeId = x.Id,
                 Name = x.Name,
                 Description = x.Description,
                 IsActive = x.IsActive,

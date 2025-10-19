@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.AbstactClass;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Customers;
 
@@ -8,10 +9,10 @@ namespace Domain.Customers;
 /// </summary>
 public class TenantCustomerProfile : UserProfile
 {
-     /// <summary>
+    /// <summary>
     /// Global customer identifier (CustomerAccount.GlobalCustomerId)
     /// </summary>
-    public Guid GlobalCustomerId { get; set; }  
+    public Guid GlobalCustomerId { get; set; }
 
     /// <summary>
     /// Optional parent global customer id (null for root)
@@ -35,6 +36,15 @@ public class TenantCustomerProfile : UserProfile
     public bool TaxEnabled { get; set; }
     public bool CourierChargesApplicable { get; set; }
     public string GSTNumber { get; set; } = string.Empty;
-    public string GSTName { get; set; }
+    public string GSTName { get; set; } = string.Empty;
     public double CreditLimit { get; set; }
+
+    // Link to Route
+    public int? RouteId { get; set; }
+    public Route Route { get; set; }
+
+    // Order within route
+    public int SequenceNo { get; set; }  // Determines visiting order
+
+
 }

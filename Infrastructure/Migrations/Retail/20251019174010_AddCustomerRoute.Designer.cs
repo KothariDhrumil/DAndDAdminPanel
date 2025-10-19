@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 {
     [DbContext(typeof(RetailDbContext))]
-    partial class RetailDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251019174010_AddCustomerRoute")]
+    partial class AddCustomerRoute
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,15 +80,18 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DataKey")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(250)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(250)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -99,8 +105,9 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -126,8 +133,9 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DataKey")
                         .IsRequired()
@@ -148,8 +156,9 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -233,12 +242,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
-                    b.Property<int?>("RouteId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SequenceNo")
-                        .HasColumnType("int");
-
                     b.Property<bool>("TaxEnabled")
                         .HasColumnType("bit");
 
@@ -266,10 +269,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 
                     b.HasIndex("GlobalCustomerId", "TenantId")
                         .IsUnique();
-
-                    b.HasIndex("RouteId", "SequenceNo")
-                        .IsUnique()
-                        .HasFilter("[RouteId] IS NOT NULL");
 
                     b.ToTable("TenantCustomerProfiles", "retail");
                 });
@@ -349,8 +348,9 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DataKey")
                         .IsRequired()
@@ -372,8 +372,9 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -521,16 +522,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Navigation("TenantUser");
                 });
 
-            modelBuilder.Entity("Domain.Customers.TenantCustomerProfile", b =>
-                {
-                    b.HasOne("Domain.Customers.Route", "Route")
-                        .WithMany("Customers")
-                        .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Route");
-                });
-
             modelBuilder.Entity("Domain.Customers.TenantUserProfile", b =>
                 {
                     b.HasOne("Domain.Customers.UserType", "UserType")
@@ -549,11 +540,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .IsRequired();
 
                     b.Navigation("CustomerProfile");
-                });
-
-            modelBuilder.Entity("Domain.Customers.Route", b =>
-                {
-                    b.Navigation("Customers");
                 });
 #pragma warning restore 612, 618
         }

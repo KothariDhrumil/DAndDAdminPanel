@@ -2,7 +2,6 @@ using Application.Abstractions.Messaging;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Oracle.ManagedDataAccess.Types;
 using SharedKernel;
 
 namespace Application.Customers.Update;
@@ -13,7 +12,6 @@ public sealed class UpdateCustomerProfileToCentralCommand : ICommand
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
-
     public string Address { get; set; } = string.Empty;
     public double OpeningBalance { get; set; }
     public bool IsActive { get; set; }

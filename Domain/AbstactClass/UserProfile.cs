@@ -1,7 +1,7 @@
 using AuthPermissions.BaseCode.CommonCode;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Customers;
+namespace Domain.AbstactClass;
 
 public abstract class UserProfile : IDataKeyFilterReadWrite, IDataKeyFilterReadOnly
 {

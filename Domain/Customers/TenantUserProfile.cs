@@ -1,4 +1,6 @@
-﻿namespace Domain.Customers;
+﻿using Domain.AbstactClass;
+
+namespace Domain.Customers;
 
 public class TenantUserProfile: UserProfile
 {

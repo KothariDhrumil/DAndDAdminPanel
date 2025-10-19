@@ -19,7 +19,8 @@ public sealed record TenantCustomerProfileDto(
     int TenantId,
     string? FirstName,
     string? LastName,
-    string? PhoneNumber);
+    string? PhoneNumber,
+    string Route);
 
 internal sealed class ListTenantCustomerProfilesQueryHandler(
     ITenantRetailDbContextFactory tenantRetailDbContextFactory
@@ -47,6 +48,7 @@ internal sealed class ListTenantCustomerProfilesQueryHandler(
         var total = await profiles.CountAsync(cancellationToken);
 
         var pageItems = await profiles
+            .Include(x=>x.Route)
             .OrderBy(p => p.FirstName)
             .Skip((page - 1) * size)
             .Take(size)
@@ -56,7 +58,8 @@ internal sealed class ListTenantCustomerProfilesQueryHandler(
                 p.TenantId,
                 p.FirstName,
                 p.LastName,
-                p.PhoneNumber
+                p.PhoneNumber,
+                p.Route.Name
                 ))
             .ToListAsync(cancellationToken);
 

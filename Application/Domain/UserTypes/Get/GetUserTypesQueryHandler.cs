@@ -13,7 +13,7 @@ public sealed class GetUserTypesQueryHandler(IRetailDbContext db) : IQueryHandle
         var types = await db.UserTypes.AsNoTracking()
             .Select(x => new GetUserTypeResponseDTO
             {
-                UserTypeId = x.UserTypeId,
+                UserTypeId = x.Id,
                 Name = x.Name,
                 Description = x.Description,
                 IsActive = x.IsActive,
