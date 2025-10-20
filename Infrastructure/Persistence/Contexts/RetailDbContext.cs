@@ -12,7 +12,6 @@ using Domain.Todos;
 using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
-using System;
 
 namespace Infrastructure.Persistence.Contexts;
 
@@ -39,7 +38,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
             //NOTE: If no connection string is provided the DbContext will use the connection it was provided when it was registered
             //If you don't want that to happen, then remove the if above and the connection will be set to null (and fail) 
             Database.SetConnectionString(shardingDataKeyAndConnect.ConnectionString);
-        
+
         this.domainEventsDispatcher = domainEventsDispatcher;
         this.userContext = userContext;
         this.dateTimeProvider = dateTimeProvider;
@@ -53,6 +52,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
     public DbSet<UserType> UserTypes => Set<UserType>();
     public DbSet<Route> Routes => Set<Route>();
+    public DbSet<Product> Products => Set<Product>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -203,6 +203,18 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.OrderId);
         modelBuilder.Entity<CustomerRoute>()
             .HasIndex(x => x.DataKey);
+
+        // Product config
+        modelBuilder.Entity<Product>()
+            .ToTable("Products", "retail");
+        modelBuilder.Entity<Product>()
+            .HasIndex(x => x.Name);
+        modelBuilder.Entity<Product>()
+            .HasIndex(x => x.HSNCode);
+        modelBuilder.Entity<Product>()
+            .HasIndex(x => x.Order);
+        modelBuilder.Entity<Product>()
+            .HasIndex(x => x.DataKey);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -218,7 +230,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
         //     - handlers can fail
 
         this.MarkWithDataKeyIfNeeded(DataKey);
-        
+
         UpdateAuditableEntities();
 
         int result = await base.SaveChangesAsync(cancellationToken);
