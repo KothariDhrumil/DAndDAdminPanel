@@ -53,6 +53,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<UserType> UserTypes => Set<UserType>();
     public DbSet<Route> Routes => Set<Route>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<CustomerProduct> CustomerProducts => Set<CustomerProduct>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -215,6 +216,34 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.Order);
         modelBuilder.Entity<Product>()
             .HasIndex(x => x.DataKey);
+
+        // Customer Product
+        modelBuilder.Entity<CustomerProduct>()
+       .HasKey(cp => new { cp.CustomerId, cp.ProductId }); // Composite PK
+
+        modelBuilder.Entity<CustomerProduct>()
+            .HasOne(cp => cp.Customer)
+            .WithMany(c => c.CustomerProducts)
+            .HasForeignKey(cp => cp.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<CustomerProduct>()
+            .HasOne(cp => cp.Product)
+            .WithMany(p => p.CustomerProducts)
+            .HasForeignKey(cp => cp.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // CustomerProduct config
+        modelBuilder.Entity<CustomerProduct>()
+            .ToTable("CustomerProducts", "retail");
+        modelBuilder.Entity<CustomerProduct>()
+            .HasIndex(x => x.CustomerId);
+        modelBuilder.Entity<CustomerProduct>()
+            .HasIndex(x => x.ProductId);
+        modelBuilder.Entity<CustomerProduct>()
+            .HasIndex(x => x.DataKey);
+        modelBuilder.Entity<CustomerProduct>()
+            .HasIndex(x => x.IsActive);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

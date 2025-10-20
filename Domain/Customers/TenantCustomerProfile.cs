@@ -46,5 +46,5 @@ public class TenantCustomerProfile : UserProfile
     // Order within route
     public int SequenceNo { get; set; }  // Determines visiting order
 
-
+    public ICollection<CustomerProduct> CustomerProducts { get; set; } = new List<CustomerProduct>();
 }

@@ -14,4 +14,5 @@ public class Product : AuditableBaseEntity
     public decimal BasePrice { get; set; }
     public int Order { get; set; }
     public string HindiContent { get; set; } = string.Empty;
+    public ICollection<CustomerProduct> CustomerProducts { get; set; } = new List<CustomerProduct>();
 }
