@@ -5,7 +5,8 @@ namespace Domain.Customers;
 public class Product : AuditableBaseEntity
 {
     public required string Name { get; set; }
-    public string Image { get; set; } = string.Empty;
+    public string ImagePath { get; set; } = string.Empty;
+    public string ThumbnailPath { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string HSNCode { get; set; } = string.Empty;
     public decimal IGST { get; set; }

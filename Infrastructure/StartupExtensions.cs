@@ -1,23 +1,21 @@
 ﻿using Application;
+using Application.Abstractions.ImageHandling;
 using Asp.Versioning;
 using AuthPermissions.BaseCode.SetupCode;
 using AuthPermissions.SupportCode.DownStatusCode;
-using HealthChecks.UI.Client;
 using Infrastructure.Auth;
 using Infrastructure.DomainEvents;
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 using Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Namotion.Reflection;
 using SharedKernel;
-using Microsoft.AspNetCore.Authorization;
 
 
 namespace Infrastructure;
@@ -117,7 +115,7 @@ public static class StartupExtensions
     {
 
         builder.UseDownForMaintenance(TenantTypes.HierarchicalTenant | TenantTypes.AddSharding);
-        
+
         builder.UseSwagger();
         builder.UseSwaggerUI(c =>
         {
@@ -133,7 +131,7 @@ public static class StartupExtensions
             .UseExceptionHandler()
             .UseAuthentication()
             .UseAuthorization();
-            
+
     }
 
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
@@ -151,6 +149,7 @@ public static class StartupExtensions
 
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
+        services.AddTransient<IImageService, ImageService>();
         return services;
     }
 

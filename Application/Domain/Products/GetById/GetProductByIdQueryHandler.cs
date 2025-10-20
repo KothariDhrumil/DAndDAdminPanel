@@ -15,7 +15,7 @@ public sealed class GetProductByIdQueryHandler(IRetailDbContext db) : IQueryHand
             {
                 Id = x.Id,
                 Name = x.Name,
-                Image = x.Image,
+                Image = x.ImagePath,
                 Description = x.Description,
                 HSNCode = x.HSNCode,
                 IGST = x.IGST,

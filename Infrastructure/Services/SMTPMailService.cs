@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.Authentication;
+﻿using Application.Abstractions.SMS;
 using Application.Communication;
 using Application.Configurations;
 using MailKit.Net.Smtp;
@@ -13,12 +13,12 @@ namespace Infrastructure.Services
     public class SMTPMailService : IMailService
     {
         public MailConfiguration _mailSettings { get; }
-        public ILogger<SMTPMailService> _logger { get; }
+        public ILogger<SMTPMailService> Logger { get; }
 
         public SMTPMailService(IOptions<MailConfiguration> mailSettings, ILogger<SMTPMailService> logger)
         {
             _mailSettings = mailSettings.Value;
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task SendAsync(MailRequest request)
@@ -40,7 +40,7 @@ namespace Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, ex);
+                Logger.LogError(ex.Message, ex);
             }
         }
     }

@@ -14,14 +14,15 @@ public sealed class GetProductsQueryHandler(IRetailDbContext db) : IQueryHandler
             {
                 Id = x.Id,
                 Name = x.Name,
-                Image = x.Image,
+                ThumbnailPath = x.ThumbnailPath,
                 Description = x.Description,
                 HSNCode = x.HSNCode,
                 IGST = x.IGST,
                 CGST = x.CGST,
                 BasePrice = x.BasePrice,
                 Order = x.Order,
-                HindiContent = x.HindiContent,                
+                HindiContent = x.HindiContent,
+                IsActive = x.IsActive
             })
             .ToListAsync(ct);
         return Result.Success(products);

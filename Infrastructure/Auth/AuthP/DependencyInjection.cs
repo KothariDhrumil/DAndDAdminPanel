@@ -109,6 +109,7 @@ public static class DependencyInjection
         services.AddTransient<ITenantRetailDbContextFactory, TenantRetailDbContextFactory>();
         services.AddTransient<ICustomerTokenService, CustomerTokenService>();
 
+
         return services;
     }
 

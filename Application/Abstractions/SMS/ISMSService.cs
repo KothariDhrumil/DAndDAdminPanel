@@ -1,6 +1,6 @@
 ﻿using Application.Communication;
 
-namespace Application.Abstractions.Authentication;
+namespace Application.Abstractions.SMS;
 
 public interface ISMSService : ITransientService
 {

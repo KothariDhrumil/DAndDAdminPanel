@@ -1,5 +1,4 @@
-﻿
-using Application.Abstractions.Authentication;
+﻿using Application.Abstractions.SMS;
 using Application.Communication;
 using Application.Identity.Account;
 using Domain;

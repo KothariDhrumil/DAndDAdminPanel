@@ -30,7 +30,7 @@ public class ProductsController : VersionedApiController
 
     [HttpPost]
     public async Task<IActionResult> CreateProductAsync(
-        [FromBody] CreateProductCommand command,
+        [FromForm] CreateProductCommand command,
         ICommandHandler<CreateProductCommand, int> handler,
         CancellationToken cancellationToken)
     {
@@ -38,9 +38,9 @@ public class ProductsController : VersionedApiController
         return Ok(response);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdateProductAsync(
-        [FromBody] UpdateProductCommand command,
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateProductAsync(int id,
+        [FromForm] UpdateProductCommand command,
         ICommandHandler<UpdateProductCommand> handler,
         CancellationToken cancellationToken)
     {
@@ -54,5 +54,22 @@ public class ProductsController : VersionedApiController
     {
         var result = await handler.Handle(new DeleteProductCommand { Id = id }, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpPatch("{id:int}/active")]
+    public async Task<IActionResult> UpdateProductActiveStatusAsync(
+        int id,
+        [FromBody] UpdateProductActiveStatusDto dto,
+        ICommandHandler<UpdateProductActiveStatusCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateProductActiveStatusCommand { Id = id, IsActive = dto.IsActive };
+        var result = await handler.Handle(command, cancellationToken);
+        return Ok(result);
+    }
+
+    public class UpdateProductActiveStatusDto
+    {
+        public bool IsActive { get; set; }
     }
 }
