@@ -19,7 +19,7 @@ public sealed class UpdateProductCommandHandler(IRetailDbContext db, IImageServi
         product.IGST = command.IGST;
         product.CGST = command.CGST;
         product.BasePrice = command.BasePrice;
-        product.Order = command.Order;
+        product.Order = (command.Order is null || command.Order == 0) ? product.Order : (int)command.Order;
         product.HindiContent = command.HindiContent;
 
         if (command.ImageFile != null && command.ImageFile.Length > 0)

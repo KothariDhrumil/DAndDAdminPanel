@@ -2,6 +2,7 @@ using Application.Abstractions.Data;
 using Application.Abstractions.ImageHandling;
 using Application.Abstractions.Messaging;
 using Domain.Customers;
+using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 
@@ -11,6 +12,14 @@ public sealed class CreateProductCommandHandler(IRetailDbContext db, IImageServi
 {
     public async Task<Result<int>> Handle(CreateProductCommand command, CancellationToken ct)
     {
+        // if command.order is null, set it to max existing order + 1
+        int order = command.Order ?? 0;
+        if (command.Order == null || command.Order == 0)
+        {
+            var maxOrder = await db.Products.MaxAsync(p => (int?)p.Order, ct) ?? 0;
+            order = maxOrder + 1;
+        }
+
         var entity = new Product
         {
             Name = command.Name,
@@ -19,7 +28,7 @@ public sealed class CreateProductCommandHandler(IRetailDbContext db, IImageServi
             IGST = command.IGST,
             CGST = command.CGST,
             BasePrice = command.BasePrice,
-            Order = command.Order,
+            Order = order,
             HindiContent = command.HindiContent
         };
 

@@ -1,5 +1,6 @@
 ﻿using Application;
 using Application.Abstractions.ImageHandling;
+using Application.Abstractions.Pricing;
 using Asp.Versioning;
 using AuthPermissions.BaseCode.SetupCode;
 using AuthPermissions.SupportCode.DownStatusCode;
@@ -150,6 +151,7 @@ public static class StartupExtensions
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
         services.AddTransient<IImageService, ImageService>();
+        services.AddTransient<IPriceTierService, PriceTierService>();
         return services;
     }
 

@@ -54,6 +54,10 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<Route> Routes => Set<Route>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<CustomerProduct> CustomerProducts => Set<CustomerProduct>();
+    public DbSet<PriceTier> PriceTiers => Set<PriceTier>();
+    public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>();
+    public DbSet<RoutePriceTier> RoutePriceTiers => Set<RoutePriceTier>();
+    public DbSet<CustomerPriceTier> CustomerPriceTiers => Set<CustomerPriceTier>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -244,6 +248,34 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.DataKey);
         modelBuilder.Entity<CustomerProduct>()
             .HasIndex(x => x.IsActive);
+
+        // PriceTier config
+        modelBuilder.Entity<PriceTier>()
+            .ToTable("PriceTiers", "retail");
+        modelBuilder.Entity<PriceTier>()
+            .HasIndex(x => x.Name);
+        modelBuilder.Entity<PriceTier>()
+            .HasIndex(x => x.IsActive);
+        // PriceTierProduct config
+        modelBuilder.Entity<PriceTierProduct>()
+            .ToTable("PriceTierProducts", "retail");
+        modelBuilder.Entity<PriceTierProduct>()
+            .HasIndex(x => new { x.PriceTierId, x.ProductId });
+        // RoutePriceTier config
+        modelBuilder.Entity<RoutePriceTier>()
+            .ToTable("RoutePriceTiers", "retail");
+        modelBuilder.Entity<RoutePriceTier>()
+            .HasIndex(x => x.RouteId);
+        modelBuilder.Entity<RoutePriceTier>()
+            .HasIndex(x => x.PriceTierId);
+        // CustomerPriceTier config
+        modelBuilder.Entity<CustomerPriceTier>()
+            .ToTable("CustomerPriceTiers", "retail");
+        modelBuilder.Entity<CustomerPriceTier>()
+            .HasIndex(x => x.CustomerId);
+        modelBuilder.Entity<CustomerPriceTier>()
+            .HasIndex(x => x.PriceTierId);
+
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

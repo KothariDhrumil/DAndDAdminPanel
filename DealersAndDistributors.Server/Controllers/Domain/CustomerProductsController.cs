@@ -31,15 +31,12 @@ public class CustomerProductsController : VersionedApiController
     [HttpPost("{customerId:guid}/upsert")]
     public async Task<IActionResult> UpsertCustomerProductsAsync(
         Guid customerId,
-        [FromBody] List<CustomerProductUpsertDto> products,
+        [FromBody] UpsertCustomerProductsCommand command,
         ICommandHandler<UpsertCustomerProductsCommand> handler,
         CancellationToken cancellationToken)
     {
-        var command = new UpsertCustomerProductsCommand
-        {
-            CustomerId = customerId,
-            Products = products
-        };
+
+
         var result = await handler.Handle(command, cancellationToken);
         return Ok(result);
     }

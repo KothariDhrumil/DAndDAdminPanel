@@ -7,13 +7,12 @@ public sealed class UpdateProductCommand : ICommand
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string HSNCode { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? HSNCode { get; set; }
     public decimal IGST { get; set; }
     public decimal CGST { get; set; }
     public decimal BasePrice { get; set; }
-    public int Order { get; set; }
-    public string HindiContent { get; set; } = string.Empty;
+    public int? Order { get; set; }
+    public string? HindiContent { get; set; }
     public IFormFile? ImageFile { get; set; }
-    
 }

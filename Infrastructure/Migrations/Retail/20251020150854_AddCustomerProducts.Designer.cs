@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 {
     [DbContext(typeof(RetailDbContext))]
-    partial class RetailDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251020150854_AddCustomerProducts")]
+    partial class AddCustomerProducts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,52 +67,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.HasIndex("TenantUserId", "EntryDate");
 
                     b.ToTable("LedgerEntries", "retail");
-                });
-
-            modelBuilder.Entity("Domain.Customers.CustomerPriceTier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DataKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PriceTierId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("DataKey");
-
-                    b.HasIndex("PriceTierId");
-
-                    b.ToTable("CustomerPriceTiers", "retail");
                 });
 
             modelBuilder.Entity("Domain.Customers.CustomerProduct", b =>
@@ -210,104 +167,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.ToTable("CustomerRoutes", "retail");
                 });
 
-            modelBuilder.Entity("Domain.Customers.PriceTier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DataKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataKey");
-
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("Name");
-
-                    b.ToTable("PriceTiers", "retail");
-                });
-
-            modelBuilder.Entity("Domain.Customers.PriceTierProduct", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DataKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PriceTierId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SalesRate")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("decimal(9,2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataKey");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("PriceTierId", "ProductId");
-
-                    b.ToTable("PriceTierProducts", "retail");
-                });
-
             modelBuilder.Entity("Domain.Customers.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -337,12 +196,15 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .HasColumnType("varchar(250)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HSNCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("HindiContent")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("IGST")
@@ -350,6 +212,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .HasColumnType("decimal(9,2)");
 
                     b.Property<string>("ImagePath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -363,6 +226,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .HasColumnType("int");
 
                     b.Property<string>("ThumbnailPath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -431,52 +295,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.HasIndex("TenantUserId");
 
                     b.ToTable("Routes", "retail");
-                });
-
-            modelBuilder.Entity("Domain.Customers.RoutePriceTier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DataKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PriceTierId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RouteId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataKey");
-
-                    b.HasIndex("PriceTierId");
-
-                    b.HasIndex("RouteId");
-
-                    b.ToTable("RoutePriceTiers", "retail");
                 });
 
             modelBuilder.Entity("Domain.Customers.TenantCustomerProfile", b =>
@@ -806,25 +624,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.ToTable("TodoItems", "retail");
                 });
 
-            modelBuilder.Entity("Domain.Customers.CustomerPriceTier", b =>
-                {
-                    b.HasOne("Domain.Customers.TenantCustomerProfile", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Customers.PriceTier", "PriceTier")
-                        .WithMany()
-                        .HasForeignKey("PriceTierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("PriceTier");
-                });
-
             modelBuilder.Entity("Domain.Customers.CustomerProduct", b =>
                 {
                     b.HasOne("Domain.Customers.TenantCustomerProfile", "Customer")
@@ -863,25 +662,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("Domain.Customers.PriceTierProduct", b =>
-                {
-                    b.HasOne("Domain.Customers.PriceTier", "PriceTier")
-                        .WithMany("Products")
-                        .HasForeignKey("PriceTierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Customers.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PriceTier");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("Domain.Customers.Route", b =>
                 {
                     b.HasOne("Domain.Customers.TenantUserProfile", "TenantUser")
@@ -891,25 +671,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .IsRequired();
 
                     b.Navigation("TenantUser");
-                });
-
-            modelBuilder.Entity("Domain.Customers.RoutePriceTier", b =>
-                {
-                    b.HasOne("Domain.Customers.PriceTier", "PriceTier")
-                        .WithMany()
-                        .HasForeignKey("PriceTierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Customers.Route", "Route")
-                        .WithMany()
-                        .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PriceTier");
-
-                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("Domain.Customers.TenantCustomerProfile", b =>
@@ -940,11 +701,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .IsRequired();
 
                     b.Navigation("CustomerProfile");
-                });
-
-            modelBuilder.Entity("Domain.Customers.PriceTier", b =>
-                {
-                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Domain.Customers.Product", b =>

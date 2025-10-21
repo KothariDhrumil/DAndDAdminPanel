@@ -21,5 +21,9 @@ public interface IRetailDbContext : IDataKeyFilterReadOnly
     DbSet<Route> Routes { get; }
     DbSet<Product> Products { get; }
     DbSet<CustomerProduct> CustomerProducts { get; }
+    DbSet<PriceTier> PriceTiers { get; }
+    DbSet<PriceTierProduct> PriceTierProducts { get; }
+    DbSet<RoutePriceTier> RoutePriceTiers { get; }
+    DbSet<CustomerPriceTier> CustomerPriceTiers { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
