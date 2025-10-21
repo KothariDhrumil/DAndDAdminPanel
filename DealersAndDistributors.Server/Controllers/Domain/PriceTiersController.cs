@@ -5,6 +5,7 @@ using Application.Domain.PriceTiers.Update;
 using Application.Domain.PriceTiers.Bulk;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
+using Application.Domain.PriceTiers.Delete;
 
 namespace DealersAndDistributors.Server.Controllers.Domain;
 
@@ -28,23 +29,24 @@ public class PriceTiersController : VersionedApiController
         return Ok(response);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdatePriceTierAsync(
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdatePriceTierAsync(int id,
         [FromBody] UpdatePriceTierCommand command,
         ICommandHandler<UpdatePriceTierCommand> handler,
         CancellationToken cancellationToken)
     {
+        command.Id = id;
         return Ok(await handler.Handle(command, cancellationToken));
     }
 
     [HttpPatch("{id:int}/active")]
     public async Task<IActionResult> UpdatePriceTierActiveStatusAsync(
         int id,
-        [FromBody] bool isActive,
+        [FromBody] UpdatePriceTierActiveStatusCommand command,
         ICommandHandler<UpdatePriceTierActiveStatusCommand> handler,
         CancellationToken cancellationToken)
     {
-        var command = new UpdatePriceTierActiveStatusCommand { Id = id, IsActive = isActive };
+        command.Id = id;
         var result = await handler.Handle(command, cancellationToken);
         return Ok(result);
     }
@@ -68,4 +70,16 @@ public class PriceTiersController : VersionedApiController
         var result = await handler.Handle(command, cancellationToken);
         return Ok(result);
     }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeletePriceTierAsync(
+        int id,
+        ICommandHandler<DeletePriceTierCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new DeletePriceTierCommand { Id = id }, cancellationToken);
+        return Ok(result);
+    }
+    
+    
 }
