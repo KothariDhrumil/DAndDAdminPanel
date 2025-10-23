@@ -80,6 +80,22 @@ public class PriceTiersController : VersionedApiController
         var result = await handler.Handle(new DeletePriceTierCommand { Id = id }, cancellationToken);
         return Ok(result);
     }
-    
-    
+
+    [HttpGet("bulk-upsert-products")]
+    public async Task<IActionResult> GetBulkPriceTierProductsAsync(
+        IQueryHandler<GetBulkPriceTierProductsQuery, List<PriceTierProductBulkResponse>> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new GetBulkPriceTierProductsQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("bulk-upsert-route-tiers")]
+    public async Task<IActionResult> GetBulkRoutePriceTiersAsync(
+        IQueryHandler<GetBulkRoutePriceTiersQuery, List<RoutePriceTierBulkResponse>> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new GetBulkRoutePriceTiersQuery(), cancellationToken);
+        return Ok(result);
+    }
 }
