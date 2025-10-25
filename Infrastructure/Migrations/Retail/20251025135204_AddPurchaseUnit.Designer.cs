@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 {
     [DbContext(typeof(RetailDbContext))]
-    partial class RetailDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251025135204_AddPurchaseUnit")]
+    partial class AddPurchaseUnit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -823,7 +826,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("TenantUserId")
+                    b.Property<Guid>("TenantUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1132,7 +1135,9 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                 {
                     b.HasOne("Domain.Customers.TenantUserProfile", "TenantUser")
                         .WithMany()
-                        .HasForeignKey("TenantUserId");
+                        .HasForeignKey("TenantUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("TenantUser");
                 });

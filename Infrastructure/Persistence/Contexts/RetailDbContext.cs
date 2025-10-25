@@ -8,6 +8,7 @@ using Domain.AbstactClass;
 using Domain.Accounting;
 using Domain.Customers;
 using Domain.Orders;
+using Domain.Purchase;
 using Domain.Todos;
 using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +56,8 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<CustomerProduct> CustomerProducts => Set<CustomerProduct>();
     public DbSet<PriceTier> PriceTiers => Set<PriceTier>();
-    public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>(); 
+    public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>();
+    public DbSet<PurchaseUnit> PurchaseUnits => Set<PurchaseUnit>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -129,7 +131,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.HierarchyPath);
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.Depth);
-        
+
         //modelBuilder.Entity<TenantCustomerProfile>()
         //    .HasIndex(x => x.CreatedAt);
         //modelBuilder.Entity<TenantCustomerProfile>()
@@ -275,8 +277,27 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .ToTable("PriceTierProducts", "retail");
         modelBuilder.Entity<PriceTierProduct>()
             .HasIndex(x => new { x.PriceTierId, x.ProductId });
-       
+        // PurchaseUnit config
 
+        modelBuilder.Entity<PurchaseUnit>()
+            .ToTable("PurchaseUnits", "retail");
+        modelBuilder.Entity<PurchaseUnit>()
+            .HasIndex(x => x.Name);
+        modelBuilder.Entity<PurchaseUnit>()
+            .HasIndex(x => x.IsInternal);
+        modelBuilder.Entity<PurchaseUnit>()
+            .HasIndex(x => x.IsTaxable);
+        modelBuilder.Entity<PurchaseUnit>()
+            .HasIndex(x => x.TenantUserId);
+        modelBuilder.Entity<PurchaseUnit>()
+            .HasIndex(x => x.DataKey);
+
+        modelBuilder.Entity<PurchaseDetail>()
+            .Property(x => x.Tax).HasPrecision(18, 2);
+        modelBuilder.Entity<PurchaseDetail>()
+            .Property(x => x.Rate).HasPrecision(9, 2);
+        modelBuilder.Entity<PurchaseDetail>()
+            .Property(x => x.Amount).HasPrecision(9, 2);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

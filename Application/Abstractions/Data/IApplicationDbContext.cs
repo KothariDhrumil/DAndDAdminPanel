@@ -5,6 +5,7 @@ using Domain.Todos;
 using Domain.Customers;
 using Microsoft.EntityFrameworkCore;
 using Domain.Accounting;
+using Domain.Purchase;
 
 namespace Application.Abstractions.Data;
 
@@ -22,6 +23,7 @@ public interface IRetailDbContext : IDataKeyFilterReadOnly
     DbSet<Product> Products { get; }
     DbSet<CustomerProduct> CustomerProducts { get; }
     DbSet<PriceTier> PriceTiers { get; }
-    DbSet<PriceTierProduct> PriceTierProducts { get; }    
+    DbSet<PriceTierProduct> PriceTierProducts { get; }
+    DbSet<PurchaseUnit> PurchaseUnits { get; }    
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
