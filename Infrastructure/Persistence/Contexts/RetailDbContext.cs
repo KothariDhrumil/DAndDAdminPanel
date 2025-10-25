@@ -58,6 +58,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<PriceTier> PriceTiers => Set<PriceTier>();
     public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>();
     public DbSet<PurchaseUnit> PurchaseUnits => Set<PurchaseUnit>();
+    public DbSet<PurchaseUnitProduct> PurchaseUnitProducts => Set<PurchaseUnitProduct>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -291,6 +292,18 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.TenantUserId);
         modelBuilder.Entity<PurchaseUnit>()
             .HasIndex(x => x.DataKey);
+
+        // PurchaseUnitProduct config
+        modelBuilder.Entity<PurchaseUnitProduct>()
+            .ToTable("PurchaseUnitProduct", "retail");
+        modelBuilder.Entity<PurchaseUnitProduct>()
+            .HasIndex(x => x.PurchaseUnitId);
+        modelBuilder.Entity<PurchaseUnitProduct>()
+            .HasIndex(x => x.ProductId);
+        modelBuilder.Entity<PurchaseUnitProduct>()
+            .HasIndex(x => x.DataKey);
+        modelBuilder.Entity<PurchaseUnitProduct>()
+            .HasIndex(x => x.IsActive);
 
         modelBuilder.Entity<PurchaseDetail>()
             .Property(x => x.Tax).HasPrecision(18, 2);

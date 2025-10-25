@@ -35,8 +35,6 @@ public class CustomerProductsController : VersionedApiController
         ICommandHandler<UpsertCustomerProductsCommand> handler,
         CancellationToken cancellationToken)
     {
-
-
         var result = await handler.Handle(command, cancellationToken);
         return Ok(result);
     }
