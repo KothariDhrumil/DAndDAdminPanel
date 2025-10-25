@@ -55,9 +55,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<CustomerProduct> CustomerProducts => Set<CustomerProduct>();
     public DbSet<PriceTier> PriceTiers => Set<PriceTier>();
-    public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>();
-    public DbSet<RoutePriceTier> RoutePriceTiers => Set<RoutePriceTier>();
-    public DbSet<CustomerPriceTier> CustomerPriceTiers => Set<CustomerPriceTier>();
+    public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>(); 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -139,11 +137,20 @@ public class RetailDbContext : DbContext, IRetailDbContext
         modelBuilder.Entity<TenantCustomerProfile>()
          .HasIndex(c => new { c.RouteId, c.SequenceNo })
          .IsUnique(); // Prevent duplicate sequence numbers per route
+        modelBuilder.Entity<TenantCustomerProfile>()
+           .HasIndex(x => x.PriceTierId);
 
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasOne(c => c.Route)
             .WithMany(r => r.Customers)
             .HasForeignKey(c => c.RouteId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+
+        modelBuilder.Entity<TenantCustomerProfile>()
+            .HasOne(c => c.PriceTier)
+            .WithMany()
+            .HasForeignKey(c => c.PriceTierId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // TenantUserProfile config (staff/users like HR/Admin/Salesman)
@@ -196,6 +203,13 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.TenantUserId);
         modelBuilder.Entity<Route>()
             .HasIndex(x => x.IsActive);
+        modelBuilder.Entity<Route>()
+            .HasIndex(x => x.PriceTierId);
+        modelBuilder.Entity<Route>()
+            .HasOne(r => r.PriceTier)
+            .WithMany()
+            .HasForeignKey(r => r.PriceTierId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // CustomerRoute config
         modelBuilder.Entity<CustomerRoute>()
@@ -261,20 +275,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .ToTable("PriceTierProducts", "retail");
         modelBuilder.Entity<PriceTierProduct>()
             .HasIndex(x => new { x.PriceTierId, x.ProductId });
-        // RoutePriceTier config
-        modelBuilder.Entity<RoutePriceTier>()
-            .ToTable("RoutePriceTiers", "retail");
-        modelBuilder.Entity<RoutePriceTier>()
-            .HasIndex(x => x.RouteId);
-        modelBuilder.Entity<RoutePriceTier>()
-            .HasIndex(x => x.PriceTierId);
-        // CustomerPriceTier config
-        modelBuilder.Entity<CustomerPriceTier>()
-            .ToTable("CustomerPriceTiers", "retail");
-        modelBuilder.Entity<CustomerPriceTier>()
-            .HasIndex(x => x.CustomerId);
-        modelBuilder.Entity<CustomerPriceTier>()
-            .HasIndex(x => x.PriceTierId);
+       
 
     }
 

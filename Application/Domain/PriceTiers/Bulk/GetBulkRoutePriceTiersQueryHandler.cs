@@ -9,17 +9,17 @@ public sealed class GetBulkRoutePriceTiersQueryHandler(IRetailDbContext db) : IQ
 {
     public async Task<Result<List<RoutePriceTierBulkResponse>>> Handle(GetBulkRoutePriceTiersQuery query, CancellationToken ct)
     {
-        var items = await db.RoutePriceTiers
-            .Include(x => x.Route)
-            .Include(x => x.PriceTier)
-            .Select(x => new RoutePriceTierBulkResponse
-            {
-                RouteId = x.RouteId,
-                RouteName = x.Route.Name,
-                PriceTierId = x.PriceTierId,
-                PriceTierName = x.PriceTier.Name
-            })
-            .ToListAsync(ct);
-        return Result.Success(items);
+        //var items = await db.RoutePriceTiers
+        //    .Include(x => x.Route)
+        //    .Include(x => x.PriceTier)
+        //    .Select(x => new RoutePriceTierBulkResponse
+        //    {
+        //        RouteId = x.RouteId,
+        //        RouteName = x.Route.Name,
+        //        PriceTierId = x.PriceTierId,
+        //        PriceTierName = x.PriceTier.Name
+        //    })
+        //    .ToListAsync(ct);
+        return Result.Success(new List<RoutePriceTierBulkResponse>());
     }
 }

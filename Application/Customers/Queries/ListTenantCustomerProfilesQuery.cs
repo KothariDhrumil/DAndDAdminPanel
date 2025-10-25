@@ -23,7 +23,9 @@ public sealed record TenantCustomerProfileDto(
     string? PhoneNumber,
     int? RouteId,
     string Route,
-    int SequenceNo);
+    int SequenceNo,
+    int? priceTierId,
+    string priceTier);
 
 internal sealed class ListTenantCustomerProfilesQueryHandler(
     ITenantRetailDbContextFactory tenantRetailDbContextFactory
@@ -69,7 +71,9 @@ internal sealed class ListTenantCustomerProfilesQueryHandler(
                 p.PhoneNumber,
                 p.RouteId,
                 p.Route.Name,
-                p.SequenceNo
+                p.SequenceNo,
+                p.PriceTierId,
+                p.PriceTier.Name
                 ))
             
             .ToListAsync(cancellationToken);

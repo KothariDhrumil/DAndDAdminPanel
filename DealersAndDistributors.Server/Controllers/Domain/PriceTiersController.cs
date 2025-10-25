@@ -98,4 +98,28 @@ public class PriceTiersController : VersionedApiController
         var result = await handler.Handle(new GetBulkRoutePriceTiersQuery(), cancellationToken);
         return Ok(result);
     }
+
+    [HttpPut("route/{routeId:int}")]
+    public async Task<IActionResult> UpdateRoutePriceTierAsync(
+        int routeId,
+        [FromBody] UpdateRoutePriceTierCommand command,
+        ICommandHandler<UpdateRoutePriceTierCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        command.RouteId = routeId;
+        var result = await handler.Handle(command, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("customer/{tenantUserId:guid}")]
+    public async Task<IActionResult> UpdateCustomerPriceTierAsync(
+        Guid tenantUserId,
+        [FromBody] UpdateCustomerPriceTierCommand command,
+        ICommandHandler<UpdateCustomerPriceTierCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        command.TenantUserId = tenantUserId;
+        var result = await handler.Handle(command, cancellationToken);
+        return Ok(result);
+    }
 }

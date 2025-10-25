@@ -14,6 +14,7 @@ public sealed class CreateRouteCommandHandler(IRetailDbContext db) : ICommandHan
             Name = command.Name,
             TenantUserId = Guid.Parse(command.TenantUserId),
             IsActive = command.IsActive,
+            PriceTierId = command.PriceTierId
         };
         db.Routes.Add(entity);
         await db.SaveChangesAsync(ct);

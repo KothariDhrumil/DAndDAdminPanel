@@ -12,4 +12,7 @@ public sealed class GetRouteResponse
     public string TenantUser { get; set; } = string.Empty;
     public Guid TenantUserId { get; set; }
     public bool IsActive { get; set; }
- }
+
+    public int? PriceTierId { get; set; }
+    public string PriceTier { get; set; }
+}

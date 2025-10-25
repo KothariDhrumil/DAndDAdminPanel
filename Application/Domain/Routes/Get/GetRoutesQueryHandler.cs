@@ -16,7 +16,9 @@ public sealed class GetRoutesQueryHandler(IRetailDbContext db) : IQueryHandler<G
                 TenantUserId = x.TenantUserId,
                 IsActive = x.IsActive,
                 Id = x.Id,
-                TenantUser = x.TenantUser.FirstName + " " + x.TenantUser.LastName
+                TenantUser = x.TenantUser.FirstName + " " + x.TenantUser.LastName,
+                PriceTier = x.PriceTier.Name,
+                PriceTierId = x.PriceTierId
             })
             .ToListAsync(ct);
         return Result.Success(routes);
