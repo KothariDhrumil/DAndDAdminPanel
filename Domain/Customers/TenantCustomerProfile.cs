@@ -32,7 +32,6 @@ public class TenantCustomerProfile : UserProfile
 
     public string Address { get; set; } = string.Empty;
     public double OpeningBalance { get; set; }
-    public bool IsActive { get; set; }
     public bool TaxEnabled { get; set; }
     public bool CourierChargesApplicable { get; set; }
     public string GSTNumber { get; set; } = string.Empty;
@@ -41,13 +40,13 @@ public class TenantCustomerProfile : UserProfile
 
     // Link to Route
     public int? RouteId { get; set; }
-    public Route Route { get; set; }
+    public Route? Route { get; set; }
 
     // Order within route
     public int SequenceNo { get; set; }  // Determines visiting order
 
     public int? PriceTierId { get; set; }
-    public PriceTier PriceTier { get; set; } = default!;
+    public PriceTier? PriceTier { get; set; } = default!;
 
     public ICollection<CustomerProduct> CustomerProducts { get; set; } = new List<CustomerProduct>();
 }

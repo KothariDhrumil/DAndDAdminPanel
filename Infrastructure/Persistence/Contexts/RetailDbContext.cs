@@ -129,10 +129,12 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.HierarchyPath);
         modelBuilder.Entity<TenantCustomerProfile>()
             .HasIndex(x => x.Depth);
-        modelBuilder.Entity<TenantCustomerProfile>()
-            .HasIndex(x => x.CreatedAt);
-        modelBuilder.Entity<TenantCustomerProfile>()
-            .HasIndex(x => x.UpdatedAt);
+        
+        //modelBuilder.Entity<TenantCustomerProfile>()
+        //    .HasIndex(x => x.CreatedAt);
+        //modelBuilder.Entity<TenantCustomerProfile>()
+        //    .HasIndex(x => x.UpdatedAt);
+
         // Index for RouteId (for fast queries by route)
         modelBuilder.Entity<TenantCustomerProfile>()
          .HasIndex(c => new { c.RouteId, c.SequenceNo })
@@ -187,8 +189,6 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .HasIndex(x => x.DataKey);
         modelBuilder.Entity<LedgerEntry>()
             .HasIndex(x => x.EntryDate);
-        modelBuilder.Entity<LedgerEntry>()
-            .HasIndex(x => new { x.TenantUserId, x.EntryDate });
         modelBuilder.Entity<LedgerEntry>()
             .HasIndex(x => new { x.TenantUserId, x.EntryDate });
 

@@ -21,7 +21,7 @@ namespace Application.Customers.Queries
         public string HierarchyPath { get; set; } = string.Empty;
         public byte Depth { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public string Address { get; set; } = string.Empty;
         public double OpeningBalance { get; set; }
         public bool IsActive { get; set; }

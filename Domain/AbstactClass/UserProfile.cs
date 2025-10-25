@@ -9,15 +9,15 @@ public abstract class UserProfile : IDataKeyFilterReadWrite, IDataKeyFilterReadO
     public Guid TenantUserId { get; private set; }
 
     [Required, MaxLength(100)]
-    public string? FirstName { get; set; }
+    public string? FirstName { get; set; } = default!;
 
     [Required, MaxLength(100)]
-    public string? LastName { get; set; }
+    public string? LastName { get; set; } = default!;
 
     [Required, MaxLength(32)]
-    public string PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; } = default!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
     /// <summary>
     /// Multi-tenant filter key populated automatically from the current user context
     /// </summary>
