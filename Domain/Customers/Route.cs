@@ -2,7 +2,7 @@
 
 namespace Domain.Customers;
 
-public class Route : AuditableBaseEntity
+public class Route : AuditableEntity
 {
     public string Name { get; set; }
     public virtual TenantUserProfile TenantUser { get; set; }

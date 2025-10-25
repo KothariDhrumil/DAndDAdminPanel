@@ -2,7 +2,7 @@ using Domain.AbstactClass;
 
 namespace Domain.Customers;
 
-public class PriceTierProduct : AuditableBaseEntity
+public class PriceTierProduct : AuditableEntity
 {
     public int PriceTierId { get; set; }
     public PriceTier PriceTier { get; set; } = default!;

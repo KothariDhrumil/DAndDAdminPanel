@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.AbstactClass
 {
-    public abstract class AuditableBaseEntity : IDataKeyFilterReadWrite, IDataKeyFilterReadOnly
+    public abstract class AuditableEntity : IDataKeyFilterReadWrite, IDataKeyFilterReadOnly
     {
         [Key]
         public virtual int Id { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace Domain
 {
-    public class Field : AuditableBaseEntity
+    public class Field : AuditableEntity
     {
         public string? Name { get; set; }
 

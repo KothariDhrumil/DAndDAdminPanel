@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Customers;
 
-public class UserType : AuditableBaseEntity
+public class UserType : AuditableEntity
 {
     [Required, MaxLength(100)]
     public string Name { get; set; } = string.Empty;

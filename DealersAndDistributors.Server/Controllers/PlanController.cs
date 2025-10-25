@@ -1,14 +1,14 @@
 ﻿using Application.Abstractions.Messaging;
-using Application.Plans.Create;
-using Application.Plans.Delete;
-using Application.Plans.Get;
-using Application.Plans.Update;
 using DealersAndDistributors.Server.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 using System.Threading.Tasks;
+using Application.Plans.Create;
+using Application.Plans.Delete;
+using Application.Plans.Get;
 using Application.Plans.GetById;
+using Application.Plans.Update;
 
 
 namespace DealersAndDistributors.Server.Controllers
@@ -24,10 +24,10 @@ namespace DealersAndDistributors.Server.Controllers
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A list of todo responses wrapped in an <see cref="IResult"/>.</returns>
         [HttpGet]
-        public async Task<IResult> Get(IQueryHandler<Application.Plans.Get.GetPlanQuery, List<Application.Plans.Get.PlanResponse>> handler, CancellationToken cancellationToken)
+        public async Task<IResult> Get(IQueryHandler<GetPlanQuery, List<PlanResponse>> handler, CancellationToken cancellationToken)
         {
             var query = new Application.Plans.Get.GetPlanQuery();
-            Result<List<Application.Plans.Get.PlanResponse>> resonse = await handler.Handle(query, cancellationToken);
+            Result<List<PlanResponse>> resonse = await handler.Handle(query, cancellationToken);
             return Results.Ok(resonse);
         }
 
@@ -35,7 +35,7 @@ namespace DealersAndDistributors.Server.Controllers
         /// Get a plan by id with permissions.
         /// </summary>
         [HttpGet("{id:int}")]
-        public async Task<IResult> GetById(int id, IQueryHandler<GetPlanByIdQuery, Application.Plans.GetById.PlanDetailsResponse> handler, CancellationToken cancellationToken)
+        public async Task<IResult> GetById(int id, IQueryHandler<GetPlanByIdQuery, PlanDetailsResponse> handler, CancellationToken cancellationToken)
         {
             var query = new GetPlanByIdQuery(id);
             var response = await handler.Handle(query, cancellationToken);

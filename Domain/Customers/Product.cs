@@ -2,7 +2,7 @@
 
 namespace Domain.Customers;
 
-public class Product : AuditableBaseEntity
+public class Product : AuditableEntity
 {
     public required string Name { get; set; }
     public string? ImagePath { get; set; }

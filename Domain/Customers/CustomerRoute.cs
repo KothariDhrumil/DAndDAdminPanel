@@ -2,7 +2,7 @@
 
 namespace Domain.Customers;
 
-public class CustomerRoute : AuditableBaseEntity
+public class CustomerRoute : AuditableEntity
 {
     public TenantCustomerProfile Customer { get; set; }
     public Guid CustomerId { get; set; }

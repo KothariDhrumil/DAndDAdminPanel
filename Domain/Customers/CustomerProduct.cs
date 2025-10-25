@@ -2,7 +2,7 @@
 
 namespace Domain.Customers;
 
-public class CustomerProduct : AuditableBaseEntity
+public class CustomerProduct : AuditableEntity
 {
     public TenantCustomerProfile Customer { get; set; }
     public Guid CustomerId { get; set; }

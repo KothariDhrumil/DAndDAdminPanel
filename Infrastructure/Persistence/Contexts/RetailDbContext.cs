@@ -305,7 +305,7 @@ public class RetailDbContext : DbContext, IRetailDbContext
     private void UpdateAuditableEntities()
     {
 
-        foreach (var entry in ChangeTracker.Entries<AuditableBaseEntity>().ToList())
+        foreach (var entry in ChangeTracker.Entries<AuditableEntity>().ToList())
         {
             switch (entry.State)
             {
