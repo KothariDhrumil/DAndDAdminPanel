@@ -17,6 +17,15 @@ public class CustomerProductsController : VersionedApiController
         var result = await handler.Handle(new GetCustomerProductsQuery(customerId), cancellationToken);
         return Ok(result);
     }
+    [HttpGet("{customerId:guid}/active")]
+    public async Task<IActionResult> GetActiveCustomerProductsAsync(
+        Guid customerId,
+        IQueryHandler<GetActiveCustomerProductsQuery, List<ActiveCustomerProductResponse>> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new GetActiveCustomerProductsQuery(customerId), cancellationToken);
+        return Ok(result);
+    }
 
     [HttpGet("{customerId:guid}/not-assigned")]
     public async Task<IActionResult> GetNotAssignedProductsAsync(
