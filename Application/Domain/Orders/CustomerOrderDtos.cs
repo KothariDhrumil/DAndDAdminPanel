@@ -6,6 +6,7 @@ public sealed class CustomerOrderDetailItemDto
     public int Qty { get; set; }
     public decimal Rate { get; set; }
     public decimal Amount { get; set; }
+
 }
 
 public sealed class CustomerOrderItemDto
@@ -24,5 +25,5 @@ public sealed class CustomerOrderItemDto
     public decimal? ParcelCharge { get; set; }
     public bool IsPreOrder { get; set; }
     public Guid? PayerCustomerId { get; set; }
-    public List<CustomerOrderDetailItemDto> Details { get; set; } = new();
+    public List<CustomerOrderDetailItemDto> CustomerOrderDetails { get; set; } = new();
 }

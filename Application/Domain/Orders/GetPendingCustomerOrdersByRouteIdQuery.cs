@@ -1,7 +1,5 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
-using Application.Abstractions.Persistence;
-using Domain.Purchase;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -22,7 +20,7 @@ internal sealed class GetPendingCustomerOrdersByRouteIdQueryHandler(
         var command = db.CustomerOrders
             .AsNoTracking()
             .Where(o => o.IsDelivered == false);
-        
+
         if (query.RouteId.HasValue)
             command = command.Where(o => o.Customer.RouteId == query.RouteId.Value);
 
@@ -43,7 +41,7 @@ internal sealed class GetPendingCustomerOrdersByRouteIdQueryHandler(
                 ParcelCharge = o.ParcelCharge,
                 IsPreOrder = o.IsPreOrder,
                 PayerCustomerId = o.PayerCustomerId,
-                Details = o.CustomerOrderDetails.Select(d => new CustomerOrderDetailItemDto
+                CustomerOrderDetails = o.CustomerOrderDetails.Select(d => new CustomerOrderDetailItemDto
                 {
                     ProductId = d.ProductId,
                     Qty = d.Qty,

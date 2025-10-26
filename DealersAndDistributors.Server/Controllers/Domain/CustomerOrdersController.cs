@@ -1,6 +1,10 @@
 using Application.Abstractions.Messaging;
 using Application.Customers.GetMyOrders;
 using Application.Domain.Orders;
+using Application.Domain.Orders.CreateCustomerOrder;
+using Application.Domain.Orders.DeliveredCustomerOrders;
+using Application.Domain.Orders.UndeliveredCustomerOrder;
+using Application.Domain.Orders.UpdateCustomerOrder;
 using AuthPermissions.BaseCode.CommonCode;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -65,6 +69,18 @@ public class CustomerOrdersController : VersionedApiController
         [FromQuery] GetDeliveredCustomerOrdersQuery query,
         CancellationToken ct)
     {
+        var result = await handler.Handle(query, ct);
+        return Results.Ok(result);
+    }
+
+    [HttpGet("undelivered/{customerId}")]
+    [Authorize]
+    public async Task<IResult> GetUndeliveredOrdersByCustomerId(
+        IQueryHandler<GetUndeliveredCustomerOrdersByCustomerIdQuery, UndeliveredCustomerOrderItemDto> handler,
+        Guid customerId,        
+        CancellationToken ct)
+    {
+        var query = new GetUndeliveredCustomerOrdersByCustomerIdQuery { CustomerId = customerId };
         var result = await handler.Handle(query, ct);
         return Results.Ok(result);
     }

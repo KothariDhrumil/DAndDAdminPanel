@@ -1,20 +1,9 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
-using Application.Abstractions.Persistence;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Domain.Orders;
-
-public sealed class GetDeliveredCustomerOrdersQuery : IQuery<PagedResult<List<CustomerOrderItemDto>>>
-{
-    public int? TenantId { get; set; }
-    public int? RouteId { get; set; }
-    public DateTime? FromDate { get; set; }
-    public DateTime? ToDate { get; set; }
-    public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 20;
-}
+namespace Application.Domain.Orders.DeliveredCustomerOrders;
 
 internal sealed class GetDeliveredCustomerOrdersQueryHandler(
     IRetailDbContext db)
@@ -22,8 +11,6 @@ internal sealed class GetDeliveredCustomerOrdersQueryHandler(
 {
     public async Task<Result<PagedResult<List<CustomerOrderItemDto>>>> Handle(GetDeliveredCustomerOrdersQuery query, CancellationToken ct)
     {
-        if (!query.TenantId.HasValue)
-            return Result.Success(PagedResult<List<CustomerOrderItemDto>>.Success(new List<CustomerOrderItemDto>(), query.Page, query.PageSize, 0));
 
         var orders = db.CustomerOrders.AsNoTracking().Where(o => o.IsDelivered == true);
 
@@ -56,7 +43,7 @@ internal sealed class GetDeliveredCustomerOrdersQueryHandler(
                 ParcelCharge = o.ParcelCharge,
                 IsPreOrder = o.IsPreOrder,
                 PayerCustomerId = o.PayerCustomerId,
-                Details = o.CustomerOrderDetails.Select(d => new CustomerOrderDetailItemDto
+                CustomerOrderDetails = o.CustomerOrderDetails.Select(d => new CustomerOrderDetailItemDto
                 {
                     ProductId = d.ProductId,
                     Qty = d.Qty,
