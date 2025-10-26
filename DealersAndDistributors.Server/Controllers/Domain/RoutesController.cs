@@ -11,12 +11,29 @@ namespace DealersAndDistributors.Server.Controllers.Domain;
 
 public class RoutesController : VersionedApiController
 {
-    [HttpGet]
-    public async Task<IActionResult> GetRoutesAsync(
-        IQueryHandler<GetRoutesQuery, List<GetRouteResponse>> handler,
+    [HttpGet("with-salesman")]
+    public async Task<IActionResult> GetRoutesWithSalesManAsync(
+        IQueryHandler<GetRouteWithSalesManQuery, List<GetRouteWithSalesManResponse>> handler,
         CancellationToken cancellationToken)
     {
-        return Ok(await handler.Handle(new GetRoutesQuery(), cancellationToken));
+        return Ok(await handler.Handle(new GetRouteWithSalesManQuery(), cancellationToken));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetRoutesAsync(
+        IQueryHandler<GetRouteQuery, List<GetRouteResponse>> handler,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await handler.Handle(new GetRouteQuery(), cancellationToken));
+    }
+
+    [HttpGet("{id:int}/customers")]
+    public async Task<IActionResult> GetCustomerByRouteIdAsync(
+        int id,
+        IQueryHandler<GetCustomerByRouteIdQuery, List<GetCustomerByRouteIdResponse>> handler,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await handler.Handle(new GetCustomerByRouteIdQuery(id), cancellationToken));
     }
 
     [HttpGet("{id:int}")]

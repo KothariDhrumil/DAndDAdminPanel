@@ -5,12 +5,12 @@ using SharedKernel;
 
 namespace Application.Domain.Routes.Get;
 
-public sealed class GetRoutesQueryHandler(IRetailDbContext db) : IQueryHandler<GetRoutesQuery, List<GetRouteResponse>>
+public sealed class GetRouteWithSalesManHandler(IRetailDbContext db) : IQueryHandler<GetRouteWithSalesManQuery, List<GetRouteWithSalesManResponse>>
 {
-    public async Task<Result<List<GetRouteResponse>>> Handle(GetRoutesQuery query, CancellationToken ct)
+    public async Task<Result<List<GetRouteWithSalesManResponse>>> Handle(GetRouteWithSalesManQuery query, CancellationToken ct)
     {
         var routes = await db.Routes.AsNoTracking()
-            .Select(x => new GetRouteResponse
+            .Select(x => new GetRouteWithSalesManResponse
             {
                 Name = x.Name,
                 TenantUserId = x.TenantUserId,

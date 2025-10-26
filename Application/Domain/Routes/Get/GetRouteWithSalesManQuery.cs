@@ -1,11 +1,10 @@
 using Application.Abstractions.Messaging;
-using Domain.Customers;
 
 namespace Application.Domain.Routes.Get;
 
-public sealed record GetRoutesQuery : IQuery<List<GetRouteResponse>>;
+public sealed record GetRouteWithSalesManQuery : IQuery<List<GetRouteWithSalesManResponse>>;
 
-public sealed class GetRouteResponse
+public sealed class GetRouteWithSalesManResponse
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -16,3 +15,4 @@ public sealed class GetRouteResponse
     public int? PriceTierId { get; set; }
     public string PriceTier { get; set; }
 }
+
