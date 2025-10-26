@@ -59,6 +59,8 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>();
     public DbSet<PurchaseUnit> PurchaseUnits => Set<PurchaseUnit>();
     public DbSet<PurchaseUnitProduct> PurchaseUnitProducts => Set<PurchaseUnitProduct>();
+    public DbSet<CustomerOrder> CustomerOrders => Set<CustomerOrder>();
+    public DbSet<CustomerOrderDetail> CustomerOrderDetails => Set<CustomerOrderDetail>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -311,6 +313,58 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .Property(x => x.Rate).HasPrecision(9, 2);
         modelBuilder.Entity<PurchaseDetail>()
             .Property(x => x.Amount).HasPrecision(9, 2);
+
+        // CustomerOrder config
+        modelBuilder.Entity<CustomerOrder>()
+            .ToTable("CustomerOrders", "retail");
+        modelBuilder.Entity<CustomerOrder>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<CustomerOrder>()
+            .HasIndex(e => e.CustomerId);
+        modelBuilder.Entity<CustomerOrder>()
+            .HasIndex(e => e.IsDelivered);
+        modelBuilder.Entity<CustomerOrder>()
+            .HasIndex(e => e.OrderPlacedDate);
+        modelBuilder.Entity<CustomerOrder>()
+            .HasIndex(e => e.OrderDeliveryDate);
+        modelBuilder.Entity<CustomerOrder>()
+            .HasIndex(e => e.SalesManId);
+        modelBuilder.Entity<CustomerOrder>()
+            .HasIndex(e => e.PayerCustomerId);
+        modelBuilder.Entity<CustomerOrder>()
+            .HasMany(e => e.CustomerOrderDetails)
+            .WithOne(d => d.CustomerOrder)
+            .HasForeignKey(d => d.CustomerOrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CustomerOrder>()
+            .Property(e => e.Amount).HasPrecision(9, 2);
+        modelBuilder.Entity<CustomerOrder>()
+            .Property(e => e.Discount).HasPrecision(9, 2);
+        modelBuilder.Entity<CustomerOrder>()
+            .Property(e => e.Tax).HasPrecision(9, 2);
+        modelBuilder.Entity<CustomerOrder>()
+            .Property(e => e.GrandTotal).HasPrecision(9, 2);
+        modelBuilder.Entity<CustomerOrder>()
+            .Property(e => e.ParcelCharge).HasPrecision(9, 2);
+
+        // CustomerOrderDetail config
+        modelBuilder.Entity<CustomerOrderDetail>()
+            .ToTable("CustomerOrderDetails", "retail");
+        modelBuilder.Entity<CustomerOrderDetail>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<CustomerOrderDetail>()
+            .HasIndex(e => e.ProductId);
+        modelBuilder.Entity<CustomerOrderDetail>()
+            .HasIndex(e => e.CustomerOrderId);
+        modelBuilder.Entity<CustomerOrderDetail>()
+            .Property(e => e.Rate).HasPrecision(9, 2);
+        modelBuilder.Entity<CustomerOrderDetail>()
+            .Property(e => e.Amount).HasPrecision(9, 2);
+        modelBuilder.Entity<CustomerOrderDetail>()
+            .Property(e => e.CGST).HasPrecision(9, 2);
+        modelBuilder.Entity<CustomerOrderDetail>()
+            .Property(e => e.IGST).HasPrecision(9, 2);
+
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

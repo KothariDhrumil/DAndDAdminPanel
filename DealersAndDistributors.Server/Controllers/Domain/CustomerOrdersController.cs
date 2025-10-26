@@ -1,41 +1,15 @@
 using Application.Abstractions.Messaging;
 using Application.Customers.GetMyOrders;
-using Application.Customers.Orders;
+using Application.Domain.Orders;
 using AuthPermissions.BaseCode.CommonCode;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharedKernel;
 
 namespace DealersAndDistributors.Server.Controllers.Domain;
 
-public class CustomerOrdersController : VersionNeutralApiController
+public class CustomerOrdersController : VersionedApiController
 {
-    [HttpGet]
-    //[Authorize(Policy = "CustomersOnly")]
-    public async Task<IResult> GetMyOrders([FromQuery] string? globalCustomerId, 
-        IQueryHandler<GetMyOrdersQuery, List<MyOrderDto>> handler,
-        CancellationToken ct)
-    {
-        Guid cid = Guid.Empty;
-        int? tenantId = null;
-        if (string.IsNullOrEmpty(globalCustomerId))
-        {
-            var cidString = User.GetGlobalCustomerId();
-            if (!Guid.TryParse(cidString, out var customerId))
-                return Results.Unauthorized();
-            cid = customerId;
-        }
-        else
-        {
-            if (!Guid.TryParse(globalCustomerId, out var customerId))
-                return Results.Unauthorized();
-            cid = customerId;
-            tenantId = User.GetTenantId();
-        }
-
-        var result = await handler.Handle(new GetMyOrdersQuery(cid,tenantId), ct);
-        return Results.Ok(result);
-    }
-
     [HttpPost]
     [Authorize]
     public async Task<IResult> CreateOrder(
@@ -43,22 +17,55 @@ public class CustomerOrdersController : VersionNeutralApiController
         [FromBody] CreateCustomerOrderCommand command,
         CancellationToken ct)
     {
-
-        if (!command.TenantId.HasValue)
-        {
-            var tenantIdClaim = User.GetTenantId();
-            if (tenantIdClaim.HasValue)
-                command.TenantId = tenantIdClaim.Value;
-        }
-
-        if (command.GlobalCustomerId == Guid.Empty)
-        {
-            var cidString = User.GetGlobalCustomerId();
-            if (Guid.TryParse(cidString, out var cid))
-                command.GlobalCustomerId = cid;
-        }
-
         var result = await handler.Handle(command, ct);
+        return Results.Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    [Authorize]
+    public async Task<IResult> UpdateOrder(
+        ICommandHandler<UpdateCustomerOrderCommand, bool> handler,
+        int id,
+        [FromBody] UpdateCustomerOrderCommand command,
+        CancellationToken ct)
+    {
+        command.OrderId = id;
+        var result = await handler.Handle(command, ct);
+        return Results.Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize]
+    public async Task<IResult> DeleteOrder(
+        ICommandHandler<DeleteCustomerOrderCommand, bool> handler,
+        int id,
+        [FromBody] DeleteCustomerOrderCommand command,
+        CancellationToken ct)
+    {
+        command.OrderId = id;
+        var result = await handler.Handle(command, ct);
+        return Results.Ok(result);
+    }
+
+    [HttpGet("pending")]
+    [Authorize]
+    public async Task<IResult> GetPendingOrders(
+        IQueryHandler<GetPendingCustomerOrdersByRouteIdQuery, List<CustomerOrderItemDto>> handler,
+        [FromQuery] GetPendingCustomerOrdersByRouteIdQuery query,
+        CancellationToken ct)
+    {
+        var result = await handler.Handle(query, ct);
+        return Results.Ok(result);
+    }
+
+    [HttpGet("delivered")]
+    [Authorize]
+    public async Task<IResult> GetDeliveredOrders(
+        IQueryHandler<GetDeliveredCustomerOrdersQuery, PagedResult<List<CustomerOrderItemDto>>> handler,
+        [FromQuery] GetDeliveredCustomerOrdersQuery query,
+        CancellationToken ct)
+    {
+        var result = await handler.Handle(query, ct);
         return Results.Ok(result);
     }
 }
