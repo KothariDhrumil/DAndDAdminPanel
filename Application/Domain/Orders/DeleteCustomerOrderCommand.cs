@@ -7,7 +7,6 @@ namespace Application.Domain.Orders;
 
 public sealed class DeleteCustomerOrderCommand : ICommand<bool>
 {
-    public int? TenantId { get; set; }
     public int OrderId { get; set; }
 }
 
@@ -17,9 +16,6 @@ internal sealed class DeleteCustomerOrderCommandHandler(
 {
     public async Task<Result<bool>> Handle(DeleteCustomerOrderCommand command, CancellationToken ct)
     {
-        if (!command.TenantId.HasValue)
-            return Result.Failure<bool>(Error.Validation("TenantMissing", "Tenant id not resolved."));
-
         var order = await db.CustomerOrders
             .Include(o => o.CustomerOrderDetails)
             .FirstOrDefaultAsync(o => o.Id == command.OrderId, ct);

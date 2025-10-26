@@ -16,7 +16,7 @@ internal sealed class GetUndeliveredCustomerOrdersByCustomerIdQueryHandler(
 {
     public async Task<Result<UndeliveredCustomerOrderItemDto>> Handle(GetUndeliveredCustomerOrdersByCustomerIdQuery query, CancellationToken ct)
     {
-        var items = await db.CustomerOrders
+        var order = await db.CustomerOrders
             .AsNoTracking()
             .Where(o => o.IsDelivered == false && o.CustomerId == query.CustomerId)
             .Select(o => new UndeliveredCustomerOrderItemDto
@@ -39,6 +39,28 @@ internal sealed class GetUndeliveredCustomerOrdersByCustomerIdQueryHandler(
             })
             .FirstOrDefaultAsync(ct);
 
-        return Result.Success(items);
+        // If no undelivered order, return null DTO
+        if (order == null)
+            return Result.Success<UndeliveredCustomerOrderItemDto>(null);
+
+        var existingProductIds = order.CustomerOrderDetails.Select(d => d.ProductId).ToHashSet();
+
+        var missingProducts = await db.CustomerProducts
+            .AsNoTracking()
+            .Where(cp => cp.CustomerId == query.CustomerId
+                && cp.Product.IsActive
+                && !existingProductIds.Contains(cp.ProductId))
+            .Select(cp => new UndeliveredCustomerOrderDetailItemDto
+            {
+                ProductId = cp.ProductId,
+                Qty = 0,
+                SalesRate = cp.SalesRate,
+                ProductName = cp.Product.Name
+            })
+            .ToListAsync(ct);
+
+        order.CustomerOrderDetails.AddRange(missingProducts);
+
+        return Result.Success(order);
     }
 }

@@ -72,4 +72,28 @@ public class RoutesController : VersionedApiController
         var result = await handler.Handle(new DeleteRouteCommand { Id = id }, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("next-customer")]
+    public async Task<IActionResult> GetNextCustomerAsync(
+        [FromQuery] int routeId,
+        [FromQuery] Guid customerId,
+        IQueryHandler<GetNextCustomerInRouteQuery, TenantCustomerProfileDto?> handler,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetNextCustomerInRouteQuery { RouteId = routeId, CustomerId = customerId };
+        var result = await handler.Handle(query, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("previous-customer")]
+    public async Task<IActionResult> GetPreviousCustomerAsync(
+        [FromQuery] int routeId,
+        [FromQuery] Guid customerId,
+        IQueryHandler<GetPreviousCustomerInRouteQuery, TenantCustomerProfileDto?> handler,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetPreviousCustomerInRouteQuery { RouteId = routeId, CustomerId = customerId };
+        var result = await handler.Handle(query, cancellationToken);
+        return Ok(result);
+    }
 }
