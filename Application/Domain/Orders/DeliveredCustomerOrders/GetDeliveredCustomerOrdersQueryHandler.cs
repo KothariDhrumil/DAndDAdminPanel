@@ -38,22 +38,17 @@ internal sealed class GetDeliveredCustomerOrdersQueryHandler(
                 Discount = o.Discount,
                 Tax = o.Tax,
                 GrandTotal = o.GrandTotal,
-                Remarks = o.Remarks,
-                InvoiceNumber = o.InvoiceNumber,
                 ParcelCharge = o.ParcelCharge,
                 IsPreOrder = o.IsPreOrder,
-                PayerCustomerId = o.PayerCustomerId,
-                CustomerOrderDetails = o.CustomerOrderDetails.Select(d => new CustomerOrderDetailItemDto
-                {
-                    ProductId = d.ProductId,
-                    Qty = d.Qty,
-                    Rate = d.Rate,
-                    Amount = d.Amount
-                }).ToList()
+                CustomerName = o.Customer.FirstName + ' ' + o.Customer.LastName,
+                RouteName = o.Customer.Route.Name,
+                CreatedBy = o.CreatedBy,
+               
             })
             .ToListAsync(ct);
 
         var page = PagedResult<List<CustomerOrderItemDto>>.Success(items, query.Page, query.PageSize, total);
         return Result.Success(page);
+        
     }
 }

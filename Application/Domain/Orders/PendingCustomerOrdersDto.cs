@@ -6,8 +6,7 @@ public class PendingCustomerOrdersDto
     public Guid CustomerId { get; set; }
     public DateTime OrderPlacedDate { get; set; }
     public decimal Amount { get; set; }
-    public decimal GrandTotal { get; set; }
-    public Guid? PayerCustomerId { get; set; }
+    public decimal GrandTotal { get; set; }    
     public required string CustomerName { get; set; }
     public string? RouteName { get; set; }
 }
