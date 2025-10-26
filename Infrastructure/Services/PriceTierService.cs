@@ -4,7 +4,6 @@ using Domain.Customers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services;
-
 public class PriceTierService : IPriceTierService
 {
     private readonly IRetailDbContext _db;

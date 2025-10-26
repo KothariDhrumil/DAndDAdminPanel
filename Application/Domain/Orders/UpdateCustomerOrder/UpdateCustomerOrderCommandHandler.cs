@@ -1,22 +1,21 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Abstractions.Pricing;
 using Domain.Purchase;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
+using System.Text;
 
 namespace Application.Domain.Orders.UpdateCustomerOrder;
 
 internal sealed class UpdateCustomerOrderCommandHandler(
-    IRetailDbContext db)
+    IRetailDbContext db,
+    ICustomerOrderPriceCalculationService customerOrderPriceCalculationService)
     : ICommandHandler<UpdateCustomerOrderCommand, bool>
 {
+
     public async Task<Result<bool>> Handle(UpdateCustomerOrderCommand command, CancellationToken ct)
-    {
-        //if (!command.TenantId.HasValue)
-        //    return Result.Failure<bool>(Error.Validation("TenantMissing", "Tenant id not resolved."));
-
-        //var db = await factory.CreateAsync(command.TenantId.Value, ct);
-
+    { 
 
         var order = await db.CustomerOrders
             .Include(o => o.CustomerOrderDetails)
@@ -35,17 +34,33 @@ internal sealed class UpdateCustomerOrderCommandHandler(
             order.IsDelivered = command.IsDelivered.Value;
 
         // Update details: simple replace
-        order.CustomerOrderDetails.Clear();
-        foreach (var d in command.CustomerOrderDetails)
+        var existing = order.CustomerOrderDetails.ToList();
+
+        foreach (var item in command.CustomerOrderDetails)
         {
-            order.CustomerOrderDetails.Add(new CustomerOrderDetail
+            var detail = existing.FirstOrDefault(d => d.ProductId == item.ProductId);
+            if (detail == null)
             {
-                ProductId = d.ProductId,
-                Qty = d.Qty,
-                Rate = 0,
-                Amount = 0
-            });
+                order.CustomerOrderDetails.Add(new CustomerOrderDetail
+                {
+                    ProductId = item.ProductId,
+                    Qty = item.Qty,
+                });
+            }
+            else
+            {
+                detail.Qty = item.Qty;
+            }
         }
+
+        foreach (var existingDetail in existing)
+        {
+            if (!command.CustomerOrderDetails.Any(x => x.ProductId == existingDetail.ProductId) ||
+                command.CustomerOrderDetails.FirstOrDefault(x => x.ProductId == existingDetail.ProductId)?.Qty == 0)
+                order.CustomerOrderDetails.Remove(existingDetail);
+        }
+        await customerOrderPriceCalculationService.SaveOrUpdateOrderAsync(order);
+
         await db.SaveChangesAsync(ct);
         return Result.Success(true);
     }

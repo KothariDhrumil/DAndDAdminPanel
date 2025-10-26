@@ -152,6 +152,7 @@ public static class StartupExtensions
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
         services.AddTransient<IImageService, ImageService>();
         services.AddTransient<IPriceTierService, PriceTierService>();
+        services.AddTransient<ICustomerOrderPriceCalculationService, CustomerOrderPriceCalculationService>();
         return services;
     }
 
