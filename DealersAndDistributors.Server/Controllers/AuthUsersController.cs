@@ -2,25 +2,17 @@
 using Application.Domain.TeantUser.Services;
 using Application.Domain.TeantUser.Update;
 using AuthPermissions.AdminCode;
-using AuthPermissions.AspNetCore;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
 using AuthPermissions.SupportCode.AddUsersServices;
 using AuthPermissions.SupportCode.AddUsersServices.Authentication;
-using Domain;
-using Domain.Customers;
-using ExamplesCommonCode.CommonAdmin;
-using Infrastructure.Auth.AuthP;
-using Infrastructure.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
-using Shared;
 using SharedKernel;
-using System.Security.Claims;
+using SharedKernel.CommonAdmin;
 
 namespace DealersAndDistributors.Server.Controllers;
 
