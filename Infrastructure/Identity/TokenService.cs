@@ -1,6 +1,4 @@
-﻿using Application.Abstractions.SMS;
-using Application.Abstractions.Authentication;
-using Application.Communication;
+﻿using Application.Abstractions.Authentication;
 using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.JwtTokenCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
