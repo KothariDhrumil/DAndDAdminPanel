@@ -5,10 +5,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Auth\AuthP\AuthPermissionsDesignTimeFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
-    <PackageReference Include="AuthPermissions.AspNetCore" Version="9.0.4" />
+    <PackageReference Include="AuthPermissions.AspNetCore" Version="9.0.5" />
     <PackageReference Include="Azure.Identity" Version="1.17.0" />
     <PackageReference Include="EfCore.TestSupport" Version="9.0.0" />
     <PackageReference Include="MailKit" Version="4.14.1" />
