@@ -1,7 +1,4 @@
-﻿using AuthPermissions.BaseCode.DataLayer.Classes;
-using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
-using SharedKernel.CommonAdmin;
-using System.ComponentModel.DataAnnotations;
+﻿using ExamplesCommonCode.CommonAdmin;
 
 namespace Application.Identity.User
 {
@@ -19,5 +16,5 @@ namespace Application.Identity.User
         public AuthUserDisplay AuthUser { get; set; }
 
         public string UserRole { get; set; }
-    }   
+    }
 }

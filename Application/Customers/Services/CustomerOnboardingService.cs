@@ -1,6 +1,7 @@
 using Application.Abstractions.Persistence;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
+using Domain;
 using Domain.Customers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -46,9 +47,9 @@ public sealed class CustomerOnboardingService : ICustomerOnboardingService
             throw new InvalidOperationException(string.Join(',', created.Errors.Select(e => e.Description)));
 
         return user;
-    }
+    } 
 
-    public async Task<Guid> EnsureCustomerAccountAsync(ApplicationUser user, CancellationToken ct)
+    public async Task<Guid> EnsureCustomerAccountAsync(ApplicationUser user,  CancellationToken ct)
     {
         var existing = await authDb.CustomerAccounts.SingleOrDefaultAsync(c => c.GlobalUserId == user.Id, ct);
         if (existing != null)
@@ -70,7 +71,7 @@ public sealed class CustomerOnboardingService : ICustomerOnboardingService
         return account.GlobalCustomerId;
     }
 
-    public async Task EnsureLinkedToTenantAsync(Guid globalCustomerId, int tenantId, string? firstName, string? lastName, string phoneNumber, CancellationToken ct)
+    public async Task EnsureLinkedToTenantAsync(Guid globalCustomerId, int tenantId, string? firstName,string? lastName, string phoneNumber, CancellationToken ct)
     {
         var exists = await authDb.CustomerTenantLinks
             .AnyAsync(l => l.GlobalCustomerId == globalCustomerId && l.TenantId == tenantId, ct);

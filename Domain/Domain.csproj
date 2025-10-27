@@ -7,13 +7,11 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AuthPermissions.AspNetCore" Version="9.0.4" />
     <PackageReference Include="GenericServices.StatusGeneric" Version="1.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.10" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.7.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.7" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\AuthPermissions.BaseCode\AuthPermissions.BaseCode.csproj" />
     <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
   </ItemGroup>
 </Project>

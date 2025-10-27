@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions.SMS;
 using Application.Communication;
 using Application.Identity.Account;
-using AuthPermissions.BaseCode.DataLayer.Classes;
+using Domain;
 using Microsoft.AspNetCore.Identity;
 using SharedKernel;
 

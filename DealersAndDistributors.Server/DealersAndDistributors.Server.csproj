@@ -16,8 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AuthPermissions.AspNetCore" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -25,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\ExamplesCommonCode\ExamplesCommonCode.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
     <!--<ProjectReference Include="..\dealersanddistributors.client\dealersanddistributors.client.esproj">

@@ -1,5 +1,4 @@
-﻿using AuthPermissions.BaseCode.DataLayer.Classes;
-using Domain;
+﻿using Domain;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

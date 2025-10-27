@@ -1,8 +1,8 @@
 using Application.Abstractions.Authentication;
 using Application.Identity.Tokens;
-using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
 using AuthPermissions.BaseCode.PermissionsCode;
+using Domain;
 using Infrastructure.Auth.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +47,7 @@ internal sealed class CustomerTokenService : ICustomerTokenService
                 UserName = request.PhoneNumber,
                 PhoneNumber = request.PhoneNumber,
                 PhoneNumberConfirmed = false,
-
+                
             };
             var create = await _userManager.CreateAsync(user);
             if (!create.Succeeded)
