@@ -7,6 +7,7 @@ using AuthPermissions.AspNetCore.ShardingServices;
 using AuthPermissions.AspNetCore.StartupServices;
 using AuthPermissions.BaseCode;
 using AuthPermissions.BaseCode.DataLayer;
+using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.SetupCode;
 using AuthPermissions.SupportCode;
 using AuthPermissions.SupportCode.AddUsersServices;

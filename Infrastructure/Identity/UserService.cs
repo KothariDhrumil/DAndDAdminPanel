@@ -1,6 +1,6 @@
 ﻿using Application.Identity.Tokens;
 using Application.Identity.User;
-using Domain;
+using AuthPermissions.BaseCode.DataLayer.Classes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +24,6 @@ namespace Infrastructure.Identity
                                      .Select(user =>
                                      new UserViewModel()
                                      {
-                                         DesignationId = user.DesignationId,
                                          FirstName = user.FirstName,
                                          LastName = user.LastName
                                      }).SingleOrDefaultAsync();

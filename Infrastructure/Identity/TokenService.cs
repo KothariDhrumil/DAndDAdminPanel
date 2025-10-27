@@ -1,8 +1,9 @@
-﻿using Application.Abstractions.Authentication;
+﻿using Application.Abstractions.SMS;
+using Application.Abstractions.Authentication;
 using Application.Communication;
 using Application.Identity.Tokens;
 using AuthPermissions.AspNetCore.JwtTokenCode;
-using Domain;
+using AuthPermissions.BaseCode.DataLayer.Classes;
 using Infrastructure.Auth.Jwt;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -77,7 +78,7 @@ internal class TokenService(
         {
             return Result.Failure(Error.Validation(System.Net.HttpStatusCode.Unauthorized.ToString(), "Authentication Failed"));
         }
-        
+
 
         string code = await _userManager.GenerateChangePhoneNumberTokenAsync(account, account.PhoneNumber);
 

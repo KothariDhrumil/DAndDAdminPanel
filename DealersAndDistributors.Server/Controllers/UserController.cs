@@ -3,9 +3,8 @@ using Application.Identity.User;
 using AuthPermissions.AdminCode;
 using AuthPermissions.BaseCode.CommonCode;
 using AuthPermissions.BaseCode.PermissionsCode;
-using ExamplesCommonCode.CommonAdmin;
 using Microsoft.AspNetCore.Mvc;
-using SharedKernel;
+using SharedKernel.CommonAdmin;
 
 namespace DealersAndDistributors.Server.Controllers
 {

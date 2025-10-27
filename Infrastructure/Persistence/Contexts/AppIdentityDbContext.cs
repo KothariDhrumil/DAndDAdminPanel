@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using AuthPermissions.BaseCode.DataLayer.Classes;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

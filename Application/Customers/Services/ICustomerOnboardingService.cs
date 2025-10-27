@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using AuthPermissions.BaseCode.DataLayer.Classes;
 
 namespace Application.Customers.Services
 {
