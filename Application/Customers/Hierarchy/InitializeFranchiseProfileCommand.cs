@@ -1,6 +1,7 @@
 using Application.Abstractions.Messaging;
 using Application.Abstractions.Persistence;
 using Domain.Customers;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -47,5 +48,17 @@ public sealed class InitializeFranchiseProfileCommand : ICommand
             await db.SaveChangesAsync(ct);
             return Result.Success();
         }
+    }
+}
+
+public class InitializeFranchiseProfileCommandValidator : AbstractValidator<InitializeFranchiseProfileCommand>
+{
+    public InitializeFranchiseProfileCommandValidator()
+    {
+        RuleFor(x => x.TenantId).GreaterThan(0);
+        RuleFor(x => x.GlobalCustomerId).NotEmpty();
+        RuleFor(x => x.FirstName).MaximumLength(100);
+        RuleFor(x => x.LastName).MaximumLength(100);
+        RuleFor(x => x.PhoneNumber).MaximumLength(20);
     }
 }

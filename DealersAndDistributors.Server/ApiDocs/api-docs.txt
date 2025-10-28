@@ -1,5 +1,5 @@
 API Reference (text)
-Generated: 2025-10-27 18:23:29Z UTC
+Generated: 2025-10-28 10:15:49Z UTC
 
 Conventions:
 - Path: relative to the app root

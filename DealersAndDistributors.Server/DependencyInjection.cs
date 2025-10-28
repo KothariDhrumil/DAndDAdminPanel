@@ -47,7 +47,7 @@ public static class DependencyInjection
         services.AddProblemDetails();
 
         // Register text doc generator
-       // services.AddHostedService<DealersAndDistributors.Server.Documentation.ApiTextDocHostedService>();
+        //services.AddHostedService<DealersAndDistributors.Server.Documentation.ApiTextDocHostedService>();
 
         return services;
     }

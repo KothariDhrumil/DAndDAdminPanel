@@ -1,5 +1,4 @@
 using System.Net;
-using AuthPermissions.BaseCode.DataLayer.Classes;
 
 namespace Application.SupportTickets.Models;
 
@@ -13,8 +12,8 @@ public class SupportTicketListItemDto
     public string StatusText { get; set; } = string.Empty;
     public string? UserId { get; set; }
     public int? TenantId { get; set; }
-    public TicketStatus TicketStatus { get; set; }
-    public TicketPriority Priority { get; set; }
+    public TicketStatusDTO TicketStatus { get; set; }
+    public TicketPriorityDTO Priority { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -30,12 +29,12 @@ public class SupportTicketDetailDto : SupportTicketListItemDto
     public string? Notes { get; set; }
     public string Resolution { get; set; } = string.Empty;
 }
- 
+
 public class SupportTicketUpdateRequest
 {
     public string? Notes { get; set; }
-    public TicketStatus? State { get; set; }
-    public TicketPriority? Priority { get; set; }
+    public TicketStatusDTO? State { get; set; }
+    public TicketPriorityDTO? Priority { get; set; }
     public string? Resolution { get; set; }
 }
 
@@ -48,8 +47,8 @@ public class SupportTicketQuery
     public string? SortBy { get; set; } // createdAt, updatedAt, priority, state, status
     public string? SortDir { get; set; } // asc or desc
 
-    public TicketStatus? State { get; set; }
-    public TicketPriority? Priority { get; set; }
+    public TicketStatusDTO? State { get; set; }
+    public TicketPriorityDTO? Priority { get; set; }
     public int? TenantId { get; set; }
     public string? UserId { get; set; }
     public DateTime? From { get; set; }
@@ -58,3 +57,22 @@ public class SupportTicketQuery
     public string? Method { get; set; }
     public string? CorrelationId { get; set; }
 }
+
+
+public enum TicketStatusDTO
+{
+    Open,
+    InProgress,
+    Resolved,
+    Closed
+}
+
+public enum TicketPriorityDTO
+{
+    Low,
+    Medium,
+    High,
+    Urgent
+}
+
+

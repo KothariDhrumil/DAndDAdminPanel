@@ -24,12 +24,10 @@ public sealed class CreateTenantPlanCommand : ICommand<int>
 
     internal sealed class CreateTenantPlanCommandHandler(
         AuthPermissionsDbContext context,
-        IAuthTenantAdminService authTenantAdmin,
-        IAuthUsersAdminService authUsersAdminService)
+        IAuthTenantAdminService authTenantAdmin)
         : ICommandHandler<CreateTenantPlanCommand, int>
     {
-        private readonly IAuthUsersAdminService authUsersAdminService = authUsersAdminService;
-
+        
         public async Task<Result<int>> Handle(CreateTenantPlanCommand command, CancellationToken cancellationToken)
         {
             // Load roles by ids provided by UI (effective roles)

@@ -2,6 +2,7 @@ using Application.Abstractions.Messaging;
 using Application.Abstractions.Persistence;
 using Application.Customers.Services;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -60,5 +61,16 @@ internal sealed class CreateChildCustomerCommandHandler(
 
         await retailDb.SaveChangesAsync(ct);
         return Result.Success(childGlobalId);
+    }
+}
+
+public class CreateChildCustomerCommandValidator : AbstractValidator<CreateChildCustomerCommand>
+{
+    public CreateChildCustomerCommandValidator()
+    {
+        RuleFor(x => x.ParentGlobalCustomerId).NotEmpty();
+        RuleFor(x => x.PhoneNumber).NotEmpty().MaximumLength(20);
+        RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
     }
 }
