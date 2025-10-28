@@ -15,8 +15,8 @@ public sealed class SearchSupportTicketsQuery : IQuery<PagedResult<List<SupportT
     public string? Search { get; init; }
     public string? SortBy { get; init; }
     public string? SortDir { get; init; }
-    public TicketStatus? State { get; init; }
-    public TicketPriority? Priority { get; init; }
+    public TicketStatusDTO? State { get; init; }
+    public TicketPriorityDTO? Priority { get; init; }
     public int? TenantId { get; init; }
     public string? UserId { get; init; }
     public DateTime? From { get; init; }
@@ -48,8 +48,8 @@ public sealed class SearchSupportTicketsQuery : IQuery<PagedResult<List<SupportT
                     (t.Notes != null && t.Notes.Contains(term)));
             }
 
-            if (query.State.HasValue) q = q.Where(t => t.TicketStatus == query.State);
-            if (query.Priority.HasValue) q = q.Where(t => t.Priority == query.Priority);
+            //if (query.State.HasValue) q = q.Where(t => t.TicketStatus ==(int) query.State);
+            //if (query.Priority.HasValue) q = q.Where(t => t.Priority == query.Priority);
             if (query.TenantId.HasValue) q = q.Where(t => t.TenantId == query.TenantId);
             if (!string.IsNullOrWhiteSpace(query.UserId)) q = q.Where(t => t.UserId == query.UserId);
             if (query.From.HasValue) q = q.Where(t => t.CreatedAt >= query.From);
@@ -87,8 +87,8 @@ public sealed class SearchSupportTicketsQuery : IQuery<PagedResult<List<SupportT
                     StatusText = t.StatusText,
                     UserId = t.UserId,
                     TenantId = t.TenantId,
-                    TicketStatus = t.TicketStatus,
-                    Priority = t.Priority,
+                    TicketStatus = (TicketStatusDTO)t.TicketStatus,
+                    Priority = (TicketPriorityDTO)t.Priority,
                     CreatedAt = t.CreatedAt,
                     UpdatedAt = t.UpdatedAt
                 })

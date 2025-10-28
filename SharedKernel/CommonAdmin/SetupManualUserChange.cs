@@ -1,16 +1,10 @@
-﻿using AuthPermissions.AdminCode;
-using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
+﻿using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedKernel.CommonAdmin
 {
     public class SetupManualUserChange
     {
-        /// <summary>
-        /// This is used by SyncUsers to define what to do
-        /// </summary>
-        public SyncAuthUserChangeTypes FoundChangeType { get; set; }
-
         /// <summary>
         /// The userId of the user (NOTE: this is not show)
         /// </summary>

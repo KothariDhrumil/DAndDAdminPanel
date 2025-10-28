@@ -1,6 +1,5 @@
 ﻿using AuthPermissions.BaseCode.DataLayer.Classes.SupportTypes;
 using AuthPermissions.BaseCode.SetupCode;
-using AuthPermissions.SupportCode.AddUsersServices;
 
 namespace Infrastructure.Auth.AuthP;
 

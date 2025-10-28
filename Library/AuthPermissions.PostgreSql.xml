@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AuthPermissions.PostgreSql</name>
+    </assembly>
+    <members>
+        <member name="T:AuthPermissions.PostgreSql.Migrations.Version810">
+            <inheritdoc />
+        </member>
+        <member name="M:AuthPermissions.PostgreSql.Migrations.Version810.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AuthPermissions.PostgreSql.Migrations.Version810.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:AuthPermissions.PostgreSql.Migrations.Version810.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>
