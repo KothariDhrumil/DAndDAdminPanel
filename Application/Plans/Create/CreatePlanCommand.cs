@@ -41,7 +41,7 @@ public sealed class CreatePlanCommand : ICommand<int>
                 Description = command.Description,
             };
 
-            if (command.RoleIds != null && command.RoleIds.Count > 0)
+            if (command.RoleIds.Count > 0)
             {
                 var roles = await context.RoleToPermissions
                     .Where(x => command.RoleIds.Contains(x.RoleId))

@@ -27,7 +27,12 @@ internal sealed class UpdatePlanCommandHandler(
     public async Task<Result<int>> Handle(UpdatePlanCommand command, CancellationToken cancellationToken)
     {
         var plan = await context.Plans
-            .SingleOrDefaultAsync(t => t.Id == command.PlanId, cancellationToken) ?? throw new ApiException(GenericErrors.NotFound.Description);
+            .SingleOrDefaultAsync(t => t.Id == command.PlanId, cancellationToken);
+        
+        if (plan == null)
+        {
+            throw new ApiException(GenericErrors.NotFound.Description);
+        }
 
         plan.Name = command.Name;
         plan.IsActive = command.IsActive;
