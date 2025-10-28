@@ -1,0 +1,1546 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AuthPermissions.AspNetCore</name>
+    </assembly>
+    <members>
+        <member name="T:AuthPermissions.AspNetCore.AccessTenantData.IAccessTenantDataCookie">
+            <summary>
+            The methods in the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/> class
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.IAccessTenantDataCookie.AddOrUpdateCookie(System.String,System.Int32)">
+            <summary>
+            Add/Update a cookie with the provided string 
+            </summary>
+            <param name="value"></param>
+            <param name="numMinutesBeforeCookieTimesOut">This provides the timeout for the cookie.
+            This makes sure the change to the DataKey isn't left on too long</param>
+            <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.IAccessTenantDataCookie.Exists">
+            <summary>
+            Returns true if a Cookie exists with the cookieName provided in the ctor 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.IAccessTenantDataCookie.GetValue">
+            <summary>
+            Returns the value of the string. Can be null if not found or empty
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.IAccessTenantDataCookie.DeleteCookie">
+            <summary>
+            Delete the cookie with the cookieName provided in the ctor
+            </summary>
+            <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService">
+            <summary>
+            This define the link to tenant data services
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService.StartLinkingToTenantDataAsync(System.String,System.Int32)">
+            <summary>
+            This will change the DataKey to a different tenant than the current user's DataKey
+            This does this by creating a cookie that contains a DataKey that will replace the current user's DataKey claim
+            </summary>
+            <param name="currentUserId">Id of the current user. Used to check that user type matches the </param>
+            <param name="tenantId">The primary key of the Tenant the user wants to access</param>
+            <returns></returns>
+            <exception cref="T:AuthPermissions.BaseCode.CommonCode.AuthPermissionsException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService.StopLinkingToTenant">
+            <summary>
+            This stops the current user's DataKey being set by the <see cref="M:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService.StartLinkingToTenantDataAsync(System.String,System.Int32)"/> method.
+            It simply deletes the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/>
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService.GetDataKeyOfLinkedTenant">
+            <summary>
+            This gets the DataKey from the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/>
+            If there no cookie it returns null
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService.GetShardingDataOfLinkedTenant">
+            <summary>
+            This gets the DataKey and ConnectionName from the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/>
+            If there no cookie it returns null for both properties
+            </summary>
+            <returns></returns>
+            <exception cref="T:AuthPermissions.BaseCode.CommonCode.AuthPermissionsException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService.GetNameOfLinkedTenant">
+            <summary>
+            This gets the TenantFullName of the tenant that the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/> contains
+            If there no cookie it returns null
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie">
+            <summary>
+            This is the Cookie used for setting / overriding the DataKey with a different tenant's DataKey
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Takes in the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/> to get the cookie in / out parts
+            </summary>
+            <param name="httpContextAccessor"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie.AddOrUpdateCookie(System.String,System.Int32)">
+            <summary>
+            Add/Update a cookie with the provided string 
+            </summary>
+            <param name="value"></param>
+            <param name="numMinutesBeforeCookieTimesOut">This provides the timeout for the cookie.
+            This makes sure the change to the DataKey isn't left on too long</param>
+            <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie.Exists">
+            <summary>
+            Returns true if a Cookie exists with the cookieName provided in the ctor 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie.GetValue">
+            <summary>
+            Returns the value of the string. Can be null if not found or empty
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie.DeleteCookie">
+            <summary>
+            Delete the cookie with the cookieName provided in the ctor
+            </summary>
+            <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService">
+            <summary>
+            This service defines the admin command to implement the "Access the data of other tenant" feature - see issue #10
+            It handles the creating, accessing and removing a cookie that carries the DataKey and Name of the tenant to want to access
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService.#ctor(AuthPermissions.BaseCode.DataLayer.EfCode.AuthPermissionsDbContext,AuthPermissions.BaseCode.AuthPermissionsOptions,AuthPermissions.AspNetCore.AccessTenantData.IAccessTenantDataCookie,AuthPermissions.BaseCode.CommonCode.IEncryptDecryptService,AuthPermissions.BaseCode.SetupCode.IAuthPDefaultLocalizer)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="context"></param>
+            <param name="options"></param>
+            <param name="cookieAccessor"></param>
+            <param name="encryptorService"></param>
+            <param name="localizeProvider"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService.StartLinkingToTenantDataAsync(System.String,System.Int32)">
+            <summary>
+            This will change the DataKey to a different tenant than the current user's DataKey
+            This does this by creating a cookie that contains a DataKey that will replace the current user's DataKey claim
+            </summary>
+            <param name="currentUserId">Id of the current user. Used to check that user type matches the </param>
+            <param name="tenantId">The primary key of the Tenant the user wants to access</param>
+            <returns></returns>
+            <exception cref="T:AuthPermissions.BaseCode.CommonCode.AuthPermissionsException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService.StopLinkingToTenant">
+            <summary>
+            This stops the current user's DataKey being set by the <see cref="M:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService.StartLinkingToTenantDataAsync(System.String,System.Int32)"/> method.
+            It simply deletes the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/>
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService.GetDataKeyOfLinkedTenant">
+            <summary>
+            This gets the DataKey from the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/>
+            If there no cookie it returns null
+            </summary>
+            <returns></returns>
+            <exception cref="T:AuthPermissions.BaseCode.CommonCode.AuthPermissionsException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService.GetShardingDataOfLinkedTenant">
+            <summary>
+            This gets the DataKey and ConnectionName from the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/>
+            If there no cookie it returns null for both properties
+            </summary>
+            <returns></returns>
+            <exception cref="T:AuthPermissions.BaseCode.CommonCode.AuthPermissionsException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.AccessTenantData.Services.LinkToTenantDataService.GetNameOfLinkedTenant">
+            <summary>
+            This gets the TenantFullName of the tenant that the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/> contains
+            If there no cookie it returns null
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromAppAndHierarchicalUsersAccessTenantData">
+            <summary>
+            This service is registered if a multi-tenant setup is defined <see cref="P:AuthPermissions.BaseCode.AuthPermissionsOptions.TenantType"/>
+            and the <see cref="P:AuthPermissions.BaseCode.AuthPermissionsOptions.LinkToTenantType"/> is not set to <see cref="F:AuthPermissions.BaseCode.SetupCode.LinkToTenantTypes.NotTurnedOn"/>
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromAppAndHierarchicalUsersAccessTenantData.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService)">
+            <summary>
+            This will return the AuthP' DataKey claim, unless the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/> overrides it
+            This version works with tenant users, but is little bit slower than the version that only works with app users
+            If no <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>, or no user, or no claim and no override from the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/> then returns null
+            </summary>
+            <param name="accessor">IHttpContextAccessor</param>
+            <param name="linkService">service to get </param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromAppAndHierarchicalUsersAccessTenantData.DataKey">
+            <summary>
+            The AuthP' DataKey, can be null.
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromAppUserAccessTenantData">
+            <summary>
+            This service is registered if a multi-tenant setup is defined <see cref="P:AuthPermissions.BaseCode.AuthPermissionsOptions.TenantType"/>
+            and the <see cref="P:AuthPermissions.BaseCode.AuthPermissionsOptions.LinkToTenantType"/> is not set to <see cref="F:AuthPermissions.BaseCode.SetupCode.LinkToTenantTypes.NotTurnedOn"/>
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromAppUserAccessTenantData.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService)">
+            <summary>
+            This will return the AuthP' DataKey claim, unless the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/> overrides it
+            This version assumes the the user that is 
+            If no <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>, or no user, or no claim and no override from the <see cref="T:AuthPermissions.AspNetCore.AccessTenantData.Services.AccessTenantDataCookie"/> then returns null
+            </summary>
+            <param name="accessor">IHttpContextAccessor</param>
+            <param name="linkService">service to get </param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromAppUserAccessTenantData.DataKey">
+            <summary>
+            The AuthP' DataKey, can be null.
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromUserNormal">
+            <summary>
+            This service is registered if a multi-tenant setup without sharding
+            NOTE: There are other version if the "Access the data of other tenant" is turned on
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromUserNormal.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            This will return the AuthP' DataKey claim. If no user, or no claim then returns null
+            </summary>
+            <param name="accessor"></param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetDataKeyFromUserNormal.DataKey">
+            <summary>
+            The AuthP' DataKey, can be null.
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataAppAndHierarchicalUsersAccessTenantData">
+            <summary>
+            This service is registered if a multi-tenant setup with sharding on
+            NOTE: There are other versions if the "Access the data of other tenant" is turned on
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataAppAndHierarchicalUsersAccessTenantData.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries,AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService)">
+            <summary>
+            This will return the AuthP's DataKey and the connection string via the ConnectionName claim.
+            This version works with tenant users, but is little bit slower than the version that only works with app users
+            If no user, or no claim then both parameters will be null
+            </summary>
+            <param name="accessor"></param>
+            <param name="shardingService">Service to get the current connection string for the  </param>
+            <param name="linkService"></param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataAppAndHierarchicalUsersAccessTenantData.DataKey">
+            <summary>
+            The AuthP' DataKey, can be null.
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataAppAndHierarchicalUsersAccessTenantData.ConnectionString">
+            <summary>
+            This contains the connection string to the database to use
+            If null, then use the default connection string as defined at the time when your application's DbContext was registered
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataUserAccessTenantData">
+            <summary>
+            This service is registered if a multi-tenant setup with sharding on
+            NOTE: There are other versions if the "Access the data of other tenant" is turned on
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataUserAccessTenantData.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries,AuthPermissions.AspNetCore.AccessTenantData.ILinkToTenantDataService)">
+            <summary>
+            This will return the AuthP's DataKey and the connection string via the ConnectionName claim,
+            but only if the user doesn't have a tenant, i.e. an app admin user
+            If no user, or no claim then both parameters will be null
+            </summary>
+            <param name="accessor"></param>
+            <param name="connectionService">Service to get the current connection string for the  </param>
+            <param name="linkService"></param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataUserAccessTenantData.DataKey">
+            <summary>
+            The AuthP' DataKey, can be null.
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataUserAccessTenantData.ConnectionString">
+            <summary>
+            This contains the connection string to the database to use
+            If null, then use the default connection string as defined at the time when your application's DbContext was registered
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataUserNormal">
+            <summary>
+            This service is registered if a multi-tenant setup with sharding on
+            NOTE: There are other versions if the "Access the data of other tenant" is turned on
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataUserNormal.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries)">
+            <summary>
+            This will return the AuthP's DataKey and the connection string via the ConnectionName claim.
+            If no user, or no claim then both parameters will be null
+            </summary>
+            <param name="accessor"></param>
+            <param name="connectionService">Service to get the current connection string for the  </param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataUserNormal.DataKey">
+            <summary>
+            The AuthP' DataKey, can be null.
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.GetShardingDataUserNormal.ConnectionString">
+            <summary>
+            This contains the connection string to the database to use
+            If null, then use the default connection string as defined at the time when your application's DbContext was registered
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.GetDataKeyCode.IGetDataKeyFromUser">
+            <summary>
+            This is the interface used by the GetDataKeyFilterFromUser and <see cref="T:AuthPermissions.BaseCode.DataLayer.EfCode.DataKeyQueryExtension"/>
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.IGetDataKeyFromUser.DataKey">
+            <summary>
+            The DataKey to be used for multi-tenant applications
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.GetDataKeyCode.IGetShardingDataFromUser">
+            <summary>
+            This is the interface provides both the DataKey and the connection string 
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.IGetShardingDataFromUser.DataKey">
+            <summary>
+            The DataKey to be used for multi-tenant applications
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.GetDataKeyCode.IGetShardingDataFromUser.ConnectionString">
+            <summary>
+            This contains the connection string to the database to use
+            If null, then use the default connection string as defined at the time when your application's DbContext was registered
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.HasPermissionAttribute">
+            <summary>
+            This attribute can be applied in the same places as the [Authorize] would go
+            This will only allow users which has a role containing the enum Permission passed in 
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.HasPermissionAttribute.#ctor(System.Object)">
+            <summary>
+            This creates an HasPermission attribute with a Permission enum member
+            </summary>
+            <param name="permission"></param>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.JwtTokenCode.ITokenBuilder">
+            <summary>
+            Interfaces of the JTW Token builder and the refresh token
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.ITokenBuilder.GenerateJwtTokenAsync(System.String)">
+            <summary>
+            This creates a JWT token containing the claims from the AuthPermissions database
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.ITokenBuilder.GenerateTokenAndRefreshTokenAsync(System.String)">
+            <summary>
+            This generates a JWT token containing the claims from the AuthPermissions database
+            and a Refresh token to go with this token
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.ITokenBuilder.RefreshTokenUsingRefreshTokenAsync(AuthPermissions.AspNetCore.JwtTokenCode.TokenAndRefreshToken)">
+            <summary>
+            This will refresh the JWT token if the JWT is valid (but can be expired) and the RefreshToken in the database is valid
+            </summary>
+            <param name="tokenAndRefresh"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.JwtTokenCode.TokenAndRefreshToken">
+            <summary>
+            This is used for input and output of the JWT Token and the RefreshToken
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.JwtTokenCode.TokenAndRefreshToken.Token">
+            <summary>
+            JWT Token
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.JwtTokenCode.TokenAndRefreshToken.RefreshToken">
+            <summary>
+            Refresh Token
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.JwtTokenCode.TokenBuilder">
+            <summary>
+            This contains the code to create/refresh JWT tokens
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.TokenBuilder.#ctor(AuthPermissions.BaseCode.AuthPermissionsOptions,AuthPermissions.IClaimsCalculator,AuthPermissions.BaseCode.DataLayer.EfCode.AuthPermissionsDbContext,Microsoft.Extensions.Logging.ILogger{AuthPermissions.AspNetCore.JwtTokenCode.TokenBuilder})">
+            <summary>
+            
+            </summary>
+            <param name="options"></param>
+            <param name="claimsCalculator"></param>
+            <param name="context"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.TokenBuilder.GenerateJwtTokenAsync(System.String)">
+            <summary>
+            This creates a JWT token containing the claims from the AuthPermissions database
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.TokenBuilder.GenerateTokenAndRefreshTokenAsync(System.String)">
+            <summary>
+            This generates a JWT token containing the claims from the AuthPermissions database
+            and a Refresh token to go with this token
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.TokenBuilder.RefreshTokenUsingRefreshTokenAsync(AuthPermissions.AspNetCore.JwtTokenCode.TokenAndRefreshToken)">
+            <summary>
+            This will refresh the JWT token if the JWT is valid (but can be expired) and the RefreshToken in the database is valid
+            </summary>
+            <param name="tokenAndRefresh"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.TokenBuilder.GenerateJwtTokenHandler(System.String,System.Collections.Generic.IEnumerable{System.Security.Claims.Claim})">
+            <summary>
+            Shared code for creating the JWT tokenHandler
+            </summary>
+            <param name="userId"></param>
+            <param name="claims"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.JwtTokenCode.TokenBuilder.GetPrincipalFromExpiredToken(System.String)">
+            <summary>
+            This will extract the ClaimsPrincipal from an expired JWT token
+            taken from https://www.blinkingcaret.com/2018/05/30/refresh-tokens-in-asp-net-core-web-api/
+            </summary>
+            <param name="token">a valid JWT token - can be expired</param>
+            <returns>If valid JWT (but can be expired) it returns the ClaimsPrincipal. returns null if invalid</returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings">
+            <summary>
+            This contains the names of the claims to get the userId, Email and Username when using Azure AD
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            This lets you define the claim names in an OpenIDConnect to an Azure AD
+            </summary>
+            <param name="userIdClaimName"></param>
+            <param name="emailClaimName"></param>
+            <param name="usernameClaimName"></param>
+            <param name="authenticationSchemeName"></param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings.UserIdClaimName">
+            <summary>
+            Contains the claim name holding the UserId
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings.EmailClaimName">
+            <summary>
+            Contains the claim name holding the user's email
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings.UsernameClaimName">
+            <summary>
+            Contains the claim name holding the user's name
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings.AuthenticationSchemeName">
+            <summary>
+            This holds the AuthenticationScheme Name
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings.AzureAdDefaultSettings(System.String)">
+            <summary>
+            This provides a standard set of claim names when working with Azure AD
+            </summary>
+            <param name="authenticationSchemeName">Optional:
+            Needs to be that same as used in AddAuthentication call - defaults to <see cref="F:Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectDefaults.AuthenticationScheme"/></param>
+            <returns>AzureAdEventSettings</returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.OpenIdCode.AzureAdOpenIdExtension">
+            <summary>
+            Extension methods for Azure Ad authentication
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.OpenIdCode.AzureAdOpenIdExtension.SetupOpenAzureAdOpenId(Microsoft.Extensions.DependencyInjection.IServiceCollection,AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings)">
+            <summary>
+            This will register an OpenId Connect event which will add the AuthP's claims to the principal user
+            </summary>
+            <param name="services">The service collection to register this to</param>
+            <param name="eventSettings">This contains the data needed to add the AuthP claims to the Azure AD login</param>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.OpenIdCode.AzureAdOptions">
+            <summary>
+            This contains the applications settings to access an Azure AD 
+            </summary>
+        </member>
+        <member name="F:AuthPermissions.AspNetCore.OpenIdCode.AzureAdOptions.SectionName">
+            <summary>
+            Name of the section in the appsettinsg file holding this data
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.OpenIdCode.AzureAdOptions.AzureAdApproaches">
+            <summary>
+            This is a AuthP setting and contains a comma delimited string that defines how the AzureAD
+            AzureAD manager will manage the Azure AD user
+            1. "Find" means try to find a existing Azure AD user via its email
+            2. "Create" means it will create a new Azure AD
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.PolicyCode.AuthorizationPolicyProvider">
+            <summary>
+            This class implements a ASP.NET Core policy
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.PolicyCode.AuthorizationPolicyProvider.#ctor(Microsoft.Extensions.Options.IOptions{Microsoft.AspNetCore.Authorization.AuthorizationOptions})">
+            <summary>
+            
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.PolicyCode.AuthorizationPolicyProvider.GetPolicyAsync(System.String)">
+            <summary>
+            This gets the PermissionRequirement for the given policyName
+            </summary>
+            <param name="policyName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.PolicyCode.PermissionExtensions">
+            <summary>
+            Class which contains extensions for the ASP.Net core permission policy
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.PolicyCode.PermissionExtensions.HasPermission``1(``0,System.Object)">
+            <summary>
+            The fluent minimal api implementation of <see cref="T:AuthPermissions.AspNetCore.HasPermissionAttribute"/>
+            </summary>
+            <typeparam name="TBuilder"></typeparam>
+            <param name="builder"></param>
+            <param name="permission"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.PolicyCode.PermissionPolicyHandler">
+            <summary>
+            This defines the policy handler for the <see cref="T:AuthPermissions.AspNetCore.PolicyCode.PermissionRequirement"/> which the AuthP defined
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.PolicyCode.PermissionPolicyHandler.#ctor(AuthPermissions.BaseCode.AuthPermissionsOptions)">
+            <summary>
+            ctor
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.PolicyCode.PermissionPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext,AuthPermissions.AspNetCore.PolicyCode.PermissionRequirement)">
+            <summary>
+            This allows a user to access a method with a HasPermission attribute if that have the correct Permission 
+            </summary>
+            <param name="context"></param>
+            <param name="requirement"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.PolicyCode.PermissionRequirement">
+            <summary>
+            This is the policy requirement
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.PolicyCode.PermissionRequirement.#ctor(System.String)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="permissionName"></param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.PolicyCode.PermissionRequirement.PermissionName">
+            <summary>
+            The Permission name to look for
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.Services.AddPermissionsToUserClaims`1">
+            <summary>
+            This version provides:
+            - Adds Permissions and DataKey claims to the user's claims.
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.AddPermissionsToUserClaims`1.#ctor(Microsoft.AspNetCore.Identity.UserManager{`0},Microsoft.Extensions.Options.IOptions{Microsoft.AspNetCore.Identity.IdentityOptions},AuthPermissions.IClaimsCalculator)">
+            <summary>
+            Needs UserManager and IdentityOptions, plus the two services to provide the permissions and dataKey
+            </summary>
+            <param name="userManager"></param>
+            <param name="optionsAccessor"></param>
+            <param name="claimsCalculator"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.AddPermissionsToUserClaims`1.GenerateClaimsAsync(`0)">
+            <summary>
+            This adds the permissions and, optionally, a multi-tenant DataKey to the claims
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.Services.DisableJwtRefreshToken">
+            <summary>
+            This service allows you to mark the Jwt Refresh Token as 'used' so that the JWT token cannot be refreshed.
+            There are two methods: one to allow a user to logout and another to allow a admin person log out all logins of a specific user. 
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.DisableJwtRefreshToken.#ctor(AuthPermissions.BaseCode.DataLayer.EfCode.AuthPermissionsDbContext)">
+            <summary>
+            ctor
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.DisableJwtRefreshToken.LogoutUserViaRefreshTokenAsync(System.String)">
+            <summary>
+            This allows a user to logout. The effect is that when the JWT Token expires
+            you cannot refresh the JWT Token because the refresh token is invalid.
+            If the user has multiple logins, this only logs out the login using the given refresh token.
+            </summary>
+            <param name="refreshToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.DisableJwtRefreshToken.LogoutUserViaUserIdAsync(System.String)">
+            <summary>
+            This will mark all the refresh tokens linked to this userid will be marked as invalid,
+            which means the user cannot refresh the JWT Token. If the user has multiple logins,
+            then all the users logins will marked as a invalid. 
+            </summary>
+            <param name="userId"></param>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.Services.IDisableJwtRefreshToken">
+            <summary>
+            This service allows you to mark the Jwt Refresh Token as 'used' so that the JWT token cannot be refreshed.
+            There are two methods: one to allow a user to logout and another to allow a admin person log out all logins of a specific user. 
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.IDisableJwtRefreshToken.LogoutUserViaRefreshTokenAsync(System.String)">
+            <summary>
+            This allows a user to logout. The effect is that when the JWT Token expires
+            you cannot refresh the JWT Token because the refresh token is invalid.
+            If the user has multiple logins, this only logs out the login using the given refresh token.
+            </summary>
+            <param name="refreshToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.IDisableJwtRefreshToken.LogoutUserViaUserIdAsync(System.String)">
+            <summary>
+            This will mark all the refresh tokens linked to this userid will be marked as invalid,
+            which means the user cannot refresh the JWT Token. If the user has multiple logins,
+            then all the users logins will marked as a invalid. 
+            </summary>
+            <param name="userId"></param>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.Services.IndividualAccountUserLookup">
+            <summary>
+            This is a working example of how to build a <see cref="T:AuthPermissions.BaseCode.SetupCode.IFindUserInfoService"/> service
+            that is used by the the <see cref="T:AuthPermissions.BulkLoadServices.Concrete.BulkLoadUsersService"/> to provide the actual userId (and userName)
+            from the applications authentication provider.
+            This works for the Individual Accounts authentication provider
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.IndividualAccountUserLookup.#ctor(Microsoft.AspNetCore.Identity.UserManager{AuthPermissions.BaseCode.DataLayer.Classes.ApplicationUser})">
+            <summary>
+            ctor
+            </summary>
+            <param name="userManager"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.IndividualAccountUserLookup.FindUserInfoAsync(System.String)">
+            <summary>
+            This should find an user in the authentication provider using the <see cref="P:AuthPermissions.BaseCode.SetupCode.BulkLoadUserWithRolesTenant.UniqueUserName"/>.
+            It returns userId and its user name (if no user found with that uniqueName, then
+            </summary>
+            <param name="uniqueName"></param>
+            <returns>a class containing a UserIf and UserName property, or null if not found</returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.Services.SyncIndividualAccountUsers">
+            <summary>
+            This is a working example of how to send a list of all the user in the Individual Accounts authentication provider
+            This is used by the <see cref="M:AuthPermissions.AdminCode.Services.AuthUsersAdminService.SyncAndShowChangesAsync"/> method which makes sure the AuthP
+            users are synchronized with users in the Individual Accounts authentication provider
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.SyncIndividualAccountUsers.#ctor(Microsoft.AspNetCore.Identity.UserManager{AuthPermissions.BaseCode.DataLayer.Classes.ApplicationUser})">
+            <summary>
+            ctor
+            </summary>
+            <param name="userManager"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.Services.SyncIndividualAccountUsers.GetAllActiveUserInfoAsync">
+            <summary>
+            This returns the userId, email and UserName of all the users
+            </summary>
+            <returns>collection of SyncAuthenticationUser</returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.SetupExtensions">
+            <summary>
+            A set of extension methods for creation and configuring the AuthPermissions that uses ASP.NET Core features
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.IndividualAccountsAuthentication(AuthPermissions.AuthSetupData)">
+            <summary>
+            This registers the code to add AuthP's claims using IndividualAccounts
+            </summary>
+            <param name="setupData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.IndividualAccountsAuthentication``1(AuthPermissions.AuthSetupData)">
+            <summary>
+            This registers the code to add AuthP's claims using IndividualAccounts that has a custom Identity User
+            </summary>
+            <param name="setupData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.AzureAdAuthentication(AuthPermissions.AuthSetupData,AuthPermissions.AspNetCore.OpenIdCode.AzureAdEventSettings)">
+            <summary>
+            This registers an OpenIDConnect set up to work with Azure AD authorization
+            </summary>
+            <param name="setupData"></param>
+            <param name="eventSettings">This contains the data needed to add the AuthP claims to the Azure AD login</param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.ManualSetupOfAuthentication(AuthPermissions.AuthSetupData)">
+            <summary>
+            This says you have manually set up the Authentication code which adds the AuthP Roles and Tenant claims to the cookie or JWT Token
+            </summary>
+            <param name="setupData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.AddSuperUserToIndividualAccounts(AuthPermissions.AuthSetupData)">
+            <summary>
+            This will add a single user to ASP.NET Core individual accounts identity system using data in the appsettings.json file.
+            This is here to allow you add a super-admin user when you first start up the application on a new system
+            </summary>
+            <param name="setupData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.AddSuperUserToIndividualAccounts``1(AuthPermissions.AuthSetupData)">
+            <summary>
+            This will add a single user to ASP.NET Core individual accounts (with custom identity)using data in the appsettings.json file.
+            This is here to allow you add a super-admin user when you first start up the application on a new system
+            </summary>
+            <param name="setupData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.SetupAuthPLocalization``1(AuthPermissions.AuthSetupData,System.String[])">
+            <summary>
+            This sets up the AuthP localization system, which uses the Net.LocalizeMessagesAndErrors library
+            </summary>
+            <typeparam name="TResource">This should be a class within your ASP.NET Core app which
+            has .NET localization setup</typeparam>
+            <param name="setupData"></param>
+            <param name="supportedCultures">Provide list of supported cultures. This is used to only log
+            missing resource entries if its supported culture. NOTE: if null, then it will log every missing culture.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.SetupMultiTenantSharding(AuthPermissions.AuthSetupData,AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions)">
+            <summary>
+            This sets up the AuthP Sharding feature that 
+            You must have set the <see cref="P:AuthPermissions.BaseCode.AuthPermissionsOptions.TenantType"/>  before calling this extension method
+            </summary>
+            <param name="setupData"></param>
+            <param name="defaultShardingEntry">Optional: The default doesn't allows tenants being stored the AuthP database.
+            If you want store tenants in the AuthP database, or change any other data, then provide a instance of the
+            <see cref="T:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions"/> with the ctor hybridMode parameter set to true.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.SetupAspNetCorePart(AuthPermissions.AuthSetupData)">
+            <summary>
+            This will finalize the setting up of the AuthPermissions parts needed by ASP.NET Core
+            NOTE: It assumes the AuthPermissions database has been created and has the current migration applied
+            </summary>
+            <param name="setupData"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.SetupAspNetCoreAndDatabase(AuthPermissions.AuthSetupData,System.Action{RunMethodsSequentially.RunSequentiallyOptions})">
+            <summary>
+            This finalizes the setting up of the AuthPermissions parts needed by ASP.NET Core
+            This may trigger code to run on startup, before ASP.NET Core active, to
+            1) Migrate the AuthP's database
+            2) Run a bulk load process
+            </summary>
+            <param name="setupData"></param>
+            <param name="optionsAction">You can your own startup services by adding them to the <see cref="T:RunMethodsSequentially.RunSequentiallyOptions"/> options.
+            Your startup services will be registered after the Migrate the AuthP's database and bulk load process, so set the OrderNum in
+            your startup services to a negative to get them before the AuthP startup services</param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.SetupExtensions.SetupForUnitTestingAsync(AuthPermissions.AuthSetupData)">
+            <summary>
+            This will set up the basic AppPermissions parts and and any roles, tenants and users in the in-memory database
+            </summary>
+            <param name="setupData"></param>
+            <returns>The built ServiceProvider for access to AuthP's services</returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.ConnectionStringsOption">
+            <summary>
+            This is used to get all the connection strings in the appsettings file
+            </summary>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.PostgresDatabaseSpecificMethods">
+            <summary>
+            This contains the Postgres-specific sharding functions
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.PostgresDatabaseSpecificMethods.AuthPDatabaseType">
+            <summary>
+            This is used select the <see cref="T:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods"/> from the AuthP's <see cref="P:AuthPermissions.BaseCode.SetupCode.SetupInternalData.AuthPDatabaseType"/>
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.PostgresDatabaseSpecificMethods.DatabaseProviderShortName">
+            <summary>
+            This contains the short name of EF Core Database Provider that this service supports
+            e.g. "SqlServer" instead of "Microsoft.EntityFrameworkCore.SqlServer"
+            Useful when use showing database type to a user and used internal
+            NOTE: The name MUST contain the last part of the DbContext.Database.ProviderName , e.g. PostgreSQL
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.PostgresDatabaseSpecificMethods.FormShardingConnectionString(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry,System.String)">
+            <summary>
+            This changes the database to the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.DatabaseName"/> in the given connectionString
+            NOTE: If the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.DatabaseName"/> is null / empty, then it returns the connectionString with no change
+            </summary>
+            <param name="shardingEntry">Information about the database type/name to be used in the connection string</param>
+            <param name="connectionString"></param>
+            <returns>A connection string containing the correct database to be used, or errors</returns>
+            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.PostgresDatabaseSpecificMethods.ChangeDatabaseInformationWithinDistributedLock(System.String,System.Func{StatusGeneric.IStatusGeneric})">
+            <summary>
+            This will execute the function (which updates the shardingsettings json file) within a Distributed Lock. 
+            Typically this will use a lock on the database provider.  
+            </summary>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <param name="runInLock"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.PostgresDatabaseSpecificMethods.ChangeDatabaseInformationWithinDistributedLockAsync(System.String,System.Func{System.Threading.Tasks.Task{StatusGeneric.IStatusGeneric}})">
+            <summary>
+            This will execute the function (which updates the shardingsettings json file) within a Distributed Lock. 
+            Typically this will use a lock on the database provider.  
+            </summary>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <param name="runInLockAsync"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqliteInMemorySpecificMethods">
+            <summary>
+            This class implements the sharding methods for a Sqlite database.
+            i.e. it provides it provides Sqlite methods for creating connection strings.
+            Your would register this class to the DI in your custom database extension methods
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqliteInMemorySpecificMethods.#ctor(AuthPermissions.BaseCode.AuthPermissionsOptions)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqliteInMemorySpecificMethods.AuthPDatabaseType">
+            <summary>
+            This is used select the <see cref="T:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods"/> from the AuthP's <see cref="P:AuthPermissions.BaseCode.SetupCode.SetupInternalData.AuthPDatabaseType"/>
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqliteInMemorySpecificMethods.DatabaseProviderShortName">
+            <summary>
+            <summary>
+            This contains the short name of EF Core Database Provider that this service supports
+            e.g. "SqlServer" instead of "Microsoft.EntityFrameworkCore.SqlServer"
+            Useful when use showing database type to a user and used internal
+            NOTE: The name MUST contain the last part of the DbContext.Database.ProviderName , e.g. PostgreSQL
+            </summary>
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqliteInMemorySpecificMethods.FormShardingConnectionString(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry,System.String)">
+            <summary>
+            This simply returns a in-memory connection string
+            </summary>
+            <param name="shardingEntry"></param>
+            <param name="connectionString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqliteInMemorySpecificMethods.ChangeDatabaseInformationWithinDistributedLock(System.String,System.Func{StatusGeneric.IStatusGeneric})">
+            <summary>
+            This will execute the function (which updates the shardingsettings json file) within a Distributed Lock. 
+            Typically this will use a lock on the database provider.  
+            </summary>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <param name="runInLock"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqliteInMemorySpecificMethods.ChangeDatabaseInformationWithinDistributedLockAsync(System.String,System.Func{System.Threading.Tasks.Task{StatusGeneric.IStatusGeneric}})">
+            <summary>
+            This will execute the function (which updates the shardingsettings json file) within a Distributed Lock. 
+            Typically this will use a lock on the database provider.  
+            </summary>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <param name="runInLockAsync"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqlServerDatabaseSpecificMethods">
+            <summary>
+            This contains the SqlServer-specific sharding functions
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqlServerDatabaseSpecificMethods.AuthPDatabaseType">
+            <summary>
+            This is used select the <see cref="T:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods"/> from the AuthP's <see cref="P:AuthPermissions.BaseCode.SetupCode.SetupInternalData.AuthPDatabaseType"/>
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqlServerDatabaseSpecificMethods.DatabaseProviderShortName">
+            <summary>
+            This contains the short name of EF Core Database Provider that this service supports
+            e.g. "SqlServer" instead of "Microsoft.EntityFrameworkCore.SqlServer"
+            Useful when use showing database type to a user and used internal
+            NOTE: The name MUST contain the last part of the DbContext.Database.ProviderName , e.g. PostgreSQL
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqlServerDatabaseSpecificMethods.FormShardingConnectionString(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry,System.String)">
+            <summary>
+            This changes the database to the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.DatabaseName"/> in the given connectionString
+            NOTE: If the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.DatabaseName"/> is null / empty, then it returns the connectionString with no change
+            </summary>
+            <param name="shardingEntry">Information about the database type/name to be used in the connection string</param>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <returns>A connection string containing the correct database to be used, or errors</returns>
+            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqlServerDatabaseSpecificMethods.ChangeDatabaseInformationWithinDistributedLock(System.String,System.Func{StatusGeneric.IStatusGeneric})">
+            <summary>
+            This will execute the function (which updates the shardingsettings json file) within a Distributed Lock. 
+            Typically this will use a lock on the database provider.  
+            </summary>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <param name="runInLock"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.DatabaseSpecificMethods.SqlServerDatabaseSpecificMethods.ChangeDatabaseInformationWithinDistributedLockAsync(System.String,System.Func{System.Threading.Tasks.Task{StatusGeneric.IStatusGeneric}})">
+            <summary>
+            This will execute the function (which updates the shardingsettings json file) within a Distributed Lock. 
+            Typically this will use a lock on the database provider.  
+            </summary>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <param name="runInLockAsync"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache">
+            <summary>
+            This is an implementation of the <see cref="T:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries"/> using the Net.DistributedFileStoreCache
+            library. This provides the reading and writing of the ShardingEntries stored in the FileStoreCache.
+            </summary>
+        </member>
+        <member name="F:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.ShardingEntryPrefix">
+            <summary>
+            This is the prefix for creating the key to a sharding entry  
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.FormShardingEntryKey(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="shardingEntryName"></param>
+            <returns></returns>
+        </member>
+        <member name="F:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache._shardingDatabaseProviders">
+            <summary>
+            This contains the methods with are specific to a database provider
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{AuthPermissions.AspNetCore.ShardingServices.ConnectionStringsOption},AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions,AuthPermissions.BaseCode.AuthPermissionsOptions,AuthPermissions.BaseCode.DataLayer.EfCode.AuthPermissionsDbContext,Net.DistributedFileStoreCache.IDistributedFileStoreCacheClass,System.Collections.Generic.IEnumerable{AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods},AuthPermissions.BaseCode.SetupCode.IAuthPDefaultLocalizer)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="connectionsAccessor"></param>
+            <param name="defaultInformationOptions"></param>
+            <param name="options"></param>
+            <param name="authDbContext"></param>
+            <param name="fsCache"></param>
+            <param name="databaseProviderMethods"></param>
+            <param name="localizeProvider"></param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.PossibleDatabaseProviders">
+            <summary>
+            This returns the supported database providers that can be used for multi tenant sharding.
+            Only useful if you have multiple database providers for your tenant databases (rare).
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.GetAllShardingEntries">
+            <summary>
+            This will return a list of <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> in the sharding settings file in the application
+            </summary>
+            <returns>If data, then returns the default list. This handles the situation where the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> isn't set up.</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.GetSingleShardingEntry(System.String)">
+            <summary>
+            This returns a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> where the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> matches
+            the <see parameter="shardingEntryName"/> parameter. 
+            </summary>
+            <param name="shardingEntryName"></param>
+            <returns>Returns the found <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/>, or null if not found.</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.AddNewShardingEntry(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry)">
+            <summary>
+            This adds a new <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> to the list in the current sharding settings file.
+            If there are no errors it will update the sharding settings in the FileStore cache.
+            </summary>
+            <param name="shardingEntry">Adds a new <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> to the sharding data.</param>
+            <returns>status containing a success message, or errors</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.UpdateShardingEntry(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry)">
+            <summary>
+            This updates a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> already in the sharding settings file.
+            It uses the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> in the provided in the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> parameter.
+            If there are no errors it will update the sharding settings file in the application.
+            </summary>
+            <param name="shardingEntry">Looks for a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> and updates it.</param>
+            <returns>status containing a success message, or errors</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.RemoveShardingEntry(System.String)">
+            <summary>
+            This removes a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the same <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> as the databaseInfoName.
+            If there are no errors it will update the sharding settings in the FileStore.
+            </summary>
+            <param name="shardingEntryName">Looks for a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> and removes it.</param>
+            <returns>status containing a success message, or errors</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.CheckTwoShardingSources">
+            <summary>
+            This checks that the FileStore Cache and ShardingBackup db contain the same sharding data.
+            This method is there for an admin user to run a check if they think something is wrong. 
+            </summary>
+            <returns>status containing a success message, or errors</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.GetConnectionStringNames">
+            <summary>
+            This provides the name of the connection strings. This allows you have connection strings
+            linked to different servers, e.g. WestServer, CenterServer and EastServer (see Example6)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.GetShardingsWithTenantNamesAsync">
+            <summary>
+            This returns all the sharding entries names in the sharding settings file, with a list of tenant name linked to each connection name
+            NOTE: The shardingName which matches the <see cref="P:AuthPermissions.BaseCode.AuthPermissionsOptions.DefaultShardingEntryName"/> is always
+            returns a HasOwnDb value of false. This is because the default database has the AuthP data in it.
+            </summary>
+            <returns>List of all the sharding entries names with the tenants using that database data name
+            NOTE: The hasOwnDb is true for a database containing a single database, false for multiple tenant database and null if empty</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.FormConnectionString(System.String)">
+            <summary>
+            This will provide the connection string for the entry with the given sharding entry name
+            </summary>
+            <param name="shardingEntryName">The name of sharding entry we want to access</param>
+            <returns>The connection string, or throw exception</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.GetSetShardingEntriesFileStoreCache.TestFormingConnectionString(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry)">
+            <summary>
+            This method allows you to check that the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> will create a
+            valid connection string. Useful when adding or editing the data in the ShardingEntry data.
+            </summary>
+            <param name="databaseInfo">The full definition of the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> for this sharding entry</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods">
+            <summary>
+            This contains sharding methods that are specific database providers.
+            e.g. it provides methods that are unique for each database type.
+            There are two build-in versions for SqlServer and Postgres, which as built in.
+            If the developer wants to use a different database provider (referred as "CustomDatabase"),
+            then they need to provide a version with the correct 
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods.AuthPDatabaseType">
+            <summary>
+            This is used select the <see cref="T:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods"/> from the AuthP's <see cref="P:AuthPermissions.BaseCode.SetupCode.SetupInternalData.AuthPDatabaseType"/>
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods.DatabaseProviderShortName">
+            <summary>
+            This contains the short name of EF Core Database Provider that this service supports
+            e.g. "SqlServer" instead of "Microsoft.EntityFrameworkCore.SqlServer"
+            Useful when use showing database type to a user and used internal
+            NOTE: The name MUST contain the last part of the DbContext.Database.ProviderName , e.g. PostgreSQL
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods.FormShardingConnectionString(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry,System.String)">
+            <summary>
+            This changes the database to the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.DatabaseName"/> in the given connectionString
+            NOTE: If the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.DatabaseName"/> is null / empty, then it returns the connectionString with no change
+            </summary>
+            <param name="shardingEntry">Information about the database type/name to be used in the connection string</param>
+            <param name="connectionString"></param>
+            <returns>A connection string containing the correct database to be used, or errors</returns>
+            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods.ChangeDatabaseInformationWithinDistributedLock(System.String,System.Func{StatusGeneric.IStatusGeneric})">
+            <summary>
+            This will execute the function (which updates the shardingsettings json file) within a Distributed Lock. 
+            Typically this will use a lock on the database provider.  
+            </summary>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <param name="runInLock"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IDatabaseSpecificMethods.ChangeDatabaseInformationWithinDistributedLockAsync(System.String,System.Func{System.Threading.Tasks.Task{StatusGeneric.IStatusGeneric}})">
+            <summary>
+            This will execute the function (which updates the shardingsettings json file) within a Distributed Lock. 
+            Typically this will use a lock on the database provider.  
+            </summary>
+            <param name="connectionString">connection string to the database to place a Distributed Lock on</param>
+            <param name="runInLockAsync"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries">
+            <summary>
+            This interface defines the methods for getting and setting the list of <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/>
+            used to define the database that each tenant should access.
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.PossibleDatabaseProviders">
+            <summary>
+            This returns the supported database providers that can be used for multi tenant sharding.
+            Only useful if you have multiple database providers for your tenant databases (rare).
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.GetAllShardingEntries">
+            <summary>
+            This will return a list of <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> in the sharding settings file in the application
+            </summary>
+            <returns>If data, then returns the default list. This handles the situation where the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> isn't set up.</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.GetSingleShardingEntry(System.String)">
+            <summary>
+            This returns a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> where the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> matches
+            the <see parameter="shardingEntryName"/> parameter. 
+            </summary>
+            <param name="shardingEntryName">The name of the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/></param>
+            <returns>Returns the found <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/>, or null if not found.</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.AddNewShardingEntry(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry)">
+            <summary>
+            This adds a new <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> to the list in the current sharding settings file.
+            If there are no errors it will update the sharding settings file in the application.
+            </summary>
+            <param name="shardingEntry">Adds a new <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> to the sharding data.</param>
+            <returns>status containing a success message, or errors</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.UpdateShardingEntry(AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry)">
+            <summary>
+            This updates a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> already in the sharding settings file.
+            It uses the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> in the provided in the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> parameter.
+            If there are no errors it will update the sharding settings file in the application.
+            </summary>
+            <param name="shardingEntry">Looks for a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> and updates it.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.RemoveShardingEntry(System.String)">
+            <summary>
+            This removes a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the same <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> as the databaseInfoName.
+            If there are no errors it will update the sharding settings data in the application.
+            </summary>
+            <param name="shardingEntryName">Looks for a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.Name"/> and removes it.</param>
+            <returns>status containing a success message, or errors</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.CheckTwoShardingSources">
+            <summary>
+            This checks that the FileStore Cache and ShardingBackup db contain the same sharding data.
+            This method is there for an admin user to run a check if they think something is wrong. 
+            </summary>
+            <returns>status containing a success message, or errors</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.GetConnectionStringNames">
+            <summary>
+            This provides the name of the connection strings. This allows you have connection strings
+            linked to different servers, e.g. WestServer, CenterServer and EastServer (see Example6)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.GetShardingsWithTenantNamesAsync">
+            <summary>
+            This returns all the database info names in the ShardingEntry data, with a list of tenant name linked to each connection name
+            </summary>
+            <returns>List of all the database info names with the tenants (and whether its sharding) within that database data name
+            NOTE: The hasOwnDb is true for a database containing a single database, false for multiple tenant database and null if empty</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.FormConnectionString(System.String)">
+            <summary>
+            This will provide the connection string for the entry with the given database info name
+            </summary>
+            <param name="shardingEntryName">The name of sharding database info we want to access</param>
+            <returns>The connection string, or throw exception</returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.IShardingOnlyTenantAddRemove">
+            <summary>
+            This service is designed for applications using the <see cref="F:AuthPermissions.BaseCode.SetupCode.TenantTypes.AddSharding"/> feature
+            and this code creates / deletes a shard tenant (i.e. the tenant's <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.Tenant.HasOwnDb"/> is true) and
+            at the same time adds / removes a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> entry linked to the tenant's database.
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IShardingOnlyTenantAddRemove.CreateTenantAsync(AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto)">
+            <summary>
+            This creates a shard tenant (i.e. the tenant's <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.Tenant.HasOwnDb"/> is true) and 
+            it will create a sharding entry to contain the new database name.
+            Note this method can handle single and hierarchical tenants, including adding a child
+            hierarchical entry which uses the parent's sharding entry. 
+            </summary>
+            <param name="dto">A class called <see cref="T:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto"/> holds all the data needed,
+            including a method to validate that the information is correct.</param>
+            <returns>status</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.IShardingOnlyTenantAddRemove.DeleteTenantAsync(System.Int32)">
+            <summary>
+            This will delete a shard tenant (i.e. the tenant's <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.Tenant.HasOwnDb"/> is true)
+            and will also delete the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> entry for this shard tenant
+            (unless the tenant is a child hierarchical, in which case it doesn't delete the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> entry).
+            </summary>
+            <param name="tenantId">The id of the tenant.</param>
+            <returns>status</returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.ISignUpGetShardingEntry">
+            <summary>
+            This interface defines a service that a developer has to add if the application uses
+            1. The SignInAndCreateTenant service
+            2. And the multi-tenant is using sharding
+            Its job is to find or create a database for the new tenant and returns its <see cref="!:ShardingEntry"/> Name
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ISignUpGetShardingEntry.FindOrCreateShardingEntryAsync(System.Boolean,System.String,System.String,System.String)">
+            <summary>
+            This will allow you to find of create a <see cref="!:ShardingEntry"/> for the new sharding tenant
+            and return the existing / new <see cref="!:ShardingEntry"/>'s Name.
+            1. Hybrid sharding: you might have existing <see cref="!:ShardingEntry"/> / databases or might create a
+            new <see cref="!:ShardingEntry"/>.
+            2. Sharding-only: In this case you will be creating a new <see cref="!:ShardingEntry"/>
+            </summary>
+            <param name="hasOwnDb">If true the tenant needs its own database. False means it shares a database.</param>
+            <param name="createTimestamp">If you create a new <see cref="!:ShardingEntry"/> you should include this timestamp
+            in the name of the entry. This is useful to the App Admin when looking at a SignUp that failed.</param>
+            <param name="region">If not null this provides geographic information to pick the nearest database server.</param>
+            <param name="version">Optional: provides the version name in case that effects the database selection</param>
+            <returns>Status with the DatabaseInfoName, or error if it can't find a database to work with</returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.ProviderNameExtension">
+            <summary>
+            Simple method to get the short name of a EF Core database provider
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ProviderNameExtension.GetProviderShortName(Microsoft.EntityFrameworkCore.DbContext)">
+            <summary>
+            This returns the short name that people know these EF Core databases
+            NOTE: This only works for the primary EF Core database providers 
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions">
+            <summary>
+            This defines the default sharding entry to add the sharding if the sharding data is empty.
+            You can manually set the four properties and/or call the <see cref="M:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.FormDefaultShardingEntry(AuthPermissions.BaseCode.AuthPermissionsOptions,AuthPermissions.BaseCode.DataLayer.EfCode.AuthPermissionsDbContext)"/>
+            method to fill in the normal default <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/>.
+            NOTE: if your tenants are ALL using sharding, then set <see cref="P:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.HybridMode"/> parameter to false
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.#ctor(System.Boolean)">
+            <summary>
+            ctor
+            </summary>
+            <param name="hybridMode">If true, then you can add shared tenants into the database used by AuthP.
+            If false, then you are in sharding-only mode, where you can't add tenants into the database used by AuthP.
+            </param>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.HybridMode">
+            <summary>
+            If true, then
+            - A default <see cref = "T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry" /> is added to the sharding entities
+              which allowing tenants to be added to the AuthP's context.
+            - The DefaultConnection connection string is shown in the <see cref="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.GetConnectionStringNames"/> method
+            If false, then
+            - The sharding entities start as empty
+            - The DefaultConnection connection string is not shown in the <see cref="M:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries.GetConnectionStringNames"/> method
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.DefaultConnectionName">
+            <summary>
+            This holds the name of the DefaultConnection in the ConnectionStrings in the appsettings.json file.
+            If the <see cref="P:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.HybridMode"/> is false, then the <see cref="T:AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries"/> will
+            remove this named connection string 
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.FormDefaultShardingEntry(AuthPermissions.BaseCode.AuthPermissionsOptions,AuthPermissions.BaseCode.DataLayer.EfCode.AuthPermissionsDbContext)">
+            <summary>
+            This fills in the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> with the default information.
+            </summary>
+            <param name="options">This is used to set the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.DatabaseType"/>
+            based on which database provider you selected. NOTE: If using custom database, then you MUST
+            define the <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry.DatabaseType"/> with the short form of the custom
+            database provider name before you call this method.</param>
+            <param name="authPContext">AuthP's database DbContext</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.ProvideDefaultShardingEntry(AuthPermissions.BaseCode.AuthPermissionsOptions,AuthPermissions.BaseCode.DataLayer.EfCode.AuthPermissionsDbContext)">
+            <summary>
+            This return the correct list of default <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> list.
+            Can be an empty if <see cref="P:AuthPermissions.AspNetCore.ShardingServices.ShardingEntryOptions.HybridMode"/> is false (useful in sharding only situations)
+            </summary>
+            <param name="options">Needed to fill in the <see cref="!:ShardingEntryOptions."/></param>
+            <param name="authPContext">Optional: Only needed if AddIfEmpty and using custom database.
+            You must provide the <see cref="T:AuthPermissions.BaseCode.DataLayer.EfCode.AuthPermissionsDbContext"/> to get the short provider name.</param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto">
+            <summary>
+            This is used if you want to use the <see cref="T:AuthPermissions.AspNetCore.ShardingServices.IShardingOnlyTenantAddRemove"/>'s
+            <see cref="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddRemove.CreateTenantAsync(AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto)"/>.
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.TenantName">
+            <summary>
+            Required: The name of the new tenant to create
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.HasOwnDb">
+            <summary>
+            Defines if the tenant should have its own database - always true
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.TenantRoleIds">
+            <summary>
+            Optional: List of tenant role names 
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ConnectionStringNames">
+            <summary>
+            Optional: If you have multiple connections strings you should This should contains the names of the connection strings to select the correct server
+            for the 
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ConnectionStringName">
+            <summary>
+            Required: The name of the connection string which defines the database server to use
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.DbProviderShortName">
+            <summary>
+            The short name (e.g. SqlServer) of the database provider for this tenant
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ParentTenantId">
+            <summary>
+            If creating a new hierarchical tenant, then
+            - if its zero (shown as ' none '), then you will be create a new, top-level 
+            - if non-zero, then you are add a new child hierarchical to the parent hierarchical tenant defined by the
+            <see cref="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ParentTenantId"/>
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ListOfHierarchicalTenants">
+            <summary>
+            For a new hierarchical tenant, then you must call the <see cref="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.FillListOfHierarchicalTenants(AuthPermissions.AdminCode.IAuthTenantAdminService)"/>
+            method to fill this list.
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.SetConnectionStringNames(System.Collections.Generic.List{System.String})">
+            <summary>
+            This sets up the <see cref="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ConnectionStringNames"/> allowing a user select which server they need.
+            NOTE: If there is only one connection string in the appsettings this method will set the
+            <see cref="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ConnectionStringName"/> to that single connection string (thus needing the user to select anything).
+            </summary>
+            <param name="connectionStringNames"></param>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.SetDatabaseProvider(Microsoft.EntityFrameworkCore.DbContext)">
+            <summary>
+            This with set the <see cref="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.DbProviderShortName"/> via an instance of the tenant's DbContext.
+            </summary>
+            <param name="tenantContext"></param>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.FillListOfHierarchicalTenants(AuthPermissions.AdminCode.IAuthTenantAdminService)">
+            <summary>
+            This method will fill the <see cref="P:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ListOfHierarchicalTenants"/> list that
+            you need when creating a hierarchical tenant
+            </summary>
+            <param name="tenantAdminService">provide the </param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.ValidateProperties">
+            <summary>
+            This ensures the data provided is valid
+            </summary>
+            <exception cref="T:AuthPermissions.BaseCode.CommonCode.AuthPermissionsBadDataException"></exception>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.FormDatabaseInformation">
+            <summary>
+            This will build the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> when you add a shard tenant.
+            NOTE: I have used a datetime for the database name for the reasons covered in the comments.
+            If you want to change the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/>'s Name or the DatabaseName,
+            then you can create a new class and override the <see cref="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto.FormDatabaseInformation"/> method.
+            See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/override
+            </summary>
+            <returns></returns>
+            <exception cref="T:AuthPermissions.BaseCode.CommonCode.AuthPermissionsException"></exception>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddRemove">
+            <summary>
+            This service is designed for applications using the <see cref="F:AuthPermissions.BaseCode.SetupCode.TenantTypes.AddSharding"/> feature
+            and this code creates / deletes a shard tenant (i.e. the tenant's <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.Tenant.HasOwnDb"/> is true) and
+            at the same time adds / removes a <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> entry linked to the tenant's database.
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddRemove.#ctor(AuthPermissions.AdminCode.IAuthTenantAdminService,AuthPermissions.AspNetCore.ShardingServices.IGetSetShardingEntries,AuthPermissions.BaseCode.AuthPermissionsOptions,AuthPermissions.BaseCode.SetupCode.IAuthPDefaultLocalizer)">
+            <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddRemove.CreateTenantAsync(AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto)">
+            <summary>
+            This creates a shard tenant (i.e. the tenant's <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.Tenant.HasOwnDb"/> is true) and 
+            it will create a sharding entry to contain the new database name.
+            Note this method can handle single and hierarchical tenants, including adding a child
+            hierarchical entry which uses the parent's sharding entry. 
+            </summary>
+            <param name="dto">A class called <see cref="T:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddDto"/> holds all the data needed,
+            including a method to validate that the information is correct.</param>
+            <returns>status</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.ShardingServices.ShardingOnlyTenantAddRemove.DeleteTenantAsync(System.Int32)">
+            <summary>
+            This will delete a shard tenant (i.e. the tenant's <see cref="P:AuthPermissions.BaseCode.DataLayer.Classes.Tenant.HasOwnDb"/> is true)
+            and will also delete the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> entry for this shard tenant
+            (unless the tenant is a child hierarchical, in which case it doesn't delete the <see cref="T:AuthPermissions.BaseCode.DataLayer.Classes.ShardingEntry"/> entry).
+            </summary>
+            <param name="tenantId">The id of the tenant.</param>
+            <returns>status</returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.StartupServices.AspNetUserExtension.CheckAddNewUserAsync(Microsoft.AspNetCore.Identity.UserManager{AuthPermissions.BaseCode.DataLayer.Classes.ApplicationUser},System.String,System.String)">
+            <summary>
+            This will add a user with the given email if they don't all ready exist
+            </summary>
+            <param name="userManager"></param>
+            <param name="email"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.StartupServices.StartupServiceBulkLoadAuthPInfo">
+            <summary>
+            This seeds the AuthP database with roles, tenants, and users using AuthP's bulk load feature.
+            This allows you to provide a starting point for a new application, 
+            e.g. setting up an super admin role and a super admin user so that you can 
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.StartupServices.StartupServiceBulkLoadAuthPInfo.OrderNum">
+            <summary>
+            Sets the order. Default is zero. If multiple classes have same OrderNum, then run in the order they were registered
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.StartupServices.StartupServiceBulkLoadAuthPInfo.ApplyYourChangeAsync(System.IServiceProvider)">
+            <summary>
+            This takes data from the bulk load extension methods and and if there is no data for a
+            each type of bulk load (i.e. roles, tenants, and users), then it will write the bulk load
+            data to the AuthP's database.
+            NOTE: any AuthP database event change listeners will NOT be triggered during bulk loading
+            </summary>
+            <param name="scopedServices">This should be a scoped service</param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.StartupServices.StartupServiceIndividualAccountsAddSuperUser`1">
+            <summary>
+            This is a complex method that can handle a individual account user with a 
+            personalized IdentityUser type
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.StartupServices.StartupServiceIndividualAccountsAddSuperUser`1.OrderNum">
+            <summary>
+            This must be after migrations, and after the adding demo users startup service.
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.StartupServices.StartupServiceIndividualAccountsAddSuperUser`1.ApplyYourChangeAsync(System.IServiceProvider)">
+            <summary>
+            This will ensure that a user who's email/password is held in the "SuperAdmin" section of 
+            the appsettings.json file is in the individual users account authentication database
+            </summary>
+            <param name="scopedServices">This should be a scoped service</param>
+            <returns></returns>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.StartupServices.StartupServiceIndividualAccountsAddSuperUser`1.CheckAddNewUserAsync(Microsoft.AspNetCore.Identity.UserManager{`0},System.String,System.String)">
+            <summary>
+            This will add a user with the given email if they don't all ready exist
+            </summary>
+            <param name="userManager"></param>
+            <param name="email"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.StartupServices.StartupServiceMigrateAnyDbContext`1">
+            <summary>
+            This will run EF Core's Migrate method on the given DbContext
+            Note that if the database is an in-memory, then it will simply create it
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.StartupServices.StartupServiceMigrateAnyDbContext`1.OrderNum">
+            <summary>
+            Set to -10 so that it is run before any other startup services
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.StartupServices.StartupServiceMigrateAnyDbContext`1.ApplyYourChangeAsync(System.IServiceProvider)">
+            <summary>
+            This migrates the given <typeparamref name="TContext"/> DbContext
+            </summary>
+            <param name="scopedServices">This should be a scoped service</param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.StartupServices.StartupServiceMigrateAuthPDatabase">
+            <summary>
+            Startup service that migrates the AuthP database
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.StartupServices.StartupServiceMigrateAuthPDatabase.OrderNum">
+            <summary>
+            Sets the order. Default is zero. If multiple classes have same OrderNum, then run in the order they were registered
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.StartupServices.StartupServiceMigrateAuthPDatabase.ApplyYourChangeAsync(System.IServiceProvider)">
+            <summary>
+            This will migrate the AuthP database
+            </summary>
+            <param name="scopedServices"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AuthPermissions.AspNetCore.StartupServices.StartupServicesIndividualAccountsAddDemoUsers">
+            <summary>
+            Startup service that is run on startup: This will add Demo Individual Accounts users using data in the appsetting.json
+            </summary>
+        </member>
+        <member name="P:AuthPermissions.AspNetCore.StartupServices.StartupServicesIndividualAccountsAddDemoUsers.OrderNum">
+            <summary>
+            This must be run after the migration of the IndividualAccounts database,
+            But before the SuperUser is added
+            </summary>
+        </member>
+        <member name="M:AuthPermissions.AspNetCore.StartupServices.StartupServicesIndividualAccountsAddDemoUsers.ApplyYourChangeAsync(System.IServiceProvider)">
+            <summary>
+            This takes a comma delimited string of demo users from the "DemoUsers" in the appsettings.json file
+            and adds each if they aren't in the individual account user
+            NOTE: The email is also the password, so make sure the email is a valid password
+            </summary>
+            <param name="scopedServices">This should be a scoped service</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
