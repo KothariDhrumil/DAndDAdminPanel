@@ -16,18 +16,14 @@ COPY Infrastructure/Infrastructure.csproj Infrastructure/
 COPY Shared/Shared.csproj Shared/
 COPY SharedKernel/SharedKernel.csproj SharedKernel/
 COPY AuthPermissions.SqlServer/AuthPermissions.SqlServer.csproj AuthPermissions.SqlServer/
-# Ensure libs folder exists and is copied to leverage direct DLL references
-COPY libs ./libs
-# Opt-in project(s) to use solution libs via build arg
-ARG USE_SOLUTION_LIBS=true
-ENV UseSolutionLibs=${USE_SOLUTION_LIBS}
+# Copy local DLL folder so project references like ..\Library\*.dll resolve during build
+COPY Library ./Library
 RUN dotnet restore DealersAndDistributors.Server/DealersAndDistributors.Server.csproj --nologo
 
 # Copy the rest of the source and build
 COPY . .
 WORKDIR /src/DealersAndDistributors.Server
 RUN dotnet publish -c Release -o /app/publish \
-    -p:UseSolutionLibs=${UseSolutionLibs} \
     -p:PublishTrimmed=false \
     -p:PublishReadyToRun=false \
     --nologo
