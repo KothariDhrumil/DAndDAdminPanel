@@ -11,7 +11,12 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
   exit 1
 }
 
-# Compose image ref explicitly to avoid PS tokenization issues
+if (-not $Port -or $Port -le 0) {
+  Write-Error "Invalid -Port value. Provide a positive integer (default 9000)."
+  exit 1
+}
+
+# Compose image ref explicitly
 $image = "sonarqube:$Tag"
 
 # Check if a container with the given name exists
@@ -22,14 +27,16 @@ if (-not $existing) {
   & docker pull $image | Out-Null
 
   Write-Host "Creating SonarQube container '$Name' on port $Port ..."
+  $publish = "--publish=$Port:9000"
   $runArgs = @(
     "run",
     "-d",
     "--name", $Name,
-    "-p", "$Port:9000",
+    $publish,
     "-e", "SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true",
     $image
   )
+  Write-Host "docker $($runArgs -join ' ')"
   & docker @runArgs | Out-Null
 } else {
   Write-Host "Starting existing SonarQube container '$Name'..."
