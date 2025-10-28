@@ -57,7 +57,7 @@ If you need to build immediately:
 Check if there's a pre-release version:
 ```bash
 # Search for all versions including pre-release
-dotnet add package AuthPermissions.AspNetCore --version "*-*"
+dotnet package search AuthPermissions.AspNetCore --prerelease
 ```
 
 ### Option 4: Use Private Package Source
@@ -106,9 +106,9 @@ dotnet build --configuration Release
 dotnet test
 
 # Run SonarQube analysis (requires server setup)
-dotnet sonarscanner begin /k:"DealersAndDistributors" /d:sonar.host.url="YOUR_URL" /d:sonar.login="YOUR_TOKEN"
+dotnet sonarscanner begin /k:"DealersAndDistributors" /d:sonar.host.url="YOUR_URL" /d:sonar.token="YOUR_TOKEN"
 dotnet build
-dotnet sonarscanner end /d:sonar.login="YOUR_TOKEN"
+dotnet sonarscanner end /d:sonar.token="YOUR_TOKEN"
 ```
 
 ## Support

@@ -36,13 +36,13 @@ To run SonarQube analysis locally (requires a SonarQube server):
 dotnet sonarscanner begin \
   /k:"DealersAndDistributors" \
   /d:sonar.host.url="http://localhost:9000" \
-  /d:sonar.login="your-token-here"
+  /d:sonar.token="your-token-here"
 
 # Build the project
 dotnet build --no-incremental
 
 # End analysis and upload results
-dotnet sonarscanner end /d:sonar.login="your-token-here"
+dotnet sonarscanner end /d:sonar.token="your-token-here"
 ```
 
 ## CI/CD Integration
