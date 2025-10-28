@@ -15,7 +15,7 @@ public sealed class CreatePlanCommand : ICommand<int>
     public int PlanRate { get; set; }
     public bool IsActive { get; set; }
 
-    public List<int> RoleIds { get; set; }
+    public List<int> RoleIds { get; set; } = new();
 
     internal sealed class CreatePlanCommandHandler(
         AuthPermissionsDbContext context)
@@ -23,7 +23,15 @@ public sealed class CreatePlanCommand : ICommand<int>
     {
         public async Task<Result<int>> Handle(CreatePlanCommand command, CancellationToken cancellationToken)
         {
-            // TODO : Check for unique / Duplicate name
+            // Check for unique/duplicate name
+            var existingPlan = await context.Plans
+                .AnyAsync(p => p.Name == command.Name, cancellationToken);
+            
+            if (existingPlan)
+            {
+                return Result.Failure<int>(Error.Validation("Plan.DuplicateName", "A plan with this name already exists."));
+            }
+
             var plan = new Plan()
             {
                 Name = command.Name,
@@ -33,7 +41,7 @@ public sealed class CreatePlanCommand : ICommand<int>
                 Description = command.Description,
             };
 
-            if (command.RoleIds != null && command.RoleIds.Any())
+            if (command.RoleIds.Count > 0)
             {
                 var roles = await context.RoleToPermissions
                     .Where(x => command.RoleIds.Contains(x.RoleId))
@@ -57,5 +65,8 @@ public class CreatePlanCommandValidator : AbstractValidator<CreatePlanCommand>
     public CreatePlanCommandValidator()
     {
         RuleFor(c => c.Name).NotEmpty().MaximumLength(255);
+        RuleFor(c => c.PlanValidityInDays).GreaterThan(0);
+        RuleFor(c => c.PlanRate).GreaterThanOrEqualTo(0);
+        RuleFor(c => c.Description).MaximumLength(1000);
     }
 }

@@ -1,6 +1,7 @@
 using Application.Abstractions.Messaging;
 using Application.Abstractions.Persistence;
 using Domain.Orders;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -46,5 +47,14 @@ internal sealed class CreateCustomerOrderCommandHandler(
         db.Orders.Add(order);
         await db.SaveChangesAsync(ct);
         return Result.Success(order.Id);
+    }
+}
+
+public class CreateCustomerOrderCommandValidator : AbstractValidator<CreateCustomerOrderCommand>
+{
+    public CreateCustomerOrderCommandValidator()
+    {
+        RuleFor(x => x.Total).GreaterThan(0);
+        RuleFor(x => x.GlobalCustomerId).NotEmpty();
     }
 }
