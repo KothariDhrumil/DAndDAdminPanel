@@ -1,6 +1,7 @@
 using Application.Abstractions.Messaging;
 using Application.Abstractions.Persistence;
 using Domain.Customers;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -90,5 +91,14 @@ public sealed class SetFranchiseParentCommand : ICommand
             await db.SaveChangesAsync(ct);
             return Result.Success();
         }
+    }
+}
+
+public class SetFranchiseParentCommandValidator : AbstractValidator<SetFranchiseParentCommand>
+{
+    public SetFranchiseParentCommandValidator()
+    {
+        RuleFor(x => x.TenantId).GreaterThan(0);
+        RuleFor(x => x.GlobalCustomerId).NotEmpty();
     }
 }

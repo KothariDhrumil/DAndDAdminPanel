@@ -2,6 +2,7 @@ using Application.Abstractions.Messaging;
 using Application.Exceptions;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using System.Numerics;
@@ -74,5 +75,16 @@ internal sealed class UpdatePlanCommandHandler(
         await context.SaveChangesAsync(cancellationToken);
 
         return Result.Success(Plan.Id);
+    }
+}
+
+public class UpdatePlanCommandValidator : AbstractValidator<UpdatePlanCommand>
+{
+    public UpdatePlanCommandValidator()
+    {
+        RuleFor(c => c.PlanId).GreaterThan(0);
+        RuleFor(c => c.Name).NotEmpty().MaximumLength(255);
+        RuleFor(c => c.PlanValidityInDays).GreaterThan(0);
+        RuleFor(c => c.PlanRate).GreaterThanOrEqualTo(0);
     }
 }

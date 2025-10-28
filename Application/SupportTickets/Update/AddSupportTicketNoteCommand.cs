@@ -1,5 +1,6 @@
 using Application.Abstractions.Messaging;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -31,5 +32,14 @@ public sealed class AddSupportTicketNoteCommand : ICommand
             await _db.SaveChangesAsync(ct);
             return Result.Success();
         }
+    }
+}
+
+public class AddSupportTicketNoteCommandValidator : AbstractValidator<AddSupportTicketNoteCommand>
+{
+    public AddSupportTicketNoteCommandValidator()
+    {
+        RuleFor(x => x.Id).GreaterThan(0);
+        RuleFor(x => x.Note).NotEmpty().MaximumLength(4096);
     }
 }

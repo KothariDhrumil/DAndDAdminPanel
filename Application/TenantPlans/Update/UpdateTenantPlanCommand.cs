@@ -3,6 +3,7 @@ using Application.Exceptions;
 using AuthPermissions.AdminCode;
 using AuthPermissions.BaseCode.DataLayer.Classes;
 using AuthPermissions.BaseCode.DataLayer.EfCode;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using System.Linq;
@@ -143,5 +144,19 @@ public sealed class UpdateTenantPlanCommand : ICommand
 
             return Result.Success(tenantPlan.Id);
         }
+    }
+}
+
+public class UpdateTenantPlanCommandValidator : AbstractValidator<UpdateTenantPlanCommand>
+{
+    public UpdateTenantPlanCommandValidator()
+    {
+        RuleFor(x => x.TenantPlanId).GreaterThan(0);
+        RuleFor(x => x.PlanId).GreaterThan(0);
+        RuleFor(x => x.TenantId).GreaterThan(0);
+        RuleFor(x => x.ValidFrom).NotEmpty();
+        RuleFor(x => x.ValidTo).NotEmpty()
+            .GreaterThan(x => x.ValidFrom).WithMessage("ValidTo must be after ValidFrom");
+        RuleFor(x => x.Remarks).MaximumLength(1000);
     }
 }
