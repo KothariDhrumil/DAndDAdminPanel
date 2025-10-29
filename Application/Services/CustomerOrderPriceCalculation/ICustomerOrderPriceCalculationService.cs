@@ -1,6 +1,6 @@
 using Domain.Purchase;
 
-namespace Application.Abstractions.Pricing;
+namespace Application.Services.CustomerOrderPriceCalculation;
 
 public interface ICustomerOrderPriceCalculationService
 {

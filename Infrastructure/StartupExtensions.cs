@@ -1,6 +1,7 @@
 ﻿using Application;
 using Application.Abstractions.ImageHandling;
-using Application.Abstractions.Pricing;
+using Application.Services.CustomerOrderPriceCalculation;
+using Application.Services.PriceTier;
 using Asp.Versioning;
 using AuthPermissions.BaseCode.SetupCode;
 using AuthPermissions.SupportCode.DownStatusCode;

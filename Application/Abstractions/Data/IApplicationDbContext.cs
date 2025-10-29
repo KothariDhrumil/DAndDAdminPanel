@@ -6,13 +6,14 @@ using Domain.Customers;
 using Microsoft.EntityFrameworkCore;
 using Domain.Accounting;
 using Domain.Purchase;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Application.Abstractions.Data;
 
 public interface IRetailDbContext : IDataKeyFilterReadOnly
 {
     public string DataKey { get; }
-    Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade Database { get; }
+    DatabaseFacade Database { get; }
     DbSet<RetailOutlet> RetailOutlets { get; }
     DbSet<TenantCustomerProfile> TenantCustomerProfiles { get; }
     DbSet<TenantUserProfile> TenantUserProfiles { get; }

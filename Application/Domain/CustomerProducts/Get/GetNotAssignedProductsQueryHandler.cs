@@ -1,6 +1,6 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
-using Application.Abstractions.Pricing;
+using Application.Services.PriceTier;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 

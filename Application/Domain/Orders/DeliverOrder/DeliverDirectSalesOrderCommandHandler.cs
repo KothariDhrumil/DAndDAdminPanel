@@ -1,10 +1,10 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
-using Application.Abstractions.Pricing;
 using Application.Abstractions.Authentication;
 using Application.Services.Orders;
 using Domain.Purchase;
 using SharedKernel;
+using Application.Services.CustomerOrderPriceCalculation;
 
 namespace Application.Domain.Orders.DeliverOrder;
 
@@ -19,6 +19,9 @@ internal sealed class DeliverDirectSalesOrderCommandHandler(
     {
         if (command.CustomerOrderDetails == null || !command.CustomerOrderDetails.Any())
             return Result.Failure<int>(Error.Validation("OrderDetailsMissing", "Order must have at least one detail."));
+        
+        await using var tx = await db.Database.BeginTransactionAsync(ct);
+
         var order = new CustomerOrder
         {
             CustomerId = command.CustomerId,
@@ -39,11 +42,16 @@ internal sealed class DeliverDirectSalesOrderCommandHandler(
         await customerOrderPriceCalculationService.SaveOrUpdateOrderAsync(order);
 
         db.CustomerOrders.Add(order);
+
         await db.SaveChangesAsync(ct);
         
         // Handle post-delivery accounting
         await orderDeliveryService.HandlePostDeliveryAsync(order, userContext.UserId, ct);
-        
+
+        // Step 5: Save and commit transaction
+        await db.SaveChangesAsync(ct);
+        await tx.CommitAsync(ct);
+
         return Result.Success(order.Id);
     }
 }

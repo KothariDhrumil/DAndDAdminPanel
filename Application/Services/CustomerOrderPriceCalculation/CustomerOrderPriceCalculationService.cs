@@ -1,9 +1,8 @@
 using Application.Abstractions.Data;
-using Application.Abstractions.Pricing;
 using Domain.Purchase;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services;
+namespace Application.Services.CustomerOrderPriceCalculation;
 
 public class CustomerOrderPriceCalculationService : ICustomerOrderPriceCalculationService
 {
@@ -20,7 +19,7 @@ public class CustomerOrderPriceCalculationService : ICustomerOrderPriceCalculati
 
         var products = await _db.CustomerProducts
             .Include(x => x.Product)
-            .Where(p => productIds.Contains(p.ProductId) && Guid.Equals(p.CustomerId, order.CustomerId))
+            .Where(p => productIds.Contains(p.ProductId) && Equals(p.CustomerId, order.CustomerId))
             .ToDictionaryAsync(p => p.ProductId, p => p);
 
         decimal totalBaseAmount = 0;

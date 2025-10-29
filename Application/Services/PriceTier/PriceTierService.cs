@@ -1,9 +1,7 @@
 using Application.Abstractions.Data;
-using Application.Abstractions.Pricing;
-using Domain.Customers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services;
+namespace Application.Services.PriceTier;
 public class PriceTierService : IPriceTierService
 {
     private readonly IRetailDbContext _db;

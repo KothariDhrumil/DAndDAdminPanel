@@ -20,14 +20,19 @@ internal sealed class DeliverExistingOrderCommandHandler(
             .FirstOrDefaultAsync(o => o.Id == command.OrderId, ct);
         if (order == null)
             return Result.Failure<bool>(Error.NotFound("OrderNotFound", "Order not found."));
-        
+
+        await using var tx = await db.Database.BeginTransactionAsync(ct);
+
         order.IsDelivered = true;
         order.OrderDeliveryDate = DateTime.UtcNow;
-        await db.SaveChangesAsync(ct);
         
         // Handle post-delivery accounting
         await orderDeliveryService.HandlePostDeliveryAsync(order, userContext.UserId, ct);
-        
+
+        await db.SaveChangesAsync(ct);
+
+        await tx.CommitAsync(ct);
+
         return Result.Success(true);
     }
 }
