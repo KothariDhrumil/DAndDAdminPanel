@@ -4,5 +4,5 @@ namespace Application.Services.CustomerOrderPriceCalculation;
 
 public interface ICustomerOrderPriceCalculationService
 {
-    Task<CustomerOrder> SaveOrUpdateOrderAsync(CustomerOrder customerOrder);
+    Task<CustomerOrder> ApplyPricingAsync(CustomerOrder customerOrder);
 }

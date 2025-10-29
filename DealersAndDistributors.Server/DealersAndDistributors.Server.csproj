@@ -20,6 +20,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
 	</ItemGroup>
 
@@ -43,6 +44,9 @@
 		<Reference Include="AuthPermissions.BaseCode">
 			<HintPath>..\Library\AuthPermissions.BaseCode.dll</HintPath>
 			<Private>True</Private>
+		</Reference>
+		<Reference Include="AuthPermissions.SqlServer">
+		  <HintPath>..\Library\AuthPermissions.SqlServer.dll</HintPath>
 		</Reference>
 		<Reference Include="AuthPermissions.SupportCode">
 			<HintPath>..\Library\AuthPermissions.SupportCode.dll</HintPath>

@@ -39,7 +39,7 @@ internal sealed class DeliverDirectSalesOrderCommandHandler(
                 Qty = d.Qty,                
             }).ToList()
         };
-        await customerOrderPriceCalculationService.SaveOrUpdateOrderAsync(order);
+        await customerOrderPriceCalculationService.ApplyPricingAsync(order);
 
         db.CustomerOrders.Add(order);
 

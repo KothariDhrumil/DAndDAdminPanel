@@ -15,6 +15,17 @@ internal sealed class CreateCustomerOrderCommandHandler(
         if (command.CustomerOrderDetails == null || !command.CustomerOrderDetails.Any())
             return Result.Failure<int>(Error.Validation("OrderDetailsMissing", "Order must have at least one detail."));
 
+        var duplicateProducts = command.CustomerOrderDetails
+                                        .GroupBy(i => i.ProductId)
+                                        .Where(g => g.Count() > 1)
+                                        .Select(g => g.Key)
+                                        .ToList();
+
+        if (duplicateProducts.Any())
+            return Result.Failure<int>(
+                Error.Validation("DuplicateProducts", $"Duplicate products found: {string.Join(", ", duplicateProducts)}"));
+
+
         var order = new CustomerOrder
         {
             CustomerId = command.CustomerId,
@@ -29,7 +40,7 @@ internal sealed class CreateCustomerOrderCommandHandler(
                 Qty = d.Qty, 
             }).ToList()
         };
-        await customerOrderPriceCalculationService.SaveOrUpdateOrderAsync(order); 
+        await customerOrderPriceCalculationService.ApplyPricingAsync(order); 
 
         dbContext.CustomerOrders.Add(order);
         await dbContext.SaveChangesAsync(ct);

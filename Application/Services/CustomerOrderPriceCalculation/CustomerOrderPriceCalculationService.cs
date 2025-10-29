@@ -12,10 +12,10 @@ public class CustomerOrderPriceCalculationService : ICustomerOrderPriceCalculati
         _db = db;
     }
 
-    public async Task<CustomerOrder> SaveOrUpdateOrderAsync(CustomerOrder order)
+    public async Task<CustomerOrder> ApplyPricingAsync(CustomerOrder order)
     {
         // 1. Load all product rates
-        var productIds = order.CustomerOrderDetails.Select(x => x.ProductId).ToList();
+        var productIds = order.CustomerOrderDetails.Select(x => x.ProductId).Distinct().ToList();
 
         var products = await _db.CustomerProducts
             .Include(x => x.Product)
@@ -46,11 +46,11 @@ public class CustomerOrderPriceCalculationService : ICustomerOrderPriceCalculati
             decimal cgst = taxableAmount * product.Product.CGST / 100;
             //decimal sgst = taxableAmount * product.Product.SGST / 100;
 
-            detail.Rate = rate;
-            detail.Amount = taxableAmount;
+            detail.Rate = Math.Round(rate, 2, MidpointRounding.AwayFromZero);
+            detail.Amount = Math.Round(taxableAmount, 2, MidpointRounding.AwayFromZero);
             //detail.Discount = discountAmt;
-            detail.IGST = igst;
-            detail.CGST = cgst;
+            detail.IGST = Math.Round(igst, 2, MidpointRounding.AwayFromZero);
+            detail.CGST = Math.Round(cgst, 2, MidpointRounding.AwayFromZero);
             //detail.SGST = sgst;
 
             totalBaseAmount += taxableAmount;
@@ -59,12 +59,11 @@ public class CustomerOrderPriceCalculationService : ICustomerOrderPriceCalculati
         }
 
         // 3. Summary
-        order.Amount = totalBaseAmount;
-        //order.DiscountAmount = totalDiscount;
-        order.Tax = totalTax;
+        order.Amount = Math.Round(totalBaseAmount, 2, MidpointRounding.AwayFromZero);
+        order.Tax = Math.Round(totalTax, 2, MidpointRounding.AwayFromZero);
 
         decimal parcelCharge = order.ParcelCharge ?? 0;
-        order.GrandTotal = totalBaseAmount + totalTax + parcelCharge;
+        order.GrandTotal = Math.Round(totalBaseAmount + totalTax + parcelCharge, 2, MidpointRounding.AwayFromZero);
 
         return order;
     }
