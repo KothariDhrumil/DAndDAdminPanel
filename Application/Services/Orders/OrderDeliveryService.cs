@@ -34,13 +34,16 @@ internal sealed class OrderDeliveryService : IOrderDeliveryService
             // Update Stock for each product in the order
             if (order.RouteId.HasValue)
             {
+                // Normalize to date-only for comparison (improves query performance)
+                var deliveryDate = order.OrderDeliveryDate.Date;
+                
                 foreach (var detail in order.CustomerOrderDetails)
                 {
                     var stock = await _db.Stocks
                         .FirstOrDefaultAsync(s =>
                             s.RouteId == order.RouteId.Value &&
                             s.ProductId == detail.ProductId &&
-                            s.Date.Date == order.OrderDeliveryDate.Date,
+                            s.Date == deliveryDate,
                             ct);
 
                     if (stock == null)
@@ -50,7 +53,7 @@ internal sealed class OrderDeliveryService : IOrderDeliveryService
                         {
                             RouteId = order.RouteId.Value,
                             ProductId = detail.ProductId,
-                            Date = order.OrderDeliveryDate.Date,
+                            Date = deliveryDate,
                             QtyPurchased = 0,
                             QtySold = detail.Qty,
                             Return = 0,
