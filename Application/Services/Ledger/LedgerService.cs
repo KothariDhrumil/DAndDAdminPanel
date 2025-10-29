@@ -89,4 +89,109 @@ internal sealed class LedgerService : ILedgerService
 
         }
     }
+
+    public async Task<IReadOnlyList<LedgerEntryPassbookDto>> GetLedgerEntriesAsync(
+        Guid accountId,
+        AccountType accountType,
+        DateTime? from,
+        DateTime? to,
+        CancellationToken ct)
+    {
+        // Get opening balance (last entry before 'from' date if filtering by date)
+        decimal openingBalance = 0;
+        if (from.HasValue)
+        {
+            var lastEntryBeforeFrom = await _db.Ledgers
+                .Where(l => l.AccountId == accountId && l.AccountType == accountType && l.Date < from.Value)
+                .OrderByDescending(l => l.Date)
+                .ThenByDescending(l => l.Id)
+                .FirstOrDefaultAsync(ct);
+
+            openingBalance = lastEntryBeforeFrom?.Balance ?? 0;
+        }
+
+        var query = _db.Ledgers
+            .Where(l => l.AccountId == accountId && l.AccountType == accountType);
+
+        if (from.HasValue)
+        {
+            query = query.Where(l => l.Date >= from.Value);
+        }
+
+        if (to.HasValue)
+        {
+            query = query.Where(l => l.Date <= to.Value);
+        }
+
+        var ledgerEntries = await query
+            .OrderBy(l => l.Date)
+            .ThenBy(l => l.Id)
+            .Select(l => new
+            {
+                l.Id,
+                l.Date,
+                l.OperationType,
+                l.LedgerType,
+                l.Amount,
+                l.Balance,
+                l.PaymentMode,
+                l.Remarks
+            })
+            .ToListAsync(ct);
+
+        var passbookEntries = new List<LedgerEntryPassbookDto>();
+        decimal runningBalance = openingBalance;
+
+        foreach (var entry in ledgerEntries)
+        {
+            decimal previousBalance = runningBalance;
+            
+            // Use stored balance if available, otherwise calculate it
+            decimal currentBalance;
+            if (entry.Balance.HasValue)
+            {
+                currentBalance = entry.Balance.Value;
+            }
+            else
+            {
+                // Calculate balance: Debit increases, Credit decreases
+                currentBalance = entry.LedgerType == LedgerType.Debit
+                    ? previousBalance + entry.Amount
+                    : previousBalance - entry.Amount;
+            }
+            
+            // Update running balance for next iteration
+            runningBalance = currentBalance;
+
+            var description = GetOperationDescription(entry.OperationType);
+
+            passbookEntries.Add(new LedgerEntryPassbookDto(
+                entry.Id,
+                entry.Date,
+                description,
+                entry.LedgerType,
+                entry.Amount,
+                previousBalance,
+                currentBalance,
+                entry.PaymentMode,
+                entry.Remarks
+            ));
+        }
+
+        return passbookEntries;
+    }
+
+    private static string GetOperationDescription(OperationType operationType)
+    {
+        return operationType switch
+        {
+            OperationType.OrderPlaced => "Order Placed",
+            OperationType.PaymentReceived => "Payment Received",
+            OperationType.Refund => "Refund",
+            OperationType.RouteExpense => "Route Expense",
+            OperationType.SalaryCredit => "Salary Credit",
+            OperationType.OpeningBalance => "Opening Balance",
+            _ => operationType.ToString()
+        };
+    }
 }
