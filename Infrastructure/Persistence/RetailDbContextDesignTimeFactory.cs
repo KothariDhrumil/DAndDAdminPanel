@@ -10,13 +10,18 @@ namespace Infrastructure.Persistence;
 
 public class RetailDbContextDesignTimeFactory : IDesignTimeDbContextFactory<RetailDbContext>
 {
+    // Design-time only connection string for EF Core migrations
+    // TrustServerCertificate=True is only acceptable here as this is never used in production
+    // At runtime, actual connection strings from configuration are used
+    private const string DesignTimeConnectionString = "Server=localhost;Database=DesignTime;Trusted_Connection=True;TrustServerCertificate=True;";
+    
     public RetailDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<RetailDbContext>();
         
         // Use a connection string for design-time (migrations)
         // This will be replaced at runtime with actual connection strings
-        optionsBuilder.UseSqlServer("Server=localhost;Database=DesignTime;Trusted_Connection=True;TrustServerCertificate=True;");
+        optionsBuilder.UseSqlServer(DesignTimeConnectionString);
         
         // Create stub implementations for design-time
         var stubSharding = new StubGetShardingDataFromUser();
@@ -30,7 +35,7 @@ public class RetailDbContextDesignTimeFactory : IDesignTimeDbContextFactory<Reta
     private sealed class StubGetShardingDataFromUser : IGetShardingDataFromUser
     {
         public string DataKey => "DesignTime";
-        public string ConnectionString => "Server=localhost;Database=DesignTime;Trusted_Connection=True;TrustServerCertificate=True;";
+        public string ConnectionString => DesignTimeConnectionString;
     }
     
     private sealed class StubDomainEventsDispatcher : IDomainEventsDispatcher
