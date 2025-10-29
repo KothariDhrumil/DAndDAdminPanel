@@ -97,6 +97,19 @@ internal sealed class LedgerService : ILedgerService
         DateTime? to,
         CancellationToken ct)
     {
+        // Get opening balance (last entry before 'from' date if filtering by date)
+        decimal openingBalance = 0;
+        if (from.HasValue)
+        {
+            var lastEntryBeforeFrom = await _db.Ledgers
+                .Where(l => l.AccountId == accountId && l.AccountType == accountType && l.Date < from.Value)
+                .OrderByDescending(l => l.Date)
+                .ThenByDescending(l => l.Id)
+                .FirstOrDefaultAsync(ct);
+
+            openingBalance = lastEntryBeforeFrom?.Balance ?? 0;
+        }
+
         var query = _db.Ledgers
             .Where(l => l.AccountId == accountId && l.AccountType == accountType);
 
@@ -127,7 +140,7 @@ internal sealed class LedgerService : ILedgerService
             .ToListAsync(ct);
 
         var passbookEntries = new List<LedgerEntryPassbookDto>();
-        decimal runningBalance = 0;
+        decimal runningBalance = openingBalance;
 
         foreach (var entry in ledgerEntries)
         {
