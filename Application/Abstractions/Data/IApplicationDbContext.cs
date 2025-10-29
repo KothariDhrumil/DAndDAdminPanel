@@ -12,6 +12,7 @@ namespace Application.Abstractions.Data;
 public interface IRetailDbContext : IDataKeyFilterReadOnly
 {
     public string DataKey { get; }
+    Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade Database { get; }
     DbSet<RetailOutlet> RetailOutlets { get; }
     DbSet<TenantCustomerProfile> TenantCustomerProfiles { get; }
     DbSet<TenantUserProfile> TenantUserProfiles { get; }
@@ -28,5 +29,7 @@ public interface IRetailDbContext : IDataKeyFilterReadOnly
     DbSet<PurchaseUnitProduct> PurchaseUnitProducts { get; }
     DbSet<CustomerOrder> CustomerOrders { get; }
     DbSet<CustomerOrderDetail> CustomerOrderDetails { get; }
+    DbSet<Ledger> Ledgers { get; }
+    DbSet<Stock> Stocks { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -8,6 +8,9 @@ namespace Domain.Purchase
         public Guid CustomerId { get; set; }
         public TenantCustomerProfile Customer { get; set; } = default!;
 
+        public int? RouteId { get; set; }
+        public Route? Route { get; set; }
+
         public DateTime OrderPlacedDate { get; set; }
         public DateTime OrderDeliveryDate { get; set; }
 
