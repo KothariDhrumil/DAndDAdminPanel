@@ -1,13 +1,18 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Application.Abstractions.Pricing;
+using Application.Abstractions.Authentication;
+using Application.Services.Orders;
 using Domain.Purchase;
 using SharedKernel;
 
 namespace Application.Domain.Orders.DeliverOrder;
 
 internal sealed class DeliverDirectSalesOrderCommandHandler(
-    IRetailDbContext db, ICustomerOrderPriceCalculationService customerOrderPriceCalculationService)
+    IRetailDbContext db,
+    ICustomerOrderPriceCalculationService customerOrderPriceCalculationService,
+    IOrderDeliveryService orderDeliveryService,
+    IUserContext userContext)
     : ICommandHandler<DeliverDirectSalesOrderCommand, int>
 {
     public async Task<Result<int>> Handle(DeliverDirectSalesOrderCommand command, CancellationToken ct)
@@ -17,6 +22,7 @@ internal sealed class DeliverDirectSalesOrderCommandHandler(
         var order = new CustomerOrder
         {
             CustomerId = command.CustomerId,
+            RouteId = command.RouteId,
             Discount = command.Discount,
             Remarks = command.Remarks,
             ParcelCharge = command.ParcelCharge,
@@ -34,6 +40,10 @@ internal sealed class DeliverDirectSalesOrderCommandHandler(
 
         db.CustomerOrders.Add(order);
         await db.SaveChangesAsync(ct);
+        
+        // Handle post-delivery accounting
+        await orderDeliveryService.HandlePostDeliveryAsync(order, userContext.UserId, ct);
+        
         return Result.Success(order.Id);
     }
 }

@@ -32,6 +32,7 @@ public class TenantCustomerProfile : UserProfile
 
     public string Address { get; set; } = string.Empty;
     public double OpeningBalance { get; set; }
+    public decimal OutstandingBalance { get; set; }
     public bool TaxEnabled { get; set; }
     public bool CourierChargesApplicable { get; set; }
     public string GSTNumber { get; set; } = string.Empty;
