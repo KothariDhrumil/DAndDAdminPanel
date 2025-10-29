@@ -145,7 +145,20 @@ internal sealed class LedgerService : ILedgerService
         foreach (var entry in ledgerEntries)
         {
             decimal previousBalance = runningBalance;
-            decimal currentBalance = entry.Balance ?? runningBalance;
+            
+            // Use stored balance if available, otherwise calculate it
+            decimal currentBalance;
+            if (entry.Balance.HasValue)
+            {
+                currentBalance = entry.Balance.Value;
+            }
+            else
+            {
+                // Calculate balance: Debit increases, Credit decreases
+                currentBalance = entry.LedgerType == LedgerType.Debit
+                    ? previousBalance + entry.Amount
+                    : previousBalance - entry.Amount;
+            }
             
             // Update running balance for next iteration
             runningBalance = currentBalance;
