@@ -89,4 +89,83 @@ internal sealed class LedgerService : ILedgerService
 
         }
     }
+
+    public async Task<IReadOnlyList<LedgerEntryPassbookDto>> GetLedgerEntriesAsync(
+        Guid accountId,
+        AccountType accountType,
+        DateTime? from,
+        DateTime? to,
+        CancellationToken ct)
+    {
+        var query = _db.Ledgers
+            .Where(l => l.AccountId == accountId && l.AccountType == accountType);
+
+        if (from.HasValue)
+        {
+            query = query.Where(l => l.Date >= from.Value);
+        }
+
+        if (to.HasValue)
+        {
+            query = query.Where(l => l.Date <= to.Value);
+        }
+
+        var ledgerEntries = await query
+            .OrderBy(l => l.Date)
+            .ThenBy(l => l.Id)
+            .Select(l => new
+            {
+                l.Id,
+                l.Date,
+                l.OperationType,
+                l.LedgerType,
+                l.Amount,
+                l.Balance,
+                l.PaymentMode,
+                l.Remarks
+            })
+            .ToListAsync(ct);
+
+        var passbookEntries = new List<LedgerEntryPassbookDto>();
+        decimal runningBalance = 0;
+
+        foreach (var entry in ledgerEntries)
+        {
+            decimal previousBalance = runningBalance;
+            decimal currentBalance = entry.Balance ?? runningBalance;
+            
+            // Update running balance for next iteration
+            runningBalance = currentBalance;
+
+            var description = GetOperationDescription(entry.OperationType);
+
+            passbookEntries.Add(new LedgerEntryPassbookDto(
+                entry.Id,
+                entry.Date,
+                description,
+                entry.LedgerType,
+                entry.Amount,
+                previousBalance,
+                currentBalance,
+                entry.PaymentMode,
+                entry.Remarks
+            ));
+        }
+
+        return passbookEntries;
+    }
+
+    private static string GetOperationDescription(OperationType operationType)
+    {
+        return operationType switch
+        {
+            OperationType.OrderPlaced => "Order Placed",
+            OperationType.PaymentReceived => "Payment Received",
+            OperationType.Refund => "Refund",
+            OperationType.RouteExpense => "Route Expense",
+            OperationType.SalaryCredit => "Salary Credit",
+            OperationType.OpeningBalance => "Opening Balance",
+            _ => operationType.ToString()
+        };
+    }
 }

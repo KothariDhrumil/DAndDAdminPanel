@@ -21,4 +21,11 @@ public interface ILedgerService : IScopedService
         Guid customerId,
         decimal latestAmount,
         CancellationToken ct);
+
+    Task<IReadOnlyList<LedgerEntryPassbookDto>> GetLedgerEntriesAsync(
+        Guid accountId,
+        AccountType accountType,
+        DateTime? from,
+        DateTime? to,
+        CancellationToken ct);
 }
