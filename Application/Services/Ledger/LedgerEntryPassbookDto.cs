@@ -13,3 +13,9 @@ public sealed record LedgerEntryPassbookDto(
     PaymentMode PaymentMode,
     string Remarks
 );
+
+public enum AccountTypeDTO
+{
+    Customer,
+    TenantUser,
+}

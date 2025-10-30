@@ -20,7 +20,7 @@ internal sealed class StockService : IStockService
             // Normalize to date-only for comparison (improves query performance)
             var deliveryDate = order.OrderDeliveryDate.Date;
 
-            foreach (var detail in order.CustomerOrderDetails)
+            foreach (var detail in order.CustomerOrderDetails.Where(x => x.Qty != 0))
             {
                 var stock = await _db.Stocks
                     .FirstOrDefaultAsync(s =>

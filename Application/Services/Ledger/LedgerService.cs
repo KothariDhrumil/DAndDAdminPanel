@@ -1,16 +1,19 @@
 using Application.Abstractions.Data;
 using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 using LedgerEntity = Domain.Accounting.Ledger;
 
 namespace Application.Services.Ledger;
 internal sealed class LedgerService : ILedgerService
 {
     private readonly IRetailDbContext _db;
+    private readonly IDateTimeProvider dateTimeProvider;
 
-    public LedgerService(IRetailDbContext db)
+    public LedgerService(IRetailDbContext db, IDateTimeProvider dateTimeProvider)
     {
         _db = db;
+        this.dateTimeProvider = dateTimeProvider;
     }
 
     public async Task AddLedgerEntryAsync(
@@ -97,6 +100,15 @@ internal sealed class LedgerService : ILedgerService
         DateTime? to,
         CancellationToken ct)
     {
+        if (from == default || !from.HasValue)
+        {
+            from = dateTimeProvider.Now.AddDays(-10);
+        }
+        if (to == default || !to.HasValue)
+        {
+            to = dateTimeProvider.Now;
+        }
+
         // Get opening balance (last entry before 'from' date if filtering by date)
         decimal openingBalance = 0;
         if (from.HasValue)
@@ -145,7 +157,7 @@ internal sealed class LedgerService : ILedgerService
         foreach (var entry in ledgerEntries)
         {
             decimal previousBalance = runningBalance;
-            
+
             // Use stored balance if available, otherwise calculate it
             decimal currentBalance;
             if (entry.Balance.HasValue)
@@ -159,7 +171,7 @@ internal sealed class LedgerService : ILedgerService
                     ? previousBalance + entry.Amount
                     : previousBalance - entry.Amount;
             }
-            
+
             // Update running balance for next iteration
             runningBalance = currentBalance;
 
