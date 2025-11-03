@@ -23,6 +23,7 @@ namespace Domain.Purchase
 
         public string? Remarks { get; set; }
         public bool IsConfirmed { get; set; }
+        public bool IsPreOrder { get; set; }
 
         public Guid? PickupSalesmanId { get; set; }
         public TenantUserProfile? PickupSalesman { get; set; }

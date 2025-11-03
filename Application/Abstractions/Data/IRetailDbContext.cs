@@ -28,6 +28,8 @@ public interface IRetailDbContext : IDataKeyFilterReadOnly
     DbSet<PriceTierProduct> PriceTierProducts { get; }
     DbSet<PurchaseUnit> PurchaseUnits { get; }    
     DbSet<PurchaseUnitProduct> PurchaseUnitProducts { get; }
+    DbSet<global::Domain.Purchase.Purchase> Purchases { get; }
+    DbSet<PurchaseDetail> PurchaseDetails { get; }
     DbSet<CustomerOrder> CustomerOrders { get; }
     DbSet<CustomerOrderDetail> CustomerOrderDetails { get; }
     DbSet<Ledger> Ledgers { get; }

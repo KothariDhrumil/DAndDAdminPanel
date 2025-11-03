@@ -59,6 +59,8 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>();
     public DbSet<PurchaseUnit> PurchaseUnits => Set<PurchaseUnit>();
     public DbSet<PurchaseUnitProduct> PurchaseUnitProducts => Set<PurchaseUnitProduct>();
+    public DbSet<Domain.Purchase.Purchase> Purchases => Set<Domain.Purchase.Purchase>();
+    public DbSet<PurchaseDetail> PurchaseDetails => Set<PurchaseDetail>();
     public DbSet<CustomerOrder> CustomerOrders => Set<CustomerOrder>();
     public DbSet<CustomerOrderDetail> CustomerOrderDetails => Set<CustomerOrderDetail>();
     public DbSet<Domain.Accounting.Ledger> Ledgers => Set<Domain.Accounting.Ledger>();
@@ -309,12 +311,75 @@ public class RetailDbContext : DbContext, IRetailDbContext
         modelBuilder.Entity<PurchaseUnitProduct>()
             .HasIndex(x => x.IsActive);
 
+        // Purchase config
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .ToTable("Purchases", "retail");
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasIndex(e => e.PurchaseDate);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasIndex(e => e.RouteId);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasIndex(e => e.PurchaseUnitId);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasIndex(e => e.IsConfirmed);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasIndex(e => e.IsPreOrder);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasIndex(e => new { e.PurchaseUnitId, e.PurchaseDate });
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasIndex(e => new { e.RouteId, e.PurchaseDate });
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasIndex(e => e.DataKey);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .Property(e => e.Amount).HasPrecision(9, 2);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .Property(e => e.Discount).HasPrecision(9, 2);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .Property(e => e.Tax).HasPrecision(9, 2);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .Property(e => e.AdditionalTax).HasPrecision(9, 2);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .Property(e => e.GrandTotal).HasPrecision(9, 2);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasOne(e => e.Route)
+            .WithMany()
+            .HasForeignKey(e => e.RouteId)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasOne(e => e.PurchaseUnit)
+            .WithMany(p => p.Purchases)
+            .HasForeignKey(e => e.PurchaseUnitId)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Domain.Purchase.Purchase>()
+            .HasMany(e => e.PurchaseDetails)
+            .WithOne(d => d.Purchase)
+            .HasForeignKey(d => d.PurchaseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // PurchaseDetail config
+        modelBuilder.Entity<PurchaseDetail>()
+            .ToTable("PurchaseDetails", "retail");
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasIndex(e => e.PurchaseId);
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasIndex(e => e.ProductId);
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasIndex(e => e.DataKey);
         modelBuilder.Entity<PurchaseDetail>()
             .Property(x => x.Tax).HasPrecision(18, 2);
         modelBuilder.Entity<PurchaseDetail>()
             .Property(x => x.Rate).HasPrecision(9, 2);
         modelBuilder.Entity<PurchaseDetail>()
             .Property(x => x.Amount).HasPrecision(9, 2);
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasOne(e => e.Product)
+            .WithMany()
+            .HasForeignKey(e => e.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // CustomerOrder config
         modelBuilder.Entity<CustomerOrder>()
