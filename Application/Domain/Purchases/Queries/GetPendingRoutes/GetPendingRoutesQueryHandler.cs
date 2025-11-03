@@ -11,6 +11,7 @@ public sealed class GetPendingRoutesQueryHandler(IRetailDbContext db)
     public async Task<Result<List<PendingRouteResponse>>> Handle(GetPendingRoutesQuery query, CancellationToken ct)
     {
         var purchasesQuery = db.Purchases
+            .Include(p => p.Route)
             .Where(p => p.RouteId.HasValue && p.IsConfirmed == false);
 
         // Apply filters
