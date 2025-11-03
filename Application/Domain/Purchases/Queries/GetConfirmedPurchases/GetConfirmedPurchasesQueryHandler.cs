@@ -15,7 +15,7 @@ public sealed class GetConfirmedPurchasesQueryHandler(IRetailDbContext db)
             .Include(p => p.Route)
             .Include(p => p.PurchaseUnit)
             .Include(p => p.PickupSalesman)
-            .Where(p => p.IsConfirmed == true);
+            .Where(p => p.IsConfirmed);
 
         // Apply filters
         if (query.StartDate.HasValue)

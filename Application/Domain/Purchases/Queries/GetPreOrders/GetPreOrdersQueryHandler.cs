@@ -15,7 +15,7 @@ public sealed class GetPreOrdersQueryHandler(IRetailDbContext db)
             .Include(p => p.Route)
             .Include(p => p.PurchaseUnit)
             .Include(p => p.PickupSalesman)
-            .Where(p => p.IsPreOrder == true && p.IsConfirmed == false);
+            .Where(p => p.IsPreOrder && !p.IsConfirmed);
 
         // Apply filters
         if (query.StartDate.HasValue)

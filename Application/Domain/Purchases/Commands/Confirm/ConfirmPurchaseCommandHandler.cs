@@ -94,11 +94,11 @@ public sealed class ConfirmPurchaseCommandHandler(
             
             return Result.Success();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await transaction.RollbackAsync(ct);
             return Result.Failure(Error.Failure("Purchase.ConfirmationFailed", 
-                $"Failed to confirm purchase: {ex.Message}"));
+                "Failed to confirm purchase. Please try again or contact support."));
         }
     }
 }

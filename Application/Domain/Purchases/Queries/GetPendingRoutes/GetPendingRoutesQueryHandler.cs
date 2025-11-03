@@ -12,7 +12,7 @@ public sealed class GetPendingRoutesQueryHandler(IRetailDbContext db)
     {
         var purchasesQuery = db.Purchases
             .Include(p => p.Route)
-            .Where(p => p.RouteId.HasValue && p.IsConfirmed == false);
+            .Where(p => p.RouteId.HasValue && !p.IsConfirmed);
 
         // Apply filters
         if (query.StartDate.HasValue)
