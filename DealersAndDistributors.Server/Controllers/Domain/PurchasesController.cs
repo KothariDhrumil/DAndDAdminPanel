@@ -9,6 +9,7 @@ using Application.Domain.Purchases.Queries.GetSummary;
 using Application.Domain.Purchases.Queries.GetPreOrders;
 using Application.Domain.Purchases.Queries.GetConfirmedPurchases;
 using Application.Domain.Purchases.Queries.GetPendingRoutes;
+using Application.Domain.Purchases.Queries.GetUnconfirmedOrder;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 
@@ -115,6 +116,19 @@ public class PurchasesController : VersionedApiController
         CancellationToken cancellationToken)
     {
         var result = await handler.Handle(new DeletePurchaseCommand { Id = id }, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("unconfirmed")]
+    public async Task<IActionResult> GetUnconfirmedOrderAsync(
+        [FromQuery] int routeId,
+        [FromQuery] int purchaseUnitId,
+        IQueryHandler<GetUnconfirmedPurchaseQuery, UnconfirmedPurchaseResponse?> handler,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetUnconfirmedPurchaseQuery(routeId, purchaseUnitId);
+        var result = await handler.Handle(query, cancellationToken);
+        // result.Value is null if not found
         return Ok(result);
     }
 }

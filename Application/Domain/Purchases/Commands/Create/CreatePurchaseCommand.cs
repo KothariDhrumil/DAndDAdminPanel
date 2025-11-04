@@ -1,4 +1,5 @@
 using Application.Abstractions.Messaging;
+using Application.Domain.Purchases.Commands.Update;
 
 namespace Application.Domain.Purchases.Commands.Create;
 
@@ -16,7 +17,7 @@ public sealed class CreatePurchaseCommand : ICommand<int>
     public string? Remarks { get; set; }
     public bool IsPreOrder { get; set; }
     public Guid? PickupSalesmanId { get; set; }
-    public global::Domain.Purchase.PurchaseType Type { get; set; }
+    public PurchaseTypeDTO Type { get; set; }
     public List<PurchaseDetailDto> PurchaseDetails { get; set; } = new();
 }
 

@@ -25,7 +25,7 @@ public sealed class CreatePurchaseCommandHandler(IRetailDbContext db)
             IsPreOrder = command.IsPreOrder,
             IsConfirmed = false, // Always starts as not confirmed
             PickupSalesmanId = command.PickupSalesmanId,
-            Type = command.Type,
+            Type = (PurchaseType)command.Type,
             PurchaseDetails = command.PurchaseDetails.Select(d => new PurchaseDetail
             {
                 ProductId = d.ProductId,

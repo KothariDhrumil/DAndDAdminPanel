@@ -33,7 +33,7 @@ public sealed class UpdatePurchaseCommandHandler(IRetailDbContext db)
         purchase.GrandTotal = command.GrandTotal;
         purchase.Remarks = command.Remarks;
         purchase.PickupSalesmanId = command.PickupSalesmanId;
-        purchase.Type = command.Type;
+        purchase.Type = (PurchaseType)command.Type;
 
         // Remove existing details
         db.PurchaseDetails.RemoveRange(purchase.PurchaseDetails);

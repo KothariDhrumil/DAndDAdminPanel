@@ -1,37 +1,31 @@
 using Application.Abstractions.Messaging;
+using Application.Domain.Purchases.Commands.Update;
 
-namespace Application.Domain.Purchases.Commands.Update;
+namespace Application.Domain.Purchases.Queries.GetUnconfirmedOrder;
 
-public sealed class UpdatePurchaseCommand : ICommand
+public sealed record GetUnconfirmedPurchaseQuery(int RouteId, int PurchaseUnitId) : IQuery<UnconfirmedPurchaseResponse?>;
+
+public class UnconfirmedPurchaseResponse
 {
-    public int Id { get; set; }
+    public int? Id { get; set; }
     public int? RouteId { get; set; }
     public int PurchaseUnitId { get; set; }
-    public DateTime PurchaseDate { get; set; }
-    public DateTime? OrderPickupDate { get; set; }
     public decimal Amount { get; set; }
     public decimal? Discount { get; set; }
     public decimal? Tax { get; set; }
     public decimal? AdditionalTax { get; set; }
     public decimal GrandTotal { get; set; }
     public string? Remarks { get; set; }
-    public Guid? PickupSalesmanId { get; set; }
+    public bool IsPreOrder { get; set; }
     public PurchaseTypeDTO Type { get; set; }
-    public List<UpdatePurchaseDetailDto> PurchaseDetails { get; set; } = new();
+    public List<UnconfirmedPurchaseDetailDto> PurchaseDetails { get; set; } = new();
 }
-
-public class UpdatePurchaseDetailDto
+public class UnconfirmedPurchaseDetailDto
 {
     public int ProductId { get; set; }
+    public string ProductName { get; set; }
     public int Qty { get; set; }
-    public decimal Rate { get; set; }
+    public decimal PurchaseRate { get; set; }
     public decimal? Tax { get; set; }
     public decimal Amount { get; set; }
-}
-
-public enum PurchaseTypeDTO
-{
-    Vendor = 1,
-    Route = 2,
-    InternalTransfer = 3
 }
