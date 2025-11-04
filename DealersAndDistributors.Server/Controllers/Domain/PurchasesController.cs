@@ -12,6 +12,7 @@ using Application.Domain.Purchases.Queries.GetPendingRoutes;
 using Application.Domain.Purchases.Queries.GetUnconfirmedOrder;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
+using Application.Domain.Purchases.Commands.DeliverDirectPurchase;
 
 namespace DealersAndDistributors.Server.Controllers.Domain;
 
@@ -130,5 +131,16 @@ public class PurchasesController : VersionedApiController
         var result = await handler.Handle(query, cancellationToken);
         // result.Value is null if not found
         return Ok(result);
+    }
+
+    [HttpPost("direct-purchase")]
+    
+    public async Task<IResult> DeliverDirectPurchaseAsync(
+        ICommandHandler<DeliverDirectPurchaseCommand, int> handler,
+        [FromBody] DeliverDirectPurchaseCommand command,
+        CancellationToken ct)
+    {
+        var result = await handler.Handle(command, ct);
+        return Results.Ok(result);
     }
 }

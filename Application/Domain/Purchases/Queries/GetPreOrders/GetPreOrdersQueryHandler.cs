@@ -53,7 +53,7 @@ public sealed class GetPreOrdersQueryHandler(IRetailDbContext db)
                 IsPreOrder = p.IsPreOrder,
                 PickupSalesmanId = p.PickupSalesmanId,
                 PickupSalesmanName = p.PickupSalesman != null ? $"{p.PickupSalesman.FirstName} {p.PickupSalesman.LastName}" : null,
-                Type = p.Type
+                Type = (Commands.Update.PurchaseTypeDTO)p.Type
             })
             .ToListAsync(ct);
 

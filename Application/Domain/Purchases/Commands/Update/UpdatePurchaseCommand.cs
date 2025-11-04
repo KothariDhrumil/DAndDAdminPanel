@@ -16,6 +16,7 @@ public sealed class UpdatePurchaseCommand : ICommand
     public decimal GrandTotal { get; set; }
     public string? Remarks { get; set; }
     public Guid? PickupSalesmanId { get; set; }
+    public decimal? ShippingCost { get; set; }
     public PurchaseTypeDTO Type { get; set; }
     public List<UpdatePurchaseDetailDto> PurchaseDetails { get; set; } = new();
 }

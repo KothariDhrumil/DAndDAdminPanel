@@ -5,7 +5,7 @@ public class PurchaseDetailResponse
     public int Id { get; set; }
     public int? RouteId { get; set; }
     public string? RouteName { get; set; }
-    public int PurchaseUnitId { get; set; }
+    public int? PurchaseUnitId { get; set; }
     public string PurchaseUnitName { get; set; } = string.Empty;
     public DateTime PurchaseDate { get; set; }
     public DateTime? OrderPickupDate { get; set; }

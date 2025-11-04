@@ -17,6 +17,7 @@ public sealed class CreatePurchaseCommand : ICommand<int>
     public string? Remarks { get; set; }
     public bool IsPreOrder { get; set; }
     public Guid? PickupSalesmanId { get; set; }
+    public decimal? ShippingCost { get; set; }
     public PurchaseTypeDTO Type { get; set; }
     public List<PurchaseDetailDto> PurchaseDetails { get; set; } = new();
 }

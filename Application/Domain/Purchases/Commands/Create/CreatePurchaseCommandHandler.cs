@@ -1,21 +1,26 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Services.PurchasePriceCalculation;
 using Domain.Purchase;
 using SharedKernel;
 
 namespace Application.Domain.Purchases.Commands.Create;
 
-public sealed class CreatePurchaseCommandHandler(IRetailDbContext db) 
+public sealed class CreatePurchaseCommandHandler(IRetailDbContext db, IPurchasePriceCalculationService purchasePriceCalculationService, IDateTimeProvider dateTimeProvider)
     : ICommandHandler<CreatePurchaseCommand, int>
 {
+    private readonly IPurchasePriceCalculationService purchasePriceCalculationService = purchasePriceCalculationService;
+    private readonly IDateTimeProvider dateTimeProvider = dateTimeProvider;
+
     public async Task<Result<int>> Handle(CreatePurchaseCommand command, CancellationToken ct)
     {
-        var purchase = new global::Domain.Purchase.Purchase
+        await using var tx = await db.Database.BeginTransactionAsync(ct);
+
+        var purchase = new Purchase
         {
             RouteId = command.RouteId,
             PurchaseUnitId = command.PurchaseUnitId,
-            PurchaseDate = command.PurchaseDate,
-            OrderPickupDate = command.OrderPickupDate,
+            PurchaseDate = dateTimeProvider.Now,
             Amount = command.Amount,
             Discount = command.Discount,
             Tax = command.Tax,
@@ -25,6 +30,7 @@ public sealed class CreatePurchaseCommandHandler(IRetailDbContext db)
             IsPreOrder = command.IsPreOrder,
             IsConfirmed = false, // Always starts as not confirmed
             PickupSalesmanId = command.PickupSalesmanId,
+            ShippingCost = command.ShippingCost,
             Type = (PurchaseType)command.Type,
             PurchaseDetails = command.PurchaseDetails.Select(d => new PurchaseDetail
             {
@@ -35,10 +41,11 @@ public sealed class CreatePurchaseCommandHandler(IRetailDbContext db)
                 Amount = d.Amount
             }).ToList()
         };
-
+        await purchasePriceCalculationService.ApplyPricingAsync(purchase);
         db.Purchases.Add(purchase);
         await db.SaveChangesAsync(ct);
-        
+        await tx.CommitAsync(ct);
+
         return Result.Success(purchase.Id);
     }
 }

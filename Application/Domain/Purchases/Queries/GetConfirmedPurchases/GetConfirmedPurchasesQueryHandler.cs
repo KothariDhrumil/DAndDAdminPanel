@@ -1,5 +1,6 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Domain.Purchases.Commands.Update;
 using Application.Domain.Purchases.Queries.GetAll;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -53,7 +54,7 @@ public sealed class GetConfirmedPurchasesQueryHandler(IRetailDbContext db)
                 IsPreOrder = p.IsPreOrder,
                 PickupSalesmanId = p.PickupSalesmanId,
                 PickupSalesmanName = p.PickupSalesman != null ? $"{p.PickupSalesman.FirstName} {p.PickupSalesman.LastName}" : null,
-                Type = p.Type
+                Type = (PurchaseTypeDTO)p.Type
             })
             .ToListAsync(ct);
 

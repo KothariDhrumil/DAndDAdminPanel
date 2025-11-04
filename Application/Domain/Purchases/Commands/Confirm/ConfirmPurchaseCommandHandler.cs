@@ -1,8 +1,11 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Services.PurchasePriceCalculation;
+using Application.Services.Purchases;
 using Domain.Accounting;
 using Domain.Enums;
+using Domain.Orders;
 using Domain.Purchase;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -12,14 +15,20 @@ namespace Application.Domain.Purchases.Commands.Confirm;
 public sealed class ConfirmPurchaseCommandHandler(
     IRetailDbContext db,
     IUserContext userContext,
-    IDateTimeProvider dateTimeProvider) 
+    IDateTimeProvider dateTimeProvider,
+    IPurchaseReceivedService purchaseReceivedService,
+    IPurchasePriceCalculationService  priceService)
     : ICommandHandler<ConfirmPurchaseCommand>
 {
+    private readonly IDateTimeProvider dateTimeProvider = dateTimeProvider;
+    private readonly IPurchaseReceivedService purchaseReceivedService = purchaseReceivedService;
+    private readonly IPurchasePriceCalculationService _priceService = priceService;
+
     public async Task<Result> Handle(ConfirmPurchaseCommand command, CancellationToken ct)
     {
         // Use transaction for atomicity
         using var transaction = await db.Database.BeginTransactionAsync(ct);
-        
+
         try
         {
             var purchase = await db.Purchases
@@ -30,74 +39,31 @@ public sealed class ConfirmPurchaseCommandHandler(
                 return Result.Failure(Error.NotFound("Purchase.NotFound", "Purchase not found"));
 
             if (purchase.IsConfirmed)
-                return Result.Failure(Error.Failure("Purchase.AlreadyConfirmed", 
+                return Result.Failure(Error.Failure("Purchase.AlreadyConfirmed",
                     "Purchase is already confirmed"));
 
             // Mark as confirmed
+
             purchase.IsConfirmed = true;
-            purchase.IsPreOrder = false;
+            purchase.PurchaseDate = dateTimeProvider.Now;
 
-            // Create stock transactions for route purchases
-            if (purchase.RouteId.HasValue)
-            {
-                foreach (var detail in purchase.PurchaseDetails)
-                {
-                    var stock = await db.Stocks
-                        .FirstOrDefaultAsync(s => 
-                            s.RouteId == purchase.RouteId.Value &&
-                            s.ProductId == detail.ProductId &&
-                            s.Date.Date == purchase.PurchaseDate.Date, ct);
-
-                    if (stock != null)
-                    {
-                        stock.QtyPurchased += detail.Qty;
-                    }
-                    else
-                    {
-                        db.Stocks.Add(new Stock
-                        {
-                            RouteId = purchase.RouteId.Value,
-                            ProductId = detail.ProductId,
-                            Date = purchase.PurchaseDate.Date,
-                            QtyPurchased = detail.Qty,
-                            QtySold = 0,
-                            Return = 0,
-                            Waste = 0,
-                            InEating = 0,
-                            ItemLoss = 0,
-                            Sample = 0
-                        });
-                    }
-                }
-            }
-
-            // Create ledger entry for the purchase
-            if (purchase.PickupSalesmanId.HasValue)
-            {
-                db.Ledgers.Add(new Ledger
-                {
-                    Date = purchase.PurchaseDate,
-                    AccountId = purchase.PickupSalesmanId.Value,
-                    AccountType = AccountType.Staff,
-                    LedgerType = LedgerType.Debit,
-                    OperationType = OperationType.PurchaseConfirmed,
-                    OperationId = purchase.Id,
-                    Amount = purchase.GrandTotal,
-                    PaymentMode = PaymentMode.Cash,
-                    Remarks = $"Purchase confirmed - {purchase.Type}",
-                    PerformedByUserId = userContext.UserId
-                });
-            }
+            await _priceService.ApplyPricingAsync(purchase);
 
             await db.SaveChangesAsync(ct);
+
+            // Handle post-delivery accounting
+            await purchaseReceivedService.HandlePostReceiveAsync(purchase, userContext.UserId, ct);
+
+            // Step 5: Save and commit transaction
+            await db.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
-            
+
             return Result.Success();
         }
         catch (Exception)
         {
             await transaction.RollbackAsync(ct);
-            return Result.Failure(Error.Failure("Purchase.ConfirmationFailed", 
+            return Result.Failure(Error.Failure("Purchase.ConfirmationFailed",
                 "Failed to confirm purchase. Please try again or contact support."));
         }
     }

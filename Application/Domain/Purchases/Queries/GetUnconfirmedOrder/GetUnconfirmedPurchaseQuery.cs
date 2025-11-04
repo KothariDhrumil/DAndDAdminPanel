@@ -9,7 +9,7 @@ public class UnconfirmedPurchaseResponse
 {
     public int? Id { get; set; }
     public int? RouteId { get; set; }
-    public int PurchaseUnitId { get; set; }
+    public int? PurchaseUnitId { get; set; }
     public decimal Amount { get; set; }
     public decimal? Discount { get; set; }
     public decimal? Tax { get; set; }
