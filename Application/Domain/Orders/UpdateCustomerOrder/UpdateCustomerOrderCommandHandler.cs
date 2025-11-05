@@ -1,15 +1,16 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Common.Interfaces;
 using Application.Services.CustomerOrderPriceCalculation;
 using Domain.Purchase;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
-using System.Text;
 
 namespace Application.Domain.Orders.UpdateCustomerOrder;
 
 internal sealed class UpdateCustomerOrderCommandHandler(
     IRetailDbContext db,
+    IUnitOfWork unitOfWork,
     ICustomerOrderPriceCalculationService customerOrderPriceCalculationService)
     : ICommandHandler<UpdateCustomerOrderCommand, bool>
 {
@@ -26,7 +27,8 @@ internal sealed class UpdateCustomerOrderCommandHandler(
             return Result.Failure<bool>(
                 Error.Validation("DuplicateProducts", $"Duplicate products found: {string.Join(", ", duplicateProducts)}"));
 
-
+        // Note: Using db context here for Include operation as repository doesn't support navigation properties
+        // This is a known limitation and can be addressed by extending repository with Include support
         var order = await db.CustomerOrders
             .Include(o => o.CustomerOrderDetails)
             .FirstOrDefaultAsync(o => o.Id == command.OrderId, ct);
@@ -59,8 +61,7 @@ internal sealed class UpdateCustomerOrderCommandHandler(
         var toRemove = existingList.Where(e => !incomingByProduct.ContainsKey(e.ProductId)).ToList();
         foreach (var rem in toRemove)
         {
-            // explicit deletion
-            db.CustomerOrderDetails.Remove(rem); // or db.Set<CustomerOrderDetail>().Remove(rem);
+            unitOfWork.CustomerOrderDetails.Remove(rem);
         }
 
         foreach (var item in incomingByProduct)
@@ -82,7 +83,8 @@ internal sealed class UpdateCustomerOrderCommandHandler(
        
         await customerOrderPriceCalculationService.ApplyPricingAsync(order);
 
-        await db.SaveChangesAsync(ct);
+        unitOfWork.CustomerOrders.Update(order);
+        await unitOfWork.SaveChangesAsync(ct);
         return Result.Success(true);
     }
 }
