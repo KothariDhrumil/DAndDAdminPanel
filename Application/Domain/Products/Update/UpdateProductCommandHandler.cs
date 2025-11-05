@@ -1,16 +1,15 @@
-using Application.Abstractions.Data;
 using Application.Abstractions.ImageHandling;
 using Application.Abstractions.Messaging;
-using Microsoft.EntityFrameworkCore;
+using Application.Common.Interfaces;
 using SharedKernel;
 
 namespace Application.Domain.Products.Update;
 
-public sealed class UpdateProductCommandHandler(IRetailDbContext db, IImageService imageService) : ICommandHandler<UpdateProductCommand>
+public sealed class UpdateProductCommandHandler(IUnitOfWork unitOfWork, IImageService imageService) : ICommandHandler<UpdateProductCommand>
 {
     public async Task<Result> Handle(UpdateProductCommand command, CancellationToken ct)
     {
-        var product = await db.Products.SingleOrDefaultAsync(x => x.Id == command.Id, ct);
+        var product = await unitOfWork.Products.FirstOrDefaultAsync(x => x.Id == command.Id, ct);
         if (product == null)
             return Result.Failure(Error.NotFound("ProductNotFound", "Product not found."));
         product.Name = command.Name;
@@ -29,7 +28,8 @@ public sealed class UpdateProductCommandHandler(IRetailDbContext db, IImageServi
             product.ThumbnailPath = thumbnailWebPath;
         }
 
-        await db.SaveChangesAsync(ct);
+        unitOfWork.Products.Update(product);
+        await unitOfWork.SaveChangesAsync(ct);
         return Result.Success();
     }
 }

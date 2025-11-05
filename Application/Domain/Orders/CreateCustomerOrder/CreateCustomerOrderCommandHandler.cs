@@ -1,5 +1,5 @@
-using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Common.Interfaces;
 using Application.Services.CustomerOrderPriceCalculation;
 using Domain.Purchase;
 using SharedKernel;
@@ -7,7 +7,7 @@ using SharedKernel;
 namespace Application.Domain.Orders.CreateCustomerOrder;
 
 internal sealed class CreateCustomerOrderCommandHandler(
-    IRetailDbContext dbContext, ICustomerOrderPriceCalculationService customerOrderPriceCalculationService)
+    IUnitOfWork unitOfWork, ICustomerOrderPriceCalculationService customerOrderPriceCalculationService)
     : ICommandHandler<CreateCustomerOrderCommand, int>
 {
     public async Task<Result<int>> Handle(CreateCustomerOrderCommand command, CancellationToken ct)
@@ -42,8 +42,8 @@ internal sealed class CreateCustomerOrderCommandHandler(
         };
         await customerOrderPriceCalculationService.ApplyPricingAsync(order); 
 
-        dbContext.CustomerOrders.Add(order);
-        await dbContext.SaveChangesAsync(ct);
+        await unitOfWork.CustomerOrders.AddAsync(order, ct);
+        await unitOfWork.SaveChangesAsync(ct);
         return Result.Success(order.Id);
     }
 }

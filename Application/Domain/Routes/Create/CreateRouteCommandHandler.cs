@@ -1,11 +1,11 @@
-using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Common.Interfaces;
 using Domain.Customers;
 using SharedKernel;
 
 namespace Application.Domain.Routes.Create;
 
-public sealed class CreateRouteCommandHandler(IRetailDbContext db) : ICommandHandler<CreateRouteCommand, string>
+public sealed class CreateRouteCommandHandler(IUnitOfWork unitOfWork) : ICommandHandler<CreateRouteCommand, string>
 {
     public async Task<Result<string>> Handle(CreateRouteCommand command, CancellationToken ct)
     {
@@ -16,8 +16,8 @@ public sealed class CreateRouteCommandHandler(IRetailDbContext db) : ICommandHan
             IsActive = command.IsActive,
             PriceTierId = command.PriceTierId
         };
-        db.Routes.Add(entity);
-        await db.SaveChangesAsync(ct);
+        await unitOfWork.Routes.AddAsync(entity, ct);
+        await unitOfWork.SaveChangesAsync(ct);
         return Result.Success(entity.Name);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Common.Interfaces;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,8 @@ public static class StartupExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration) =>
         services
             .AddIdentity(configuration)
-            .AddShardingDatabase(configuration);
+            .AddShardingDatabase(configuration)
+            .AddRepositoryPattern();
 
 
     private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
@@ -34,6 +36,15 @@ public static class StartupExtensions
              dbOptions.MigrationsHistoryTable(ProductDbContextHistoryName)));
 
         services.AddScoped<IRetailDbContext>(sp => sp.GetRequiredService<RetailDbContext>());
+
+        return services;
+    }
+
+    private static IServiceCollection AddRepositoryPattern(this IServiceCollection services)
+    {
+        services.AddMemoryCache();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repositories.Repository<>));
 
         return services;
     }
