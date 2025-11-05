@@ -1,14 +1,13 @@
-using Application.Abstractions.Data;
 using Application.Abstractions.ImageHandling;
 using Application.Abstractions.Messaging;
+using Application.Common.Interfaces;
 using Domain.Customers;
-using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 
 namespace Application.Domain.Products.Create;
 
-public sealed class CreateProductCommandHandler(IRetailDbContext db, IImageService productImageService) : ICommandHandler<CreateProductCommand, int>
+public sealed class CreateProductCommandHandler(IUnitOfWork unitOfWork, IImageService productImageService) : ICommandHandler<CreateProductCommand, int>
 {
     public async Task<Result<int>> Handle(CreateProductCommand command, CancellationToken ct)
     {
@@ -16,7 +15,8 @@ public sealed class CreateProductCommandHandler(IRetailDbContext db, IImageServi
         int order = command.Order ?? 0;
         if (command.Order == null || command.Order == 0)
         {
-            var maxOrder = await db.Products.MaxAsync(p => (int?)p.Order, ct) ?? 0;
+            var products = await unitOfWork.Products.GetAllAsync(ct);
+            var maxOrder = products.Any() ? products.Max(p => p.Order) : 0;
             order = maxOrder + 1;
         }
 
@@ -39,8 +39,8 @@ public sealed class CreateProductCommandHandler(IRetailDbContext db, IImageServi
             entity.ThumbnailPath = thumbnailWebPath;
         }
 
-        db.Products.Add(entity);
-        await db.SaveChangesAsync(ct);
+        await unitOfWork.Products.AddAsync(entity, ct);
+        await unitOfWork.SaveChangesAsync(ct);
         return Result.Success(entity.Id);
     }
 }
