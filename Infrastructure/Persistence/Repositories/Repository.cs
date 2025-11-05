@@ -136,6 +136,13 @@ public class Repository<T> : IRepository<T> where T : class
         {
             var cacheKeyPrefix = typeof(T).Name;
             _cache.Remove($"{cacheKeyPrefix}_All");
+            
+            // Note: Individual entity cache keys (by ID) are not removed here.
+            // This is a trade-off: removing all individual keys would require maintaining 
+            // a list of all cached IDs, which adds complexity and memory overhead.
+            // Individual cached entities will expire naturally after the cache duration (10 minutes).
+            // For scenarios requiring immediate consistency, consider disabling caching 
+            // or reducing the cache duration.
         }
     }
 }

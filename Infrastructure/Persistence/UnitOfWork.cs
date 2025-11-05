@@ -108,5 +108,9 @@ public class UnitOfWork : IUnitOfWork
     {
         _transaction?.Dispose();
         _context.Dispose();
+        
+        // Note: _cache is NOT disposed here because it's registered as a singleton
+        // in the DI container and is shared across the application lifetime.
+        // The DI container manages its lifecycle.
     }
 }
