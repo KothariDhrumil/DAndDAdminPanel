@@ -7,5 +7,6 @@ public enum OperationType
     Refund,
     RouteExpense,
     SalaryCredit,
-    OpeningBalance
+    OpeningBalance,
+    PurchaseConfirmed
 }

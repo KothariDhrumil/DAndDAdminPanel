@@ -23,11 +23,11 @@ internal sealed class DeliverExistingOrderCommandHandler(
         if (order == null)
             return Result.Failure<bool>(Error.NotFound("OrderNotFound", "Order not found."));
 
-        var userRoute = await db.TenantCustomerProfiles.AsNoTracking()
-                                    .Where(x => x.TenantUserId == order.CustomerId)
-                                    .Select(x => x.RouteId).FirstOrDefaultAsync();
+        //var userRoute = await db.TenantCustomerProfiles.AsNoTracking()
+        //                            .Where(x => x.TenantUserId == order.CustomerId)
+        //                            .Select(x => x.RouteId).FirstOrDefaultAsync();
 
-        order.RouteId = userRoute;
+        //order.RouteId = order.RouteId;
 
         await using var tx = await db.Database.BeginTransactionAsync(ct);
 

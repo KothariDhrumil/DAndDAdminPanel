@@ -4,16 +4,19 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
+namespace Infrastructure.Migrations.Retail
 {
     [DbContext(typeof(RetailDbContext))]
-    partial class RetailDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251103101751_AddPurchaseModule")]
+    partial class AddPurchaseModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -947,7 +950,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PurchaseUnitId")
+                    b.Property<int>("PurchaseUnitId")
                         .HasColumnType("int");
 
                     b.Property<string>("Remarks")
@@ -955,9 +958,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
 
                     b.Property<int?>("RouteId")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("ShippingCost")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("Tax")
                         .HasPrecision(9, 2)
@@ -1171,16 +1171,13 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.ToTable("PurchaseUnitProduct", "retail");
                 });
 
-            modelBuilder.Entity("Domain.Purchase.RouteStock", b =>
+            modelBuilder.Entity("Domain.Purchase.Stock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClosingBalance")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1203,22 +1200,19 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Loss")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OpeningBalance")
+                    b.Property<int>("ItemLoss")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("QtyReceivedFromGodown")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QtyReturnedToGodown")
+                    b.Property<int>("QtyPurchased")
                         .HasColumnType("int");
 
                     b.Property<int>("QtySold")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Return")
                         .HasColumnType("int");
 
                     b.Property<int>("RouteId")
@@ -1250,145 +1244,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                         .IsUnique();
 
                     b.ToTable("Stocks", "retail");
-                });
-
-            modelBuilder.Entity("Domain.Purchase.StockTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DataKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ReferenceId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RouteId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataKey");
-
-                    b.HasIndex("Type");
-
-                    b.ToTable("StockTransactions", "retail");
-                });
-
-            modelBuilder.Entity("Domain.Purchase.WarehouseStock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClosingBalanceQty")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DataKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Loss")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("int");
-
-                    b.Property<int>("OpeningBalanceQty")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PurchaseUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QtyPurchased")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("int");
-
-                    b.Property<int>("QtyTransferredToRoutes")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("int");
-
-                    b.Property<int>("RouteReturn")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sample")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Waste")
-                        .HasPrecision(9, 2)
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataKey");
-
-                    b.HasIndex("Date");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("PurchaseUnitId");
-
-                    b.ToTable("WarehouseStocks", "retail");
                 });
 
             modelBuilder.Entity("Domain.RetailOutlet", b =>
@@ -1635,7 +1490,8 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.HasOne("Domain.Purchase.PurchaseUnit", "PurchaseUnit")
                         .WithMany("Purchases")
                         .HasForeignKey("PurchaseUnitId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.Customers.Route", "Route")
                         .WithMany()
@@ -1696,7 +1552,7 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Navigation("PurchaseUnit");
                 });
 
-            modelBuilder.Entity("Domain.Purchase.RouteStock", b =>
+            modelBuilder.Entity("Domain.Purchase.Stock", b =>
                 {
                     b.HasOne("Domain.Customers.Product", "Product")
                         .WithMany()
@@ -1713,24 +1569,6 @@ namespace Example7.BlazorWASMandWebApi.Infrastructure.Migrations.Retail
                     b.Navigation("Product");
 
                     b.Navigation("Route");
-                });
-
-            modelBuilder.Entity("Domain.Purchase.WarehouseStock", b =>
-                {
-                    b.HasOne("Domain.Customers.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Purchase.PurchaseUnit", "PurchaseUnit")
-                        .WithMany()
-                        .HasForeignKey("PurchaseUnitId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Product");
-
-                    b.Navigation("PurchaseUnit");
                 });
 
             modelBuilder.Entity("Domain.Customers.PriceTier", b =>

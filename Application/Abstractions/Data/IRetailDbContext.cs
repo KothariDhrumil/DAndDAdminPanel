@@ -26,11 +26,15 @@ public interface IRetailDbContext : IDataKeyFilterReadOnly
     DbSet<CustomerProduct> CustomerProducts { get; }
     DbSet<PriceTier> PriceTiers { get; }
     DbSet<PriceTierProduct> PriceTierProducts { get; }
-    DbSet<PurchaseUnit> PurchaseUnits { get; }    
+    DbSet<PurchaseUnit> PurchaseUnits { get; }
     DbSet<PurchaseUnitProduct> PurchaseUnitProducts { get; }
+    DbSet<Purchase> Purchases { get; }
+    DbSet<PurchaseDetail> PurchaseDetails { get; }
     DbSet<CustomerOrder> CustomerOrders { get; }
     DbSet<CustomerOrderDetail> CustomerOrderDetails { get; }
     DbSet<Ledger> Ledgers { get; }
-    DbSet<Stock> Stocks { get; }
+    DbSet<RouteStock> RouteStocks { get; }
+    DbSet<WarehouseStock> WarehouseStocks { get; }
+    DbSet<StockTransaction> StockTransactions { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
