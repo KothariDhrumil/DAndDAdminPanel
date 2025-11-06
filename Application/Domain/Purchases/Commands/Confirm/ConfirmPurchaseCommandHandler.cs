@@ -60,11 +60,17 @@ public sealed class ConfirmPurchaseCommandHandler(
 
             return Result.Success();
         }
-        catch (Exception)
+        catch (DbUpdateException)
         {
             await transaction.RollbackAsync(ct);
             return Result.Failure(Error.Failure("Purchase.ConfirmationFailed",
-                "Failed to confirm purchase. Please try again or contact support."));
+                "A database error occurred while confirming the purchase. Please try again or contact support."));
+        }
+        catch (InvalidOperationException)
+        {
+            await transaction.RollbackAsync(ct);
+            return Result.Failure(Error.Failure("Purchase.ConfirmationFailed",
+                "An invalid operation occurred while confirming the purchase. Please try again or contact support."));
         }
     }
 }
