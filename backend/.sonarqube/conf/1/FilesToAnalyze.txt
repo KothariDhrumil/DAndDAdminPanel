@@ -1,0 +1,3 @@
+﻿D:\tfs\DealersAndDistributors\AngularAndWebApiProject\DealersAndDistributors\AuthPermissions.SqlServer\AuthPermissions\DataLayer\Migrations\20251027165001_InitAuthP.cs
+D:\tfs\DealersAndDistributors\AngularAndWebApiProject\DealersAndDistributors\AuthPermissions.SqlServer\AuthPermissions\DataLayer\Migrations\20251027165001_InitAuthP.Designer.cs
+D:\tfs\DealersAndDistributors\AngularAndWebApiProject\DealersAndDistributors\AuthPermissions.SqlServer\AuthPermissions\DataLayer\Migrations\AuthPermissionsDbContextModelSnapshot.cs

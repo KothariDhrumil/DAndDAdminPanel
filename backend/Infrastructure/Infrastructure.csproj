@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="Auth\AuthP\AuthPermissionsDesignTimeFactory.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+		<PackageReference Include="Azure.Identity" Version="1.17.0" />
+		<PackageReference Include="EfCore.TestSupport" Version="9.0.0" />
+		<PackageReference Include="MailKit" Version="4.14.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.10" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.7.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="MimeKit" Version="4.14.0" />
+		<PackageReference Include="Net.DistributedFileStoreCache" Version="2.0.0" />
+		<PackageReference Include="Net.RunMethodsSequentially" Version="2.0.1" />
+		<PackageReference Include="NetCore.AutoRegisterDi" Version="2.2.1" />
+		<PackageReference Include="EfCore.GenericServices.AspNetCore" Version="4.1.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
+		<PackageReference Include="NSwag.AspNetCore" Version="14.6.1" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="9.0.6" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
+		<PackageReference Include="ZymLabs.NSwag.FluentValidation.AspNetCore" Version="0.7.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Application\Application.csproj" />
+		<ProjectReference Include="..\Domain\Domain.csproj" />
+		<ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Reference Include="AuthPermissions">
+			<HintPath>..\Library\AuthPermissions.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="AuthPermissions.AspNetCore">
+			<HintPath>..\Library\AuthPermissions.AspNetCore.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="AuthPermissions.BaseCode">
+			<HintPath>..\Library\AuthPermissions.BaseCode.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="AuthPermissions.SupportCode">
+			<HintPath>..\Library\AuthPermissions.SupportCode.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+	</ItemGroup>
+</Project>
