@@ -59,10 +59,14 @@ public class RetailDbContext : DbContext, IRetailDbContext
     public DbSet<PriceTierProduct> PriceTierProducts => Set<PriceTierProduct>();
     public DbSet<PurchaseUnit> PurchaseUnits => Set<PurchaseUnit>();
     public DbSet<PurchaseUnitProduct> PurchaseUnitProducts => Set<PurchaseUnitProduct>();
+    public DbSet<Purchase> Purchases => Set<Purchase>();
+    public DbSet<PurchaseDetail> PurchaseDetails => Set<PurchaseDetail>();
     public DbSet<CustomerOrder> CustomerOrders => Set<CustomerOrder>();
     public DbSet<CustomerOrderDetail> CustomerOrderDetails => Set<CustomerOrderDetail>();
-    public DbSet<Domain.Accounting.Ledger> Ledgers => Set<Domain.Accounting.Ledger>();
-    public DbSet<Domain.Purchase.Stock> Stocks => Set<Domain.Purchase.Stock>();
+    public DbSet<Ledger> Ledgers => Set<Ledger>();
+    public DbSet<RouteStock> RouteStocks => Set<RouteStock>();
+    public DbSet<WarehouseStock> WarehouseStocks => Set<WarehouseStock>();
+    public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -309,12 +313,75 @@ public class RetailDbContext : DbContext, IRetailDbContext
         modelBuilder.Entity<PurchaseUnitProduct>()
             .HasIndex(x => x.IsActive);
 
+        // Purchase config
+        modelBuilder.Entity<Purchase>()
+            .ToTable("Purchases", "retail");
+        modelBuilder.Entity<Purchase>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<Purchase>()
+            .HasIndex(e => e.PurchaseDate);
+        modelBuilder.Entity<Purchase>()
+            .HasIndex(e => e.RouteId);
+        modelBuilder.Entity<Purchase>()
+            .HasIndex(e => e.PurchaseUnitId);
+        modelBuilder.Entity<Purchase>()
+            .HasIndex(e => e.IsConfirmed);
+        modelBuilder.Entity<Purchase>()
+            .HasIndex(e => e.IsPreOrder);
+        modelBuilder.Entity<Purchase>()
+            .HasIndex(e => new { e.PurchaseUnitId, e.PurchaseDate });
+        modelBuilder.Entity<Purchase>()
+            .HasIndex(e => new { e.RouteId, e.PurchaseDate });
+        modelBuilder.Entity<Purchase>()
+            .HasIndex(e => e.DataKey);
+        modelBuilder.Entity<Purchase>()
+            .Property(e => e.Amount).HasPrecision(9, 2);
+        modelBuilder.Entity<Purchase>()
+            .Property(e => e.Discount).HasPrecision(9, 2);
+        modelBuilder.Entity<Purchase>()
+            .Property(e => e.Tax).HasPrecision(9, 2);
+        modelBuilder.Entity<Purchase>()
+            .Property(e => e.AdditionalTax).HasPrecision(9, 2);
+        modelBuilder.Entity<Purchase>()
+            .Property(e => e.GrandTotal).HasPrecision(9, 2);
+        modelBuilder.Entity<Purchase>()
+            .HasOne(e => e.Route)
+            .WithMany()
+            .HasForeignKey(e => e.RouteId)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Purchase>()
+            .HasOne(e => e.PurchaseUnit)
+            .WithMany(p => p.Purchases)
+            .HasForeignKey(e => e.PurchaseUnitId)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Purchase>()
+            .HasMany(e => e.PurchaseDetails)
+            .WithOne(d => d.Purchase)
+            .HasForeignKey(d => d.PurchaseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // PurchaseDetail config
+        modelBuilder.Entity<PurchaseDetail>()
+            .ToTable("PurchaseDetails", "retail");
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasIndex(e => e.PurchaseId);
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasIndex(e => e.ProductId);
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasIndex(e => e.DataKey);
         modelBuilder.Entity<PurchaseDetail>()
             .Property(x => x.Tax).HasPrecision(18, 2);
         modelBuilder.Entity<PurchaseDetail>()
             .Property(x => x.Rate).HasPrecision(9, 2);
         modelBuilder.Entity<PurchaseDetail>()
             .Property(x => x.Amount).HasPrecision(9, 2);
+        modelBuilder.Entity<PurchaseDetail>()
+            .HasOne(e => e.Product)
+            .WithMany()
+            .HasForeignKey(e => e.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // CustomerOrder config
         modelBuilder.Entity<CustomerOrder>()
@@ -375,46 +442,96 @@ public class RetailDbContext : DbContext, IRetailDbContext
             .Property(e => e.IGST).HasPrecision(9, 2);
 
         // Ledger config
-        modelBuilder.Entity<Domain.Accounting.Ledger>()
+        modelBuilder.Entity<Ledger>()
             .ToTable("Ledgers", "retail");
-        modelBuilder.Entity<Domain.Accounting.Ledger>()
+        modelBuilder.Entity<Ledger>()
             .HasKey(e => e.Id);
-        modelBuilder.Entity<Domain.Accounting.Ledger>()
+        modelBuilder.Entity<Ledger>()
             .HasIndex(e => e.AccountId);
-        modelBuilder.Entity<Domain.Accounting.Ledger>()
+        modelBuilder.Entity<Ledger>()
             .HasIndex(e => e.Date);
-        modelBuilder.Entity<Domain.Accounting.Ledger>()
+        modelBuilder.Entity<Ledger>()
             .HasIndex(e => new { e.AccountId, e.Date });
-        modelBuilder.Entity<Domain.Accounting.Ledger>()
+        modelBuilder.Entity<Ledger>()
             .Property(e => e.Amount).HasPrecision(18, 2);
-        modelBuilder.Entity<Domain.Accounting.Ledger>()
+        modelBuilder.Entity<Ledger>()
             .Property(e => e.Balance).HasPrecision(18, 2);
 
         // Stock config
-        modelBuilder.Entity<Domain.Purchase.Stock>()
+        modelBuilder.Entity<RouteStock>()
             .ToTable("Stocks", "retail");
-        modelBuilder.Entity<Domain.Purchase.Stock>()
+        modelBuilder.Entity<RouteStock>()
             .HasKey(e => e.Id);
-        modelBuilder.Entity<Domain.Purchase.Stock>()
+        modelBuilder.Entity<RouteStock>()
             .HasIndex(e => new { e.RouteId, e.ProductId, e.Date })
             .IsUnique();
-        modelBuilder.Entity<Domain.Purchase.Stock>()
+        modelBuilder.Entity<RouteStock>()
             .HasIndex(e => e.RouteId);
-        modelBuilder.Entity<Domain.Purchase.Stock>()
+        modelBuilder.Entity<RouteStock>()
             .HasIndex(e => e.ProductId);
-        modelBuilder.Entity<Domain.Purchase.Stock>()
+        modelBuilder.Entity<RouteStock>()
             .HasIndex(e => e.Date);
-        modelBuilder.Entity<Domain.Purchase.Stock>()
+        modelBuilder.Entity<RouteStock>()
             .HasOne(e => e.Route)
             .WithMany()
             .HasForeignKey(e => e.RouteId)
             .OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Domain.Purchase.Stock>()
+        modelBuilder.Entity<RouteStock>()
             .HasOne(e => e.Product)
             .WithMany()
             .HasForeignKey(e => e.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // WarehouseStock config
+        modelBuilder.Entity<WarehouseStock>()
+            .ToTable("WarehouseStocks", "retail");
+        modelBuilder.Entity<WarehouseStock>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<WarehouseStock>()
+            .HasIndex(e => e.ProductId);
+        modelBuilder.Entity<WarehouseStock>()
+            .HasIndex(e => e.PurchaseUnitId);
+        modelBuilder.Entity<WarehouseStock>()
+            .HasIndex(e => e.Date);
+        modelBuilder.Entity<WarehouseStock>()
+            .HasIndex(e => e.DataKey);
+        modelBuilder.Entity<WarehouseStock>()
+            .Property(e => e.OpeningBalanceQty).HasPrecision(9, 2);
+        modelBuilder.Entity<WarehouseStock>()
+            .Property(e => e.ClosingBalanceQty).HasPrecision(9, 2);
+        modelBuilder.Entity<WarehouseStock>()
+            .Property(e => e.QtyPurchased).HasPrecision(9, 2);
+        modelBuilder.Entity<WarehouseStock>()
+            .Property(e => e.QtyTransferredToRoutes).HasPrecision(9, 2);
+        modelBuilder.Entity<WarehouseStock>()
+            .Property(e => e.RouteReturn).HasPrecision(9, 2);
+        modelBuilder.Entity<WarehouseStock>()
+            .Property(e => e.Waste).HasPrecision(9, 2);
+        modelBuilder.Entity<WarehouseStock>()
+            .Property(e => e.Loss).HasPrecision(9, 2);
+        modelBuilder.Entity<WarehouseStock>()
+            .Property(e => e.Sample).HasPrecision(9, 2);
+        modelBuilder.Entity<WarehouseStock>()
+            .HasOne(e => e.Product)
+            .WithMany()
+            .HasForeignKey(e => e.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<WarehouseStock>()
+            .HasOne(e => e.PurchaseUnit)
+            .WithMany()
+            .HasForeignKey(e => e.PurchaseUnitId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // StockTransaction config
+        modelBuilder.Entity<StockTransaction>()
+            .ToTable("StockTransactions", "retail");
+        modelBuilder.Entity<StockTransaction>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<StockTransaction>()
+            .HasIndex(e => e.Type);
+        modelBuilder.Entity<StockTransaction>()
+            .HasIndex(e => e.DataKey);
+        // Add more indexes/precision as needed for StockTransaction fields
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
