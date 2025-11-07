@@ -1,0 +1,15 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Plans'" [items]="['Superadmin']" [active_item]="'Plans'">
+      </app-breadcrumb>
+    </div>
+
+    <app-generic-table
+      [data]="plans()"
+      [columns]="columns() || []"
+      [config]="tableConfig()"
+      (tableEvent)="onTableEvent($event)"
+    ></app-generic-table>
+  </div>
+</section>

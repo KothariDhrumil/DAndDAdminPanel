@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Update User Tenant</h2>
+<div mat-dialog-content>
+  <p class="mb-3">Update tenant assignment for user: <strong>{{ data.userName }}</strong></p>
+  
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Select Tenant</mat-label>
+      <mat-select formControlName="tenantId" [disabled]="loading()">
+        <mat-option [value]="null">No Tenant</mat-option>
+        @for (tenant of tenants(); track tenant.tenantId) {
+          <mat-option [value]="tenant.tenantId">
+            {{ tenant.tenantName }} ({{ tenant.tenantFullName }})
+          </mat-option>
+        }
+      </mat-select>
+      @if (data.currentTenantName) {
+        <mat-hint>Current: {{ data.currentTenantName }}</mat-hint>
+      }
+    </mat-form-field>
+  </form>
+  
+  @if (loading()) {
+  <div class="text-center">
+    <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+    <p>Loading tenants...</p>
+  </div>
+  }
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid || loading()" (click)="save()">
+    Update Tenant
+  </button>
+</div>

@@ -1,0 +1,208 @@
+<section class="content">
+    <div class="content-block">
+        <div class="block-header">
+            <!-- breadcrumb -->
+            <app-breadcrumb [title]="'Ticket Details'" [items]="['Support Tickets']" [active_item]="'Ticket Details'">
+            </app-breadcrumb>
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                @if (ticket(); as t) {
+                <div class="card">
+                    <div class="header">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h2>Ticket #{{ t.id }}</h2>
+                            <div class="d-flex align-items-center gap-2">
+                                <mat-chip [color]="statusChipColor(t.ticketStatus)" selected>{{
+                                    statusLabel(t.ticketStatus) }}</mat-chip>
+                                <mat-chip [color]="priorityChipColor(t.priority)" selected>{{ priorityLabel(t.priority)
+                                    }}</mat-chip>
+                                <button mat-raised-button color="primary" (click)="openUpdateDialog()">
+                                    <mat-icon>edit</mat-icon>
+                                    <span class="ms-1">Edit</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <div class="wrapper wrapper-content animated fadeInUp">
+                            <mat-list>
+                                <mat-list-item>
+                                    <mat-icon matListItemIcon>message</mat-icon>
+                                    <div matListItemTitle>Message</div>
+                                    <div matListItemLine>{{ t.message }}</div>
+                                </mat-list-item>
+                                <mat-divider></mat-divider>
+
+                                <mat-list-item>
+                                    <mat-icon matListItemIcon>schedule</mat-icon>
+                                    <div matListItemTitle>Created</div>
+                                    <div matListItemLine>{{ t.createdAt | date:'medium' }}</div>
+                                </mat-list-item>
+
+                                @if (t.updatedAt) {
+                                <ng-container>
+                                    <mat-divider></mat-divider>
+                                    <mat-list-item>
+                                        <mat-icon matListItemIcon>update</mat-icon>
+                                        <div matListItemTitle>Updated</div>
+                                        <div matListItemLine>{{ t.updatedAt | date:'medium' }}</div>
+                                    </mat-list-item>
+                                </ng-container>
+                                }
+
+                                @if (t.url) {
+                                <ng-container>
+                                    <mat-divider></mat-divider>
+                                    <mat-list-item>
+                                        <mat-icon matListItemIcon>link</mat-icon>
+                                        <div matListItemTitle>URL</div>
+                                        <div matListItemLine><a [href]="t.url" target="_blank">{{ t.url }}</a></div>
+                                    </mat-list-item>
+                                </ng-container>
+                                }
+
+                                @if (t.correlationId) {
+                                <ng-container>
+                                    <mat-divider></mat-divider>
+                                    <mat-list-item>
+                                        <mat-icon matListItemIcon>fingerprint</mat-icon>
+                                        <div matListItemTitle>Reference ID</div>
+                                        <div matListItemLine>{{ t.correlationId }}</div>
+                                    </mat-list-item>
+                                </ng-container>
+                                }
+
+                                @if (t.method || t.statusCode || t.statusText) {
+                                <ng-container>
+                                    <mat-divider></mat-divider>
+                                    <mat-list-item>
+                                        <mat-icon matListItemIcon>http</mat-icon>
+                                        <div matListItemTitle>HTTP</div>
+                                        <div matListItemLine>
+                                            @if (t.method) { <span><strong>Method:</strong> {{ t.method }}</span> }
+                                            @if (t.statusCode) { <span class="ms-3"><strong>Code:</strong> {{
+                                                t.statusCode }}</span> }
+                                            @if (t.statusText) { <span class="ms-3 text-muted">{{ t.statusText }}</span>
+                                            }
+                                        </div>
+                                    </mat-list-item>
+                                </ng-container>
+                                }
+
+                                @if (t.userAgent || t.timestamp) {
+                                <ng-container>
+                                    <mat-divider></mat-divider>
+                                    <mat-list-item>
+                                        <mat-icon matListItemIcon>devices</mat-icon>
+                                        <div matListItemTitle>Environment</div>
+                                        <div matListItemLine>
+                                            @if (t.userAgent) {
+                                            <span class=""><strong>Agent:</strong> {{ t.userAgent }}</span>
+                                            }
+                                            @if (t.timestamp) {
+                                            <span class="ms-3"><strong>Time:</strong> {{ t.timestamp | date:'medium'
+                                                }}</span>
+                                            }
+                                        </div>
+                                    </mat-list-item>
+                                </ng-container>
+                                }
+
+                                @if (t.userId || t.tenantId) {
+                                <ng-container>
+                                    <mat-divider></mat-divider>
+                                    <mat-list-item>
+                                        <mat-icon matListItemIcon>person</mat-icon>
+                                        <div matListItemTitle>Ownership</div>
+                                        <div matListItemLine>
+                                            @if (t.userId) { <span><strong>User:</strong> {{ t.userId }}</span> }
+                                            @if (t.tenantId) { <span class="ms-3"><strong>Tenant:</strong> {{ t.tenantId
+                                                }}</span> }
+                                        </div>
+                                    </mat-list-item>
+                                </ng-container>
+                                }
+                            </mat-list>
+
+                            @if (parsedHeaders() || parsedRequestBody() || parsedResponseBody()) {
+                            <mat-divider></mat-divider>
+                            <mat-accordion>
+                                @if (parsedHeaders()) {
+                                <mat-expansion-panel [expanded]="true">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>Headers</mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <mat-form-field class="w-100" appearance="fill">
+                                        <mat-label>Headers</mat-label>
+                                        <textarea matInput [readonly]="true"
+                                            rows="3">{{ stringifiedHeaders() }}</textarea>
+                                    </mat-form-field>
+                                </mat-expansion-panel>
+                                }
+                                @if (parsedRequestBody()) {
+                                <mat-expansion-panel [expanded]="true">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>Request Body</mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <mat-form-field class="w-100" appearance="fill">
+                                        <mat-label>Request Body</mat-label>
+                                        <textarea matInput [readonly]="true"
+                                            rows="10">{{ stringifiedRequestBody() }}</textarea>
+                                    </mat-form-field>
+                                </mat-expansion-panel>
+                                }
+                                @if (parsedResponseBody()) {
+                                <mat-expansion-panel [expanded]="true">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>Response Body</mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <mat-form-field class="w-100" appearance="fill">
+                                        <mat-label>Response Body</mat-label>
+                                        <textarea matInput [readonly]="true"
+                                            rows="10">{{ stringifiedResponseBody() }}</textarea>
+                                    </mat-form-field>
+                                </mat-expansion-panel>
+                                }
+                            </mat-accordion>
+                            }
+
+                            @if (t.notes) {
+                            <mat-divider></mat-divider>
+
+                            <ng-container>
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <mat-icon matListItemIcon>person</mat-icon>
+                                    <div matListItemTitle>Ownership</div>
+                                    <div matListItemLine>
+                                        <span><strong>Notes:</strong> {{ t.notes }}</span>
+
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            }
+                            @if (t.resolution) {
+                            <mat-divider></mat-divider>
+
+                            <ng-container>
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <mat-icon matListItemIcon>check_circle</mat-icon>
+                                    <div matListItemTitle>Resolution</div>
+                                    <div matListItemLine>
+                                        <span><strong>Resolution:</strong> {{ t.resolution }}</span>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

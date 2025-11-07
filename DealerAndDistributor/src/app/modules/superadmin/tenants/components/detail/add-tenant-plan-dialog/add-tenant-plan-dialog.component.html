@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>{{ data.tenantPlanId ? 'Update Active Plan' : 'Add Plan to Tenant' }}</h2>
+<div mat-dialog-content>
+    @if (loadingPlans()) {
+    <div class="d-flex align-items-center gap-2 my-2">
+        <mat-spinner diameter="24"></mat-spinner>
+        <span>Loading plans…</span>
+    </div>
+    } @else if (errorPlans()) {
+    <div class="text-danger my-2">{{ errorPlans() }}</div>
+    } @else {
+    <form [formGroup]="form" class="form-grid">
+        <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Plan</mat-label>
+            <mat-select formControlName="planId" required>
+                @for (p of plans(); track p.id) {
+                <mat-option [value]="p.id">{{ p.name }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        @if (selectedPlan()) {
+        <div class="plan-preview">
+            <strong>Name:</strong> {{ selectedPlan()!.name }} | <strong>Validity:</strong> {{
+            selectedPlan()!.planValidityInDays }} days | <strong>Rate:</strong> {{ selectedPlan()!.planRate | currency
+            }}
+        </div>
+        }
+
+        <div class="grid-2">
+            <mat-form-field appearance="outline">
+                <mat-label>Valid From</mat-label>
+                <input matInput [matDatepicker]="pickerFrom" formControlName="validFrom" required [min]="today">
+                <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFrom></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Valid To</mat-label>
+                <input matInput [matDatepicker]="pickerTo" formControlName="validTo" required
+                    [min]="form.value.validFrom || today">
+                <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+                <mat-datepicker #pickerTo></mat-datepicker>
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Remarks</mat-label>
+            <input matInput formControlName="remarks">
+        </mat-form-field>
+
+        <app-roles-selector formControlName="roles" label="Roles"></app-roles-selector>
+
+        @if (submitError()) {
+        <div class="text-danger">{{ submitError() }}</div>
+        }
+    </form>
+    }
+</div>
+
+<div mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="close()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || saving()">{{ data.tenantPlanId
+        ? 'Update' : 'Save' }}</button>
+    @if (saving()) { <mat-spinner diameter="20" class="ms-2"></mat-spinner> }
+</div>

@@ -1,0 +1,15 @@
+// Navigation route constants for Angular Router
+export const LOGIN_ROUTE = '/authentication/signin';
+export const FORGOT_PASSWORD_ROUTE = '/authentication/forgot-password';
+export const REGISTER_ROUTE = '/authentication/signup';
+export const LOCK_SCREEN_ROUTE = '/authentication/lock-screen';
+export const DASHBOARD_ROUTE = '/admin/dashboard';
+export const USER_DASHBOARD_ROUTE = '/user/dashboard';
+export const SUPERADMIN_DASHBOARD_ROUTE = '/superadmin/dashboard';
+export const SUPERADMIN_TENANTS_ROUTE = '/superadmin/tenants';
+export const SUPERADMIN_TENANT_DETAIL_ROUTE = '/superadmin/tenants/detail';
+export const SUPERADMIN_PLANS_ROUTE = '/superadmin/plans';
+export const SUPERADMIN_CUSTOMERS_ROUTE = '/superadmin/customers';
+export const ROLES_PERMISSION_ROUTE = '/roles-and-permission';
+export const TICKETS_ROUTE = '/tickets';
+

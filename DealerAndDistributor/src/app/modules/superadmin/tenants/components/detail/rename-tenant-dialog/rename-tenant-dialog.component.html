@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Rename Tenant</h2>
+<div mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>New Tenant Name</mat-label>
+      <input matInput formControlName="tenantName" required />
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="save()">Save</button>
+</div>

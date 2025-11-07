@@ -1,0 +1,25 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Users'" [items]="['Superadmin']" [active_item]="'Users'"></app-breadcrumb>
+    </div>
+    <div class="card">
+
+      <div class="user-type-tabs">
+        @if (userTypes().length) {
+        <mat-tab-group [selectedIndex]="getSelectedTabIndex()"
+          (selectedIndexChange)="onUserTypeTabClick(userTypes()[ $event ].userTypeId)">
+          @for (ut of userTypes(); track ut.userTypeId) {
+          <mat-tab [label]="ut.name"></mat-tab>
+          }
+        </mat-tab-group>
+        }
+      </div>
+      <div class="p-3">
+        <app-generic-table [data]="users()" [columns]="columns()" [rowActions]="rowActions()" [config]="tableConfig"
+          (tableEvent)="onTableEvent($event)">
+        </app-generic-table>
+      </div>
+    </div>
+  </div>
+</section>

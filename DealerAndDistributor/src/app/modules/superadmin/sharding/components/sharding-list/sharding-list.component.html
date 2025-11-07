@@ -1,0 +1,16 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="'Sharding'" [items]="['Superadmin']" [active_item]="'Sharding'">
+      </app-breadcrumb>
+    </div>
+    <div class="row clearfix">
+      <div class="col-12">
+        <app-generic-table [data]="shardings()" [columns]="columns() || []" [config]="tableConfig"
+          [formDialogComponent]="ShardingDialogComponent" [deleteDialogComponent]="DeleteConfirmDialogComponent"
+          (tableEvent)="onTableEvent($event)"></app-generic-table>
+      </div>
+    </div>
+  </div>
+</section>

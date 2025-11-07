@@ -1,0 +1,10 @@
+<div mat-dialog-content>
+  <app-upsert-tenant
+    [title]="'Add Tenant'"
+    [submitText]="'Create'"
+    [showPassword]="false"
+    [showDbOptions]="true"
+    [shardingOptions]="shardingOptions"
+    (submitted)="onSubmitted($event)"
+  ></app-upsert-tenant>
+</div>

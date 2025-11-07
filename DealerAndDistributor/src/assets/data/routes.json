@@ -1,0 +1,175 @@
+{
+  "routes": [
+    {
+      "path": "/superadmin/tenants",
+      "title": "MENUITEMS.Tenants.Text",
+      "iconType": "feather",
+      "icon": "monitor",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [
+        "Tenant",
+        "AccessAll"
+      ],
+      "submenu": []
+    },
+    {
+      "path": "/superadmin/sharding",
+      "title": "MENUITEMS.Sharding.Text",
+      "iconType": "feather",
+      "icon": "monitor",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [
+        "Tenant",
+        "AccessAll"
+      ],
+      "submenu": []
+    },
+    {
+      "path": "/roles-and-permission",
+      "title": "MENUITEMS.RolesAndPermissions.Text",
+      "iconType": "feather",
+      "icon": "monitor",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [],
+      "submenu": [
+        {
+          "path": "/roles-and-permission/add",
+          "title": "Add Role",
+          "iconType": "feather",
+          "icon": "plus",
+          "class": "",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "RoleManagement",
+            "AccessAll"
+          ],
+          "submenu": []
+        }
+      ]
+    },
+
+    {
+      "path": "/superadmin/plans",
+      "title": "MENUITEMS.Plans.Text",
+      "iconType": "feather",
+      "icon": "monitor",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [
+        "PlanManagement",
+        "AccessAll"
+      ],
+      "submenu": [
+        {
+          "path": "/superadmin/plans/add",
+          "title": "Add Plan",
+          "iconType": "feather",
+          "icon": "plus",
+          "class": "",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "PlanManagement",
+            "AccessAll"
+          ],
+          "submenu": []
+        }       
+      
+      ]
+    },
+    {
+      "path": "/tenant-users",
+      "title": "MENUITEMS.TenantUsers.Text",
+      "iconType": "feather",
+      "icon": "users",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [],
+      "submenu": [
+        {
+          "path": "/tenant-users/user-types",
+          "title": "MENUITEMS.UserTypes.Text",
+          "iconType": "feather",
+          "icon": "setting",
+          "class": "",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "UserManagement",
+            "AccessAll"
+          ],
+          "submenu": []
+        },
+        {
+          "path": "/tenant-users",
+          "title": "MENUITEMS.TenantUsers.Text",
+          "iconType": "feather",
+          "icon": "plus",
+          "class": "",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [
+            "UserManagement",
+            "AccessAll"
+          ],
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "path": "/user/todos",
+      "title": "MENUITEMS.Todos.Text",
+      "iconType": "feather",
+      "icon": "check-square",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [],
+      "submenu": []
+    },
+    {
+      "path": "/customers",
+      "title": "MENUITEMS.Customers.Text",
+      "iconType": "feather",
+      "icon": "users",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [],
+      "submenu": []
+    },
+    {
+      "path": "/tickets",
+      "title": "MENUITEMS.Tickets.Text",
+      "iconType": "feather",
+      "icon": "help-circle",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": [],
+      "submenu": []
+    }
+
+  ]
+}

@@ -1,0 +1,205 @@
+<div class="row">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="card">
+      <div class="materialTableHeader">
+        <div class="left">
+          <ul class="header-buttons-left ms-0">
+            @if (config().title) {
+            <li class="tbl-title">
+              <h2>{{ config().title }}</h2>
+            </li>
+            }
+            @if (config().enableSearch) {
+            <li class="tbl-search-box">
+              <label for="search-input"><i class="material-icons search-icon">search</i></label>
+              <input id="search-input" placeholder="Search" type="text" #filter (keyup)="applyFilter($event)"
+                class="browser-default search-field" aria-label="Search box">
+            </li>
+            }
+          </ul>
+        </div>
+        <div class="right">
+          <div class="right-side-btn">
+            @if (config().enableAdd) {
+            <button mat-icon-button class="tbl-header-btn col-green" matTooltip="Add" (click)="add()">
+              <mat-icon>add_circle_outline</mat-icon>
+            </button>
+            }
+            @if (config().enableRefresh) {
+            <button mat-icon-button (click)="refresh()" class="tbl-header-btn col-brown" matTooltip="Refresh">
+              <mat-icon>refresh</mat-icon>
+            </button>
+            }
+            @if (config().enableColumnHide) {
+            <button mat-icon-button [matMenuTriggerFor]="columnMenu" class="tbl-header-btn col-orange"
+              matTooltip="Show/Hide Column">
+              <mat-icon>filter_list</mat-icon>
+            </button>
+            }
+             @if (config().enableFilter) {
+            <button mat-icon-button class="tbl-header-btn col-purple" matTooltip="Filter Options" (click)="openFilterDialog()">
+              <mat-icon>tune</mat-icon>
+            </button>
+          }
+            @if (config().enableExport) {
+            <button mat-icon-button (click)="export()" class="tbl-header-btn col-blue" matTooltip="Xlsx Download">
+              <mat-icon class="material-icons-outlined">file_download</mat-icon>
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="overflow-auto">
+        <div class="responsive_table">
+
+          <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSort($event)">
+            @if (config().enableSelection) {
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="masterToggle()" [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                  [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+            }
+
+            @for (column of columns(); track column.def) {
+            @if (isColumnVisible(column)) {
+            <ng-container [matColumnDef]="column.def">
+              <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.def : ''"
+                [ngClass]="column.headerClass">
+                <span class="truncate-text"> {{ column.label }} </span>
+              </th>
+              <td mat-cell *matCellDef="let row" [ngClass]="column.class"
+                [ngStyle]="{'cursor': config().enableContextMenu ? 'context-menu' : 'default'}"
+                (click)="onRowClick(row)" (contextmenu)="onContextMenu($event, row)">
+                @switch (column.type) {
+                @case ('text') {
+                @if (column.tooltip) {
+                <span [matTooltip]="row[column.def]">
+                  <span class="truncate-text">{{ row[column.def] }}</span>
+                </span>
+                } @else {
+                <span class="truncate-text">
+                  {{ row[column.def] }}
+                </span>
+                }
+                }
+                @case ('date') {
+                <span class="truncate-text">{{ row[column.def] | date }}</span>
+                }
+                @case ('phone') {
+                <a [href]="'tel:' + row[column.def]">
+                  <span class="mobile-label">{{ column.label }}:</span> <mat-icon
+                    class="tbl-icon material-icons-outlined col-green">call</mat-icon><span class="truncate-text">
+                    {{ row[column.def] }}</span>
+                </a>
+                }
+                @case ('email') {
+                <a [href]="'mailto:' + row[column.def]">{{ row[column.def] }}</a>
+                }
+                @case ('image') {
+                <img [ngSrc]="row[column.def]" width="40" height="40" [alt]="row[column.def]">
+                }
+                @case ('badge') {
+                @let color = (column.badgeColor ? column.badgeColor : (column.badgeColorField ? row[column.badgeColorField] : null));
+                <span class="badge"
+                  [ngClass]="{
+                    'badge-solid-green': color === 'green',
+                    'badge-solid-orange': color === 'orange',
+                    'badge-solid-purple': color === 'purple',
+                    'badge-solid-red': color === 'red'
+                  }">
+                  {{ row[column.def] }}
+                </span>
+                }
+                @case ('check') {
+                <mat-icon>{{ row[column.def] ? 'check' : 'close' }}</mat-icon>
+                }
+                @case ('actionBtn') {
+                <div class="action-buttons">
+                  @if (config().enableEdit) {
+                  <button mat-icon-button color="accent" (click)="edit(row); $event.stopPropagation()"
+                    class="tbl-action-btn" matTooltip="Edit">
+                    <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+                  </button>
+                  }
+                  <!-- Custom row action buttons -->
+                  @for (act of rowActions(); track act.name) {
+                  <button mat-icon-button (click)="triggerCustom(act.name, row, $event)" class="tbl-action-btn"
+                    [matTooltip]="act.tooltip || act.name" [color]="act.color || 'primary'">
+                    <app-feather-icons [icon]="act.icon" [class]="'tbl-fav-edit'"></app-feather-icons>
+                  </button>
+                  }
+                  @if (config().enableDelete) {
+                  <button mat-icon-button color="accent" (click)="delete(row); $event.stopPropagation()"
+                    matTooltip="Delete" class="tbl-action-btn">
+                    <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                  </button>
+                  }
+                </div>
+                }
+                }
+              </td>
+            </ng-container>
+            }
+            }
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+
+            <!-- Empty and no-results row with helpful actions -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" [attr.colspan]="displayedColumns().length">
+                @if (filterValue()) {
+                <div class="d-flex align-items-center gap-2">
+                  <span>No results matching "{{ filterValue() }}"</span>
+                  <button mat-stroked-button color="primary" (click)="clearFilter()">Clear search</button>
+                </div>
+                } @else {
+                <div class="d-flex align-items-center gap-2">
+                  <span>No data available</span>
+                </div>
+                }
+              </td>
+            </tr>
+          </table>
+
+          <mat-paginator [pageSize]="config().pageSize" [pageSizeOptions]="config().pageSizeOptions"
+            [length]="totalRecords()" (page)="onPageChange($event)">
+          </mat-paginator>
+        </div>
+
+        <!-- Column visibility menu -->
+        <!-- <mat-menu #columnMenu="matMenu">
+            @for (column of columns(); track column.def) {
+            <button mat-menu-item (click)="toggleColumnVisibility(column)">
+              <mat-icon>{{ isColumnVisible(column) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+              <span>{{ column.label }}</span>
+            </button>
+            }
+          </mat-menu> -->
+
+        <mat-menu #columnMenu="matMenu" class="column-menu show-hide-column" [overlapTrigger]="false">
+          <div style="padding: 0px 15px; max-height: 300px; overflow: auto; min-width: 200px;">
+            <span class="table-column-label">Show/Hide Column</span>
+            <mat-divider></mat-divider>
+            @for (cd of columns(); track $index) {
+            <div class="mb-1.5">
+              <!-- add checkbox button with click event -->
+              <mat-checkbox color="primary" (click)="toggleColumnVisibility(cd)" [checked]="isColumnVisible(cd)">
+                {{ cd.label }}
+              </mat-checkbox>
+            </div>
+            }
+          </div>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
+</div>

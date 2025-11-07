@@ -1,0 +1,12 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="'All Tenants'" [items]="['Tenants']" [active_item]="'All Tenants'">
+      </app-breadcrumb>
+    </div>
+
+    <app-generic-table [data]="tenants()" [columns]="columns() || []" [totalRecords]="totalRecords()"
+      [config]="tableConfig" [formDialogComponent]="TenantDialogComponent" (tableEvent)="onTableEvent($event)" />
+  </div>
+</section>

@@ -1,0 +1,168 @@
+@use "sass:color";
+.table-container {
+  width: 100%;
+  overflow: auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  padding: 1rem;
+}
+
+.table-header {
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.table-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  mat-form-field {
+    width: 300px;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  .mat-header-row {
+    background-color: #fafafa;
+
+    .mat-header-cell {
+      color: rgba(0, 0, 0, 0.87);
+      font-weight: 500;
+      font-size: 14px;
+      padding: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .mat-row {
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  .mat-cell {
+    padding: 16px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+    &.mat-column-select {
+      width: 50px;
+      padding-right: 8px;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  img {
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .badge {
+    padding: 6px 12px;
+    border-radius: 16px;
+    text-transform: capitalize;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+    line-height: 1;
+    transition: all 0.2s ease;
+
+    &.active,
+    &.completed,
+    &.approved {
+      background-color: #e6f4ea;
+      color: #1e8e3e;
+
+      &:hover {
+        background-color: color.adjust(#e6f4ea, $lightness: -5%);
+      }
+    }
+
+    &.inactive,
+    &.pending,
+    &.draft {
+      background-color: #fef7e0;
+      color: #b06000;
+
+      &:hover {
+        background-color: color.adjust(#fef7e0, $lightness: -5%);
+      }
+    }
+
+    &.rejected,
+    &.cancelled,
+    &.failed {
+      background-color: #fde7e9;
+      color: #d93025;
+
+      &:hover {
+        background-color: color.adjust(#fde7e9, $lightness: -5%);
+      }
+    }
+  }
+}
+
+// Pagination styles
+::ng-deep .mat-paginator {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+  .mat-paginator-container {
+    min-height: 48px;
+    padding: 0 8px;
+  }
+}
+
+// No data message styles
+.mat-row.mat-no-data-row {
+  .mat-cell {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.54);
+    font-style: italic;
+    padding: 24px;
+  }
+}
+
+// Context menu position styles
+::ng-deep .context-menu {
+  position: fixed !important;
+
+  .mat-menu-content {
+    padding: 0;
+  }
+
+  .mat-menu-item {
+    font-size: 14px;
+    height: 40px;
+    line-height: 40px;
+  }
+}

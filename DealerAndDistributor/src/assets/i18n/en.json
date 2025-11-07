@@ -1,0 +1,84 @@
+{
+  "MENUITEMS": {
+    "MAIN": {
+      "TEXT": "Main"
+    },
+    "DASHBOARD": {
+      "TEXT": "Dashboard",
+      "LIST": {
+        "DASHBOARD1": "Dashboard 1",
+        "DASHBOARD2": "Dashboard 2"
+      }
+    },
+    "PRODUCT": {
+      "TEXT": "Products",
+      "LIST": {
+        "PRODUCT1": "Product 1",
+        "PRODUCT2": "Product 2"
+      }
+    },
+    "Tenants": {
+      "Text": "Tenants",
+      "List": {
+        "List": "Tenant List",
+        "Create": "Tenant Create"
+      }
+    },
+    "Sharding": {
+      "Text": "Sharding",
+      "List": {
+        "List": "Sharding List",
+        "Create": "Sharding Create"
+      }
+    },
+    "RolesAndPermissions": {
+      "Text": "Roles & Permissions",
+      "List": {
+        "List": "Roles & Permissions List",
+        "Create": "Roles & Permissions Create"
+      }
+    },
+    "Plans": {
+      "Text": "Plans",
+      "List": {
+        "List": "Plans List",
+        "Create": "Plans Create"
+      }
+    },
+    "TenantUsers": {
+      "Text": "Users",
+      "List": {
+        "List": "Users List",
+        "Create": "Users Create"
+      }
+    },
+    "Todos": {
+      "Text": "Todos",
+      "List": {
+        "List": "Todos List",
+        "Create": "Todos Create"
+      }
+    },
+    "Customers": {
+      "Text": "Customers",
+      "List": {
+        "List": "Customers List",
+        "Create": "Customers Create"
+      }
+    },
+    "Tickets": {
+      "Text": "Support Tickets",
+      "List": {
+        "List": "Support Tickets List",
+        "Create": "Support Tickets Create"
+      }
+    },
+    "UserTypes": {
+      "Text": "User Types",
+      "List": {
+        "List": "User Types List",
+        "Create": "User Types Create"
+      }
+    }
+  }
+}

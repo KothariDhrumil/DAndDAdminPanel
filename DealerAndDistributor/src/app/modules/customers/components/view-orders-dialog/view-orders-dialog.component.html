@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Orders</h2>
+<div mat-dialog-content>
+  @if (orders().length === 0) {
+    <p>No orders found.</p>
+  } @else {
+    <mat-nav-list>
+      @for (o of orders(); track $index) {
+        <a mat-list-item>
+          <span>Total: {{ o.total }}</span>
+          <span class="spacer"></span>
+          <span class="date">{{ o.createdAt | date: 'short' }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  }
+</div>

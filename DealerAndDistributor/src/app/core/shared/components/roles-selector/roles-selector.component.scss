@@ -1,0 +1,46 @@
+.rs-container {
+  width: 100%;
+  padding-top: 0.5rem;
+}
+
+.rs-loading {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 0;
+}
+
+.rs-error {
+  color: #c62828;
+  padding: .5rem 0;
+}
+
+.rs-list {
+  width: 100%;
+}
+
+.rs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .25rem .75rem;
+}
+
+.rs-option {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+}
+
+.rs-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.rs-name {
+  font-weight: 500;
+}
+
+.rs-desc {
+  font-size: 12px;
+  opacity: .75;
+}
